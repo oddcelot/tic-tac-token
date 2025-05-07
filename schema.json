@@ -1,0 +1,629 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "anyOf": [
+    {
+      "type": "object",
+      "properties": {
+        "$type": {
+          "const": "color"
+        },
+        "$value": {
+          "type": "object",
+          "properties": {
+            "colorSpace": {
+              "enum": [
+                "a98-rgb",
+                "display-p3",
+                "hsl",
+                "hwb",
+                "lab",
+                "lch",
+                "oklab",
+                "oklch",
+                "prophoto-rgb",
+                "rec2020",
+                "srgb",
+                "srgb-linear",
+                "xyz-d50",
+                "xzy-d65"
+              ]
+            },
+            "components": {
+              "type": "array",
+              "minItems": 3,
+              "prefixItems": [
+                {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "const": "none"
+                    }
+                  ]
+                },
+                {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "const": "none"
+                    }
+                  ]
+                },
+                {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "const": "none"
+                    }
+                  ]
+                }
+              ],
+              "items": false
+            },
+            "alpha": {
+              "type": "number",
+              "maximum": 1,
+              "minimum": 0
+            },
+            "hex": {
+              "type": "string",
+              "pattern": "^[\\dA-Fa-f]+$"
+            }
+          },
+          "required": [
+            "colorSpace",
+            "components"
+          ]
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "$type",
+        "$value"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$type": {
+          "const": "cubicBezier"
+        },
+        "$value": {
+          "type": "array",
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number",
+              "maximum": 1,
+              "minimum": 0
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number",
+              "maximum": 1,
+              "minimum": 0
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "items": false
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "$type",
+        "$value"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$type": {
+          "const": "dimension"
+        },
+        "$value": {
+          "type": "object",
+          "properties": {
+            "unit": {
+              "enum": [
+                "px",
+                "rem"
+              ]
+            },
+            "value": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "unit",
+            "value"
+          ]
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "$type",
+        "$value"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$type": {
+          "const": "duration"
+        },
+        "$value": {
+          "type": "object",
+          "properties": {
+            "unit": {
+              "enum": [
+                "ms",
+                "s"
+              ]
+            },
+            "value": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "unit",
+            "value"
+          ]
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "$type",
+        "$value"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$type": {
+          "const": "fontFamily"
+        },
+        "$value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "$type",
+        "$value"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$type": {
+          "const": "fontSize"
+        },
+        "$value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "$type",
+        "$value"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$type": {
+          "const": "fontWeight"
+        },
+        "$value": {
+          "anyOf": [
+            {
+              "type": "number",
+              "maximum": 1000,
+              "minimum": 1
+            },
+            {
+              "const": "black"
+            },
+            {
+              "const": "bold"
+            },
+            {
+              "const": "book"
+            },
+            {
+              "const": "demi-bold"
+            },
+            {
+              "const": "extra-black"
+            },
+            {
+              "const": "extra-bold"
+            },
+            {
+              "const": "extra-light"
+            },
+            {
+              "const": "hairline"
+            },
+            {
+              "const": "heavy"
+            },
+            {
+              "const": "light"
+            },
+            {
+              "const": "medium"
+            },
+            {
+              "const": "normal"
+            },
+            {
+              "const": "regular"
+            },
+            {
+              "const": "semi-bold"
+            },
+            {
+              "const": "thin"
+            },
+            {
+              "const": "ultra-black"
+            },
+            {
+              "const": "ultra-bold"
+            },
+            {
+              "const": "ultra-light"
+            }
+          ]
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "$type",
+        "$value"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$type": {
+          "const": "number"
+        },
+        "$value": {
+          "type": "number"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "$type",
+        "$value"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$type": {
+          "const": "shadow"
+        },
+        "$value": {
+          "type": "object",
+          "properties": {
+            "blur": {
+              "type": "object",
+              "properties": {
+                "unit": {
+                  "enum": [
+                    "px",
+                    "rem"
+                  ]
+                },
+                "value": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "unit",
+                "value"
+              ]
+            },
+            "color": {
+              "type": "object",
+              "properties": {
+                "$type": {
+                  "const": "color"
+                },
+                "$value": {
+                  "type": "object",
+                  "properties": {
+                    "colorSpace": {
+                      "enum": [
+                        "a98-rgb",
+                        "display-p3",
+                        "hsl",
+                        "hwb",
+                        "lab",
+                        "lch",
+                        "oklab",
+                        "oklch",
+                        "prophoto-rgb",
+                        "rec2020",
+                        "srgb",
+                        "srgb-linear",
+                        "xyz-d50",
+                        "xzy-d65"
+                      ]
+                    },
+                    "components": {
+                      "type": "array",
+                      "minItems": 3,
+                      "prefixItems": [
+                        {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "const": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "const": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "const": "none"
+                            }
+                          ]
+                        }
+                      ],
+                      "items": false
+                    },
+                    "alpha": {
+                      "type": "number",
+                      "maximum": 1,
+                      "minimum": 0
+                    },
+                    "hex": {
+                      "type": "string",
+                      "pattern": "^[\\dA-Fa-f]+$"
+                    }
+                  },
+                  "required": [
+                    "colorSpace",
+                    "components"
+                  ]
+                }
+              },
+              "required": [
+                "$type",
+                "$value"
+              ]
+            },
+            "offsetX": {
+              "type": "object",
+              "properties": {
+                "unit": {
+                  "enum": [
+                    "px",
+                    "rem"
+                  ]
+                },
+                "value": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "unit",
+                "value"
+              ]
+            },
+            "offsetY": {
+              "type": "object",
+              "properties": {
+                "unit": {
+                  "enum": [
+                    "px",
+                    "rem"
+                  ]
+                },
+                "value": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "unit",
+                "value"
+              ]
+            },
+            "spread": {
+              "type": "object",
+              "properties": {
+                "unit": {
+                  "enum": [
+                    "px",
+                    "rem"
+                  ]
+                },
+                "value": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "unit",
+                "value"
+              ]
+            }
+          },
+          "required": [
+            "blur",
+            "color",
+            "offsetX",
+            "offsetY",
+            "spread"
+          ]
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "$type",
+        "$value"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$type": {
+          "const": "stroke"
+        },
+        "$value": {
+          "enum": [
+            "dashed",
+            "dotted",
+            "double",
+            "groove",
+            "hidden",
+            "inset",
+            "none",
+            "outset",
+            "ridge",
+            "solid"
+          ]
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "$type",
+        "$value"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$type": {
+          "const": "strokeStyle"
+        },
+        "$value": {
+          "type": "object",
+          "properties": {
+            "dashArray": {
+              "type": "array",
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "unit": {
+                      "enum": [
+                        "px",
+                        "rem"
+                      ]
+                    },
+                    "value": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "unit",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "unit": {
+                      "enum": [
+                        "px",
+                        "rem"
+                      ]
+                    },
+                    "value": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "unit",
+                    "value"
+                  ]
+                }
+              ],
+              "items": false
+            },
+            "lineCap": {
+              "const": "round"
+            }
+          },
+          "required": [
+            "dashArray",
+            "lineCap"
+          ]
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "$type",
+        "$value"
+      ]
+    }
+  ]
+}

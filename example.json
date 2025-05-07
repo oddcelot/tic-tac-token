@@ -1,0 +1,5 @@
+{
+  "$schema": "./schema.json",
+  "$type": "fontWeight",
+  "$value": "black"
+}

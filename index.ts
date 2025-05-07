@@ -9,7 +9,7 @@ const User = type({
 type User = typeof User.infer;
 
 
-const test: User = {}
+
 
 
 const out = User({

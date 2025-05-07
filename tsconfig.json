@@ -3,29 +3,28 @@
     /* Base Options: */
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "target": "es2022",
+
     "allowJs": true,
     "resolveJsonModule": true,
     "moduleDetection": "force",
     "isolatedModules": true,
-    "verbatimModuleSyntax": true,
 
     /* Strictness */
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
+    /* Node Stuff */
 
-    /* If transpiling with TypeScript: */
-    "module": "NodeNext",
-    "outDir": "dist",
-    "sourceMap": true,
-
-    /* AND if you're building for a library: */
-    "declaration": true,
-
+    "noEmit": true,
     /* If your code doesn't run in the DOM: */
-    "lib": ["es2022", "dom"],
+    "lib": ["es2022", "DOM", "DOM.Iterable"],
 
-    "exactOptionalPropertyTypes": true
+    "target": "esnext",
+    "module": "nodenext",
+
+    "moduleResolution": "nodenext",
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+    "verbatimModuleSyntax": true
   }
 }

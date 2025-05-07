@@ -37,13 +37,39 @@ export const FontWeightAliasMap = type({
   950: "'extra-black' | 'ultra-black'",
 });
 
-export const FontWeightAliasNames = type.enumerated(
-  Object.values(FontWeightAliasMap.infer)
+// const ResolvedFontWeightAlias = type.enumerated(
+//   ...Object.values(
+//     FontWeightAliasMap.pipe((weights) => weights).to("string")
+//       .inferIntrospectableOut || FontWeightNames
+//   )
+// );
+
+
+const FontWeightNames = type.enumerated(
+  "thin",
+  "hairline",
+  "extra-light",
+  "ultra-light",
+  "light",
+  "normal",
+  "regular",
+  "book",
+  "medium",
+  "semi-bold",
+  "demi-bold",
+  "bold",
+  "extra-bold",
+  "ultra-bold",
+  "black",
+  "heavy",
+  "extra-black",
+  "ultra-black"
 );
+
 
 export const FontWeight = type({
   $type: "'fontWeight'",
-  $value: type("1 <= number <= 1000").or(FontWeightAliasNames),
+  $value: type("1 <= number <= 1000").or(FontWeightNames),
 });
 
 export const FontSize = type({
@@ -112,13 +138,13 @@ export const Token = Color.or(Dimension)
 
 type Token = typeof Token.infer;
 
-const exampleToken: Token = {
+export const exampleToken: Token = {
   description: "some description",
-  $type: "color",
-  $value: {
-    colorSpace: "srgb",
-    components: [1, 1, 1],
-    alpha: 213,
-    hex: "#000000",
-  },
+  $type: "fontWeight",
+  $value: 123,
+};
+export const exampleToken2: Token = {
+  description: "some description",
+  $type: "fontWeight",
+  $value: "black",
 };
