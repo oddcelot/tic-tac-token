@@ -1,5 +1,16 @@
 {
   "$schema": "./schema.json",
-  "$type": "fontWeight",
-  "$value": "black"
+  "thing": {
+    "$type": "color",
+    "$value": {
+      "colorSpace": "srgb",
+      "components": [
+        255,
+        0,
+        0
+      ],
+      "alpha": ,
+      "hex": "#000000"
+    }
+  }
 }

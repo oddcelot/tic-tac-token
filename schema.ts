@@ -1,4 +1,4 @@
-import { type } from "arktype";
+import { match, type } from "arktype";
 
 export const NumberValue = type({ value: "number", unit: "'rem' | 'px'" });
 
@@ -9,15 +9,15 @@ export const Color = type({
       "'srgb' | 'srgb-linear' | 'hsl' | 'hwb' | 'lab' | 'lch' | 'oklab' | 'oklch' | 'display-p3' | 'a98-rgb' | 'prophoto-rgb' | 'rec2020' | 'xzy-d65' | 'xyz-d50'",
     components: type(["number | 'none'", "number | 'none'", "number | 'none'"]),
     alpha: "(0 <= number <= 1)?",
-    hex: "string.hex?",
+    hex: type("/^#[\\dA-Fa-f]+$/"),
   },
-});
+}).describe("Color");
 
 export const Dimension = type({
   $type: "'dimension'",
   /** `px` needs to be convered to `dp` on Android and `pt` on iOS  | `1rem` on Android is eqilvalent to `16sp` */
   $value: NumberValue,
-});
+}).describe("Dimension");
 
 export const FontFamily = type({
   $type: "'fontFamily'",
@@ -44,7 +44,6 @@ export const FontWeightAliasMap = type({
 //   )
 // );
 
-
 const FontWeightNames = type.enumerated(
   "thin",
   "hairline",
@@ -66,16 +65,16 @@ const FontWeightNames = type.enumerated(
   "ultra-black"
 );
 
-
+/** some weight */
 export const FontWeight = type({
   $type: "'fontWeight'",
   $value: type("1 <= number <= 1000").or(FontWeightNames),
-});
+}).describe("Font Weight");
 
 export const FontSize = type({
   $type: "'fontSize'",
   $value: "number | string",
-});
+}).describe("Font Size");
 
 export const Duration = type({
   $type: "'duration'",
@@ -83,17 +82,17 @@ export const Duration = type({
     value: "number.integer",
     unit: "'ms' | 's'",
   },
-});
+}).describe("Duration");
 
 export const CubicBezier = type({
   $type: "'cubicBezier'",
   $value: type(["0 <= number <= 1", "number", "0 <= number <= 1", "number"]),
-});
+}).describe("Cubic Bezier");
 
 export const Number = type({
   $type: "'number'",
   $value: "number",
-});
+}).describe("Number");
 
 export const Shadow = type({
   $type: "'shadow'",
@@ -104,13 +103,13 @@ export const Shadow = type({
     blur: NumberValue,
     spread: NumberValue,
   },
-});
+}).describe("Shadow");
 
 export const Stroke = type({
   $type: "'stroke'",
   $value:
     "'none' | 'hidden' | 'dotted' | 'dashed' | 'solid' | 'double' | 'groove' | 'ridge' | 'inset' | 'outset'",
-});
+}).describe("Stroke");
 
 export const StrokeStyle = type({
   $type: "'strokeStyle'",
@@ -118,7 +117,7 @@ export const StrokeStyle = type({
     dashArray: [NumberValue, NumberValue],
     lineCap: "'round'",
   },
-});
+}).describe("Stroke Style");
 
 export const Token = Color.or(Dimension)
   .or(FontFamily)
@@ -129,22 +128,32 @@ export const Token = Color.or(Dimension)
   .or(Number)
   .or(Shadow)
   .or(Stroke)
-  .or(StrokeStyle)
-  .and(
-    type({
-      description: "string?",
-    })
-  );
+  .or(StrokeStyle);
+
+// export const Schema = type({
+//   "[string]": Token,
+//   "thing": "string"
+// });
+
+export const Schema = match({
+  string: (v) => Token,
+
+  default: "assert",
+});
+
+export const Schema2 = type({
+  "[symbol]": "string",
+  "[string]": Token,
+});
 
 type Token = typeof Token.infer;
 
 export const exampleToken: Token = {
-  description: "some description",
   $type: "fontWeight",
   $value: 123,
 };
+
 export const exampleToken2: Token = {
-  description: "some description",
   $type: "fontWeight",
-  $value: "black",
+  $value: "light",
 };
