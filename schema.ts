@@ -1,27 +1,28 @@
 import { match, type } from "arktype";
 
 export const NumberValue = type({ value: "number", unit: "'rem' | 'px'" });
+const ValueAlias = type("/^{([^{}]+?)}$/");
 
 export const Color = type({
   $type: "'color'",
-  $value: {
+  $value: ValueAlias.or({
     colorSpace:
       "'srgb' | 'srgb-linear' | 'hsl' | 'hwb' | 'lab' | 'lch' | 'oklab' | 'oklch' | 'display-p3' | 'a98-rgb' | 'prophoto-rgb' | 'rec2020' | 'xzy-d65' | 'xyz-d50'",
     components: type(["number | 'none'", "number | 'none'", "number | 'none'"]),
     alpha: "(0 <= number <= 1)?",
     hex: type("/^#[\\dA-Fa-f]+$/"),
-  },
+  }),
 }).describe("Color");
 
 export const Dimension = type({
   $type: "'dimension'",
   /** `px` needs to be convered to `dp` on Android and `pt` on iOS  | `1rem` on Android is eqilvalent to `16sp` */
-  $value: NumberValue,
+  $value: ValueAlias.or(NumberValue),
 }).describe("Dimension");
 
 export const FontFamily = type({
   $type: "'fontFamily'",
-  $value: "string | string[]",
+  $value: ValueAlias.or("string | string[]"),
 });
 
 export const FontWeightAliasMap = type({
@@ -68,30 +69,32 @@ const FontWeightNames = type.enumerated(
 /** some weight */
 export const FontWeight = type({
   $type: "'fontWeight'",
-  $value: type("1 <= number <= 1000").or(FontWeightNames),
+  $value: ValueAlias.or(type("1 <= number <= 1000").or(FontWeightNames)),
 }).describe("Font Weight");
 
 export const FontSize = type({
   $type: "'fontSize'",
-  $value: "number | string",
+  $value: ValueAlias.or("number | string"),
 }).describe("Font Size");
 
 export const Duration = type({
   $type: "'duration'",
   $value: {
-    value: "number.integer",
+    value: ValueAlias.or("number.integer"),
     unit: "'ms' | 's'",
   },
 }).describe("Duration");
 
 export const CubicBezier = type({
   $type: "'cubicBezier'",
-  $value: type(["0 <= number <= 1", "number", "0 <= number <= 1", "number"]),
+  $value: ValueAlias.or(
+    type(["0 <= number <= 1", "number", "0 <= number <= 1", "number"])
+  ),
 }).describe("Cubic Bezier");
 
 export const Number = type({
   $type: "'number'",
-  $value: "number",
+  $value: ValueAlias.or("number"),
 }).describe("Number");
 
 export const Shadow = type({
@@ -107,17 +110,20 @@ export const Shadow = type({
 
 export const Stroke = type({
   $type: "'stroke'",
-  $value:
-    "'none' | 'hidden' | 'dotted' | 'dashed' | 'solid' | 'double' | 'groove' | 'ridge' | 'inset' | 'outset'",
+  $value: ValueAlias.or(
+    "'none' | 'hidden' | 'dotted' | 'dashed' | 'solid' | 'double' | 'groove' | 'ridge' | 'inset' | 'outset'"
+  ),
 }).describe("Stroke");
 
 export const StrokeStyle = type({
   $type: "'strokeStyle'",
-  $value: {
+  $value: ValueAlias.or({
     dashArray: [NumberValue, NumberValue],
     lineCap: "'round'",
-  },
+  }),
 }).describe("Stroke Style");
+
+const ExtenstionSchema = type({ ["string"]: "unknown" });
 
 export const Token = Color.or(Dimension)
   .or(FontFamily)
@@ -128,7 +134,14 @@ export const Token = Color.or(Dimension)
   .or(Number)
   .or(Shadow)
   .or(Stroke)
-  .or(StrokeStyle);
+  .or(StrokeStyle)
+  .and(
+    type({
+      $description: "string?",
+      $extensions: ExtenstionSchema.optional(),
+      $deprecated: "string?",
+    })
+  );
 
 // export const Schema = type({
 //   "[string]": Token,
@@ -143,7 +156,7 @@ export const Schema = match({
 
 export const Schema2 = type({
   "[symbol]": "string",
-  "[string]": Token,
+  "[string]": Token.or(type({ "[string]": Token })),
 });
 
 type Token = typeof Token.infer;

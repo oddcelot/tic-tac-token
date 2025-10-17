@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc generate-schema.ts"
+    "build": "tsc --noEmit generate-schema.ts"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +16,6 @@
     "typescript": "^5.8.3"
   },
   "devDependencies": {
-    "@types/node": "^22.15.15"
+    "@types/node": "^24.0.3"
   }
 }

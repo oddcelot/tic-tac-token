@@ -25,6 +25,7 @@
     "moduleResolution": "nodenext",
     "allowImportingTsExtensions": true,
     "rewriteRelativeImportExtensions": true,
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "strictNullChecks": true
   }
 }

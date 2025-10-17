@@ -1,15 +1,26 @@
 {
   "$schema": "./schema.json",
+  "colors": {
+    "base": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "",
+        "components": [255, 255, 255],
+        "alpha": 1,
+        "hex": "#FFFFFF"
+      }
+    }
+  },
+  "another": {
+    "$type": "number",
+    "$value": 123
+  },
   "thing": {
     "$type": "color",
     "$value": {
       "colorSpace": "srgb",
-      "components": [
-        255,
-        0,
-        0
-      ],
-      "alpha": ,
+      "components": [255, 0, 0],
+      "alpha": 1,
       "hex": "#000000"
     }
   }
