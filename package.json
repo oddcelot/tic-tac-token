@@ -6,16 +6,18 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc --noEmit generate-schema.ts"
+    "build": "tsc --noEmit generate-schema.ts",
+    "generate-schema": "node generate-schema.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "arktype": "^2.1.20",
-    "typescript": "^5.8.3"
+    "arktype": "^2.1.29",
+    "typescript": "^5.9.3",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
-    "@types/node": "^24.0.3"
+    "@types/node": "^25.0.2"
   }
 }
