@@ -48,6 +48,8 @@ export { Shadow, SingleShadow } from "./src/tokens/shadow.ts";
 import { Shadow } from "./src/tokens/shadow.ts";
 export { Border } from "./src/tokens/border.ts";
 import { Border } from "./src/tokens/border.ts";
+export { Transition } from "./src/tokens/transition.ts";
+import { Transition } from "./src/tokens/transition.ts";
 
 
 const GradientStop = type({
@@ -59,15 +61,6 @@ export const Gradient = type({
   $type: "'gradient'",
   $value: ValueAlias.or(GradientStop.array()),
 }).describe("Gradient");
-
-export const Transition = type({
-  $type: "'transition'",
-  $value: ValueAlias.or({
-    duration: DurationValue,
-    delay: DurationValue,
-    timingFunction: CubicBezierValue,
-  }),
-}).describe("Transition");
 
 export const Typography = type({
   $type: "'typography'",
