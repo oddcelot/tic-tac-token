@@ -34,28 +34,37 @@ describe("shadow token (DTCG §9.6)", () => {
     ).toBe(true);
   });
 
-  it.fails(
-    "gap: spec allows $value to be an array of shadows (layered); schema.ts:100-109 requires a single object",
-    () => {
-      expect(
-        isValid(Shadow({ $type: "shadow", $value: [singleShadow] })),
-      ).toBe(true);
-    },
-  );
+  it("accepts a layered (array) shadow value", () => {
+    expect(
+      isValid(Shadow({ $type: "shadow", $value: [singleShadow, singleShadow] })),
+    ).toBe(true);
+  });
 
-  it.fails(
-    "gap: spec allows an optional `inset: boolean` property; schema.ts:100-109 does not declare it",
-    () => {
-      // arktype currently ignores extras rather than typing `inset`, so a
-      // non-boolean slips through. Failing this test pins that behavior.
-      expect(
-        isInvalid(
-          Shadow({
-            $type: "shadow",
-            $value: { ...singleShadow, inset: "yes-please" },
-          }),
-        ),
-      ).toBe(true);
-    },
-  );
+  it("accepts a single shadow with inset: true", () => {
+    expect(
+      isValid(
+        Shadow({
+          $type: "shadow",
+          $value: { ...singleShadow, inset: true },
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("rejects a non-boolean inset value", () => {
+    expect(
+      isInvalid(
+        Shadow({
+          $type: "shadow",
+          $value: { ...singleShadow, inset: "yes-please" },
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("accepts a curly-brace alias", () => {
+    expect(
+      isValid(Shadow({ $type: "shadow", $value: "{elevation.low}" })),
+    ).toBe(true);
+  });
 });

@@ -97,15 +97,18 @@ export const Number = type({
   $value: ValueAlias.or("number"),
 }).describe("Number");
 
+const SingleShadow = type({
+  color: Color,
+  offsetX: NumberValue,
+  offsetY: NumberValue,
+  blur: NumberValue,
+  spread: NumberValue,
+  "inset?": "boolean",
+}).onUndeclaredKey("reject");
+
 export const Shadow = type({
   $type: "'shadow'",
-  $value: {
-    color: Color,
-    offsetX: NumberValue,
-    offsetY: NumberValue,
-    blur: NumberValue,
-    spread: NumberValue,
-  },
+  $value: ValueAlias.or(SingleShadow).or(SingleShadow.array()),
 }).describe("Shadow");
 
 export const Stroke = type({
