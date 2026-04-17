@@ -23,14 +23,17 @@ describe("duration token (DTCG §8.5)", () => {
     ).toBe(true);
   });
 
-  it.fails(
-    "gap: spec allows floating-point durations (e.g. 1.5s); schema.ts constrains value to number.integer",
-    () => {
-      expect(
-        isValid(
-          Duration({ $type: "duration", $value: { value: 1.5, unit: "s" } }),
-        ),
-      ).toBe(true);
-    },
-  );
+  it("accepts floating-point durations (e.g. 1.5s)", () => {
+    expect(
+      isValid(
+        Duration({ $type: "duration", $value: { value: 1.5, unit: "s" } }),
+      ),
+    ).toBe(true);
+  });
+
+  it("accepts a curly-brace alias", () => {
+    expect(
+      isValid(Duration({ $type: "duration", $value: "{motion.slow}" })),
+    ).toBe(true);
+  });
 });

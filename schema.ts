@@ -79,10 +79,10 @@ export const FontSize = type({
 
 export const Duration = type({
   $type: "'duration'",
-  $value: {
-    value: ValueAlias.or("number.integer"),
+  $value: ValueAlias.or({
+    value: "number",
     unit: "'ms' | 's'",
-  },
+  }),
 }).describe("Duration");
 
 export const CubicBezier = type({
