@@ -50,17 +50,9 @@ export { Border } from "./src/tokens/border.ts";
 import { Border } from "./src/tokens/border.ts";
 export { Transition } from "./src/tokens/transition.ts";
 import { Transition } from "./src/tokens/transition.ts";
+export { Gradient, GradientStop } from "./src/tokens/gradient.ts";
+import { Gradient } from "./src/tokens/gradient.ts";
 
-
-const GradientStop = type({
-  color: ColorValue,
-  position: ValueAlias.or("number"),
-}).onUndeclaredKey("reject");
-
-export const Gradient = type({
-  $type: "'gradient'",
-  $value: ValueAlias.or(GradientStop.array()),
-}).describe("Gradient");
 
 export const Typography = type({
   $type: "'typography'",
