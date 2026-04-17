@@ -111,19 +111,18 @@ export const Shadow = type({
   $value: ValueAlias.or(SingleShadow).or(SingleShadow.array()),
 }).describe("Shadow");
 
-export const Stroke = type({
-  $type: "'stroke'",
-  $value: ValueAlias.or(
-    "'none' | 'hidden' | 'dotted' | 'dashed' | 'solid' | 'double' | 'groove' | 'ridge' | 'inset' | 'outset'"
-  ),
-}).describe("Stroke");
+const StrokeStyleEnum = type(
+  "'solid' | 'dashed' | 'dotted' | 'double' | 'groove' | 'ridge' | 'outset' | 'inset'"
+);
+
+const StrokeStyleObject = type({
+  dashArray: NumberValue.array(),
+  lineCap: "'round' | 'butt' | 'square'",
+}).onUndeclaredKey("reject");
 
 export const StrokeStyle = type({
   $type: "'strokeStyle'",
-  $value: ValueAlias.or({
-    dashArray: [NumberValue, NumberValue],
-    lineCap: "'round'",
-  }),
+  $value: ValueAlias.or(StrokeStyleEnum).or(StrokeStyleObject),
 }).describe("Stroke Style");
 
 const Extensions = type({ "[string]": "unknown" });
@@ -142,7 +141,6 @@ export const Token = Color.or(Dimension)
   .or(CubicBezier)
   .or(Number)
   .or(Shadow)
-  .or(Stroke)
   .or(StrokeStyle)
   .and(CommonMetadata);
 
