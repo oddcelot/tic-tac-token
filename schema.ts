@@ -72,11 +72,6 @@ export const FontWeight = type({
   $value: ValueAlias.or(type("1 <= number <= 1000").or(FontWeightNames)),
 }).describe("Font Weight");
 
-export const FontSize = type({
-  $type: "'fontSize'",
-  $value: ValueAlias.or("number | string"),
-}).describe("Font Size");
-
 export const Duration = type({
   $type: "'duration'",
   $value: ValueAlias.or({
@@ -135,7 +130,6 @@ const CommonMetadata = type({
 
 export const Token = Color.or(Dimension)
   .or(FontFamily)
-  .or(FontSize)
   .or(FontWeight)
   .or(Duration)
   .or(CubicBezier)
