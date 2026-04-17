@@ -32,11 +32,8 @@ export { Duration, DurationValue } from "./src/tokens/duration.ts";
 import { Duration, DurationValue } from "./src/tokens/duration.ts";
 export { CubicBezier, CubicBezierValue } from "./src/tokens/cubicBezier.ts";
 import { CubicBezier, CubicBezierValue } from "./src/tokens/cubicBezier.ts";
-
-export const Number = type({
-  $type: "'number'",
-  $value: ValueAlias.or("number"),
-}).describe("Number");
+export { Number, NumberLiteralValue } from "./src/tokens/number.ts";
+import { Number, NumberLiteralValue } from "./src/tokens/number.ts";
 
 const SingleShadow = type({
   color: Color,
@@ -65,8 +62,6 @@ export const StrokeStyle = type({
   $type: "'strokeStyle'",
   $value: ValueAlias.or(StrokeStyleEnum).or(StrokeStyleObject),
 }).describe("Stroke Style");
-
-const NumberLiteralValue = ValueAlias.or("number");
 
 const StrokeStyleValue = ValueAlias.or(StrokeStyleEnum).or(StrokeStyleObject);
 
