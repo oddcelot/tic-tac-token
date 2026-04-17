@@ -120,6 +120,24 @@ export const StrokeStyle = type({
   $value: ValueAlias.or(StrokeStyleEnum).or(StrokeStyleObject),
 }).describe("Stroke Style");
 
+const FontFamilyValue = ValueAlias.or("string | string[]");
+const DimensionValue = ValueAlias.or(NumberValue);
+const FontWeightValue = ValueAlias.or(
+  type("1 <= number <= 1000").or(FontWeightNames)
+);
+const NumberLiteralValue = ValueAlias.or("number");
+
+export const Typography = type({
+  $type: "'typography'",
+  $value: ValueAlias.or({
+    fontFamily: FontFamilyValue,
+    fontSize: DimensionValue,
+    fontWeight: FontWeightValue,
+    letterSpacing: DimensionValue,
+    lineHeight: NumberLiteralValue,
+  }),
+}).describe("Typography");
+
 const Extensions = type({ "[string]": "unknown" });
 
 const CommonMetadata = type({
@@ -136,6 +154,7 @@ export const Token = Color.or(Dimension)
   .or(Number)
   .or(Shadow)
   .or(StrokeStyle)
+  .or(Typography)
   .and(CommonMetadata);
 
 // export const Schema = type({

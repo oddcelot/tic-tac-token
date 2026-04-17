@@ -20,9 +20,6 @@ describe("DTCG composite types missing from schema.ts", () => {
     expect("Gradient" in schema).toBe(true);
   });
 
-  it.fails("gap: `Typography` export missing (DTCG §9.8)", () => {
-    expect("Typography" in schema).toBe(true);
-  });
 });
 
 describe("DTCG format features — $deprecated shape (spec: boolean | string)", () => {
