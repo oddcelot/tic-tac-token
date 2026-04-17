@@ -127,6 +127,27 @@ const FontWeightValue = ValueAlias.or(
 );
 const NumberLiteralValue = ValueAlias.or("number");
 
+const ColorValue = ValueAlias.or(
+  type({
+    colorSpace:
+      "'srgb' | 'srgb-linear' | 'hsl' | 'hwb' | 'lab' | 'lch' | 'oklab' | 'oklch' | 'display-p3' | 'a98-rgb' | 'prophoto-rgb' | 'rec2020' | 'xyz-d65' | 'xyz-d50'",
+    components: type(["number | 'none'", "number | 'none'", "number | 'none'"]),
+    alpha: "(0 <= number <= 1)?",
+    hex: type("/^#[\\dA-Fa-f]{6}$/"),
+  })
+);
+
+const StrokeStyleValue = ValueAlias.or(StrokeStyleEnum).or(StrokeStyleObject);
+
+export const Border = type({
+  $type: "'border'",
+  $value: ValueAlias.or({
+    color: ColorValue,
+    width: DimensionValue,
+    style: StrokeStyleValue,
+  }),
+}).describe("Border");
+
 export const Typography = type({
   $type: "'typography'",
   $value: ValueAlias.or({
@@ -154,6 +175,7 @@ export const Token = Color.or(Dimension)
   .or(Number)
   .or(Shadow)
   .or(StrokeStyle)
+  .or(Border)
   .or(Typography)
   .and(CommonMetadata);
 

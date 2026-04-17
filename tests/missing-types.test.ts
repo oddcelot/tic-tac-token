@@ -8,10 +8,6 @@ import { isValid } from "./helpers.ts";
 // passing as a regular `it` and this file should be pruned.
 
 describe("DTCG composite types missing from schema.ts", () => {
-  it.fails("gap: `Border` export missing (DTCG §9.4)", () => {
-    expect("Border" in schema).toBe(true);
-  });
-
   it.fails("gap: `Transition` export missing (DTCG §9.5)", () => {
     expect("Transition" in schema).toBe(true);
   });
