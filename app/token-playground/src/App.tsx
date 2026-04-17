@@ -33,13 +33,6 @@ const App: Component = () => {
   let editorElement!: HTMLDivElement;
   const [raw, setRaw] = createSignal(demoRaw);
   const tokens = (): FlatToken[] => parseTokens(raw());
-  const prettyJson = () => {
-    try {
-      return JSON.stringify(JSON.parse(raw()), null, 2);
-    } catch (err) {
-      return `// invalid JSON\n${(err as Error).message}`;
-    }
-  };
 
   onMount(() => {
     const editor = monaco.editor.create(editorElement, {
@@ -64,7 +57,7 @@ const App: Component = () => {
     <div class="size-full p-4">
       <Resizable class="size-full">
         <Resizable.Panel
-          initialSize={0.4}
+          initialSize={0.5}
           minSize={0.2}
           class="overflow-hidden rounded-lg bg-corvu-100"
         >
@@ -77,20 +70,7 @@ const App: Component = () => {
           <div class="size-full rounded-sm transition-colors group-data-active:bg-corvu-300 group-data-dragging:bg-corvu-100" />
         </Resizable.Handle>
         <Resizable.Panel
-          initialSize={0.2}
-          minSize={0.15}
-          class="overflow-auto rounded-lg bg-corvu-100 p-3"
-        >
-          <pre class="font-mono text-xs whitespace-pre-wrap">{prettyJson()}</pre>
-        </Resizable.Panel>
-        <Resizable.Handle
-          aria-label="Resize Handle"
-          class="group basis-3 px-0.75"
-        >
-          <div class="size-full rounded-sm transition-colors group-data-active:bg-corvu-300 group-data-dragging:bg-corvu-100" />
-        </Resizable.Handle>
-        <Resizable.Panel
-          initialSize={0.4}
+          initialSize={0.5}
           minSize={0.25}
           class="overflow-hidden rounded-lg bg-corvu-100"
         >
