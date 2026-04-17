@@ -16,11 +16,8 @@ export { Color, ColorValue } from "./src/tokens/color.ts";
 import { Color, ColorValue } from "./src/tokens/color.ts";
 export { Dimension, DimensionValue } from "./src/tokens/dimension.ts";
 import { Dimension, DimensionValue } from "./src/tokens/dimension.ts";
-
-export const FontFamily = type({
-  $type: "'fontFamily'",
-  $value: ValueAlias.or("string | string[]"),
-});
+export { FontFamily, FontFamilyValue } from "./src/tokens/fontFamily.ts";
+import { FontFamily, FontFamilyValue } from "./src/tokens/fontFamily.ts";
 
 export const FontWeightAliasMap = type({
   100: "'thin' | 'hairline'",
@@ -117,7 +114,6 @@ export const StrokeStyle = type({
   $value: ValueAlias.or(StrokeStyleEnum).or(StrokeStyleObject),
 }).describe("Stroke Style");
 
-const FontFamilyValue = ValueAlias.or("string | string[]");
 const FontWeightValue = ValueAlias.or(
   type("1 <= number <= 1000").or(FontWeightNames)
 );
