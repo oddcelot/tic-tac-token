@@ -11,16 +11,16 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@unocss/preset-mini": "^66.5.10",
-    "@unocss/vite": "^66.5.10",
-    "solid-devtools": "^0.34.4",
-    "typescript": "^5.9.3",
-    "vite": "^7.2.7",
-    "vite-plugin-solid": "^2.11.10"
+    "@unocss/preset-mini": "^66.6.8",
+    "@unocss/vite": "^66.6.8",
+    "solid-devtools": "^0.34.5",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.8",
+    "vite-plugin-solid": "^2.11.12"
   },
   "dependencies": {
     "@corvu/resizable": "^0.2.5",
     "monaco-editor": "^0.55.1",
-    "solid-js": "^1.9.10"
+    "solid-js": "^1.9.12"
   }
 }

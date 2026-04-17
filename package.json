@@ -13,11 +13,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "arktype": "^2.1.29",
-    "typescript": "^5.9.3",
-    "zod": "^4.1.13"
+    "arktype": "^2.2.0",
+    "typescript": "^6.0.3",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/node": "^25.0.2"
+    "@types/node": "^25.6.0"
   }
 }
