@@ -18,53 +18,16 @@ export { Dimension, DimensionValue } from "./src/tokens/dimension.ts";
 import { Dimension, DimensionValue } from "./src/tokens/dimension.ts";
 export { FontFamily, FontFamilyValue } from "./src/tokens/fontFamily.ts";
 import { FontFamily, FontFamilyValue } from "./src/tokens/fontFamily.ts";
-
-export const FontWeightAliasMap = type({
-  100: "'thin' | 'hairline'",
-  200: "'extra-light' | 'ultra-light'",
-  300: "'light'",
-  400: "'normal' | 'regular' | 'book'",
-  500: "'medium'",
-  600: "'semi-bold' | 'demi-bold'",
-  700: "'bold'",
-  800: "'extra-bold' | 'ultra-bold'",
-  900: "'black' | 'heavy'",
-  950: "'extra-black' | 'ultra-black'",
-});
-
-// const ResolvedFontWeightAlias = type.enumerated(
-//   ...Object.values(
-//     FontWeightAliasMap.pipe((weights) => weights).to("string")
-//       .inferIntrospectableOut || FontWeightNames
-//   )
-// );
-
-const FontWeightNames = type.enumerated(
-  "thin",
-  "hairline",
-  "extra-light",
-  "ultra-light",
-  "light",
-  "normal",
-  "regular",
-  "book",
-  "medium",
-  "semi-bold",
-  "demi-bold",
-  "bold",
-  "extra-bold",
-  "ultra-bold",
-  "black",
-  "heavy",
-  "extra-black",
-  "ultra-black"
-);
-
-/** some weight */
-export const FontWeight = type({
-  $type: "'fontWeight'",
-  $value: ValueAlias.or(type("1 <= number <= 1000").or(FontWeightNames)),
-}).describe("Font Weight");
+export {
+  FontWeight,
+  FontWeightNames,
+  FontWeightValue,
+} from "./src/tokens/fontWeight.ts";
+import {
+  FontWeight,
+  FontWeightNames,
+  FontWeightValue,
+} from "./src/tokens/fontWeight.ts";
 
 export const Duration = type({
   $type: "'duration'",
@@ -114,9 +77,6 @@ export const StrokeStyle = type({
   $value: ValueAlias.or(StrokeStyleEnum).or(StrokeStyleObject),
 }).describe("Stroke Style");
 
-const FontWeightValue = ValueAlias.or(
-  type("1 <= number <= 1000").or(FontWeightNames)
-);
 const NumberLiteralValue = ValueAlias.or("number");
 
 const StrokeStyleValue = ValueAlias.or(StrokeStyleEnum).or(StrokeStyleObject);
