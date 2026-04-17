@@ -44,20 +44,8 @@ import {
   StrokeStyle,
   StrokeStyleValue,
 } from "./src/tokens/strokeStyle.ts";
-
-const SingleShadow = type({
-  color: Color,
-  offsetX: NumberValue,
-  offsetY: NumberValue,
-  blur: NumberValue,
-  spread: NumberValue,
-  "inset?": "boolean",
-}).onUndeclaredKey("reject");
-
-export const Shadow = type({
-  $type: "'shadow'",
-  $value: ValueAlias.or(SingleShadow).or(SingleShadow.array()),
-}).describe("Shadow");
+export { Shadow, SingleShadow } from "./src/tokens/shadow.ts";
+import { Shadow } from "./src/tokens/shadow.ts";
 
 
 const GradientStop = type({
