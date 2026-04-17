@@ -1,7 +1,16 @@
 import { match, type } from "arktype";
+import {
+  CommonMetadata,
+  DimensionPrimitive,
+  Extensions,
+  ValueAlias,
+} from "./src/tokens/shared.ts";
 
-export const NumberValue = type({ value: "number", unit: "'rem' | 'px'" });
-const ValueAlias = type("/^{([^{}]+?)}$/");
+// Re-exported for backwards compatibility during the in-progress split.
+export { CommonMetadata, Extensions, ValueAlias } from "./src/tokens/shared.ts";
+export { DimensionPrimitive as NumberValue } from "./src/tokens/shared.ts";
+
+const NumberValue = DimensionPrimitive;
 
 export const Color = type({
   $type: "'color'",
@@ -185,14 +194,6 @@ export const Typography = type({
     lineHeight: NumberLiteralValue,
   }),
 }).describe("Typography");
-
-const Extensions = type({ "[string]": "unknown" });
-
-const CommonMetadata = type({
-  "$description?": "string",
-  "$extensions?": Extensions,
-  "$deprecated?": "boolean | string",
-});
 
 export const Token = Color.or(Dimension)
   .or(FontFamily)
