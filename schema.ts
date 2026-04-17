@@ -10,7 +10,7 @@ export const Color = type({
       "'srgb' | 'srgb-linear' | 'hsl' | 'hwb' | 'lab' | 'lch' | 'oklab' | 'oklch' | 'display-p3' | 'a98-rgb' | 'prophoto-rgb' | 'rec2020' | 'xyz-d65' | 'xyz-d50'",
     components: type(["number | 'none'", "number | 'none'", "number | 'none'"]),
     alpha: "(0 <= number <= 1)?",
-    hex: type("/^#[\\dA-Fa-f]+$/"),
+    hex: type("/^#[\\dA-Fa-f]{6}$/"),
   }),
 }).describe("Color");
 

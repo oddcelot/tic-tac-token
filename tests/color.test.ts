@@ -93,17 +93,11 @@ describe("color token (DTCG §8.1 + Color Module)", () => {
     expect(isInvalid(Color(sampleColor({ colorSpace: "xzy-d65" })))).toBe(true);
   });
 
-  it.fails(
-    "gap: hex must be exactly 6 digits per spec; schema allows 3-digit hex",
-    () => {
-      expect(isInvalid(Color(sampleColor({ hex: "#fff" })))).toBe(true);
-    },
-  );
+  it("rejects 3-digit hex (spec: exactly 6)", () => {
+    expect(isInvalid(Color(sampleColor({ hex: "#fff" })))).toBe(true);
+  });
 
-  it.fails(
-    "gap: hex must be exactly 6 digits per spec; schema allows 8-digit hex",
-    () => {
-      expect(isInvalid(Color(sampleColor({ hex: "#ff0000ff" })))).toBe(true);
-    },
-  );
+  it("rejects 8-digit hex (spec: exactly 6)", () => {
+    expect(isInvalid(Color(sampleColor({ hex: "#ff0000ff" })))).toBe(true);
+  });
 });
