@@ -12,16 +12,8 @@ export { DimensionPrimitive as NumberValue } from "./src/tokens/shared.ts";
 
 const NumberValue = DimensionPrimitive;
 
-export const Color = type({
-  $type: "'color'",
-  $value: ValueAlias.or({
-    colorSpace:
-      "'srgb' | 'srgb-linear' | 'hsl' | 'hwb' | 'lab' | 'lch' | 'oklab' | 'oklch' | 'display-p3' | 'a98-rgb' | 'prophoto-rgb' | 'rec2020' | 'xyz-d65' | 'xyz-d50'",
-    components: type(["number | 'none'", "number | 'none'", "number | 'none'"]),
-    alpha: "(0 <= number <= 1)?",
-    hex: type("/^#[\\dA-Fa-f]{6}$/"),
-  }),
-}).describe("Color");
+export { Color, ColorValue } from "./src/tokens/color.ts";
+import { Color, ColorValue } from "./src/tokens/color.ts";
 
 export const Dimension = type({
   $type: "'dimension'",
@@ -135,16 +127,6 @@ const FontWeightValue = ValueAlias.or(
   type("1 <= number <= 1000").or(FontWeightNames)
 );
 const NumberLiteralValue = ValueAlias.or("number");
-
-const ColorValue = ValueAlias.or(
-  type({
-    colorSpace:
-      "'srgb' | 'srgb-linear' | 'hsl' | 'hwb' | 'lab' | 'lch' | 'oklab' | 'oklch' | 'display-p3' | 'a98-rgb' | 'prophoto-rgb' | 'rec2020' | 'xyz-d65' | 'xyz-d50'",
-    components: type(["number | 'none'", "number | 'none'", "number | 'none'"]),
-    alpha: "(0 <= number <= 1)?",
-    hex: type("/^#[\\dA-Fa-f]{6}$/"),
-  })
-);
 
 const StrokeStyleValue = ValueAlias.or(StrokeStyleEnum).or(StrokeStyleObject);
 
