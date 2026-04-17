@@ -34,6 +34,16 @@ export { CubicBezier, CubicBezierValue } from "./src/tokens/cubicBezier.ts";
 import { CubicBezier, CubicBezierValue } from "./src/tokens/cubicBezier.ts";
 export { Number, NumberLiteralValue } from "./src/tokens/number.ts";
 import { Number, NumberLiteralValue } from "./src/tokens/number.ts";
+export {
+  StrokeStyle,
+  StrokeStyleEnum,
+  StrokeStyleObject,
+  StrokeStyleValue,
+} from "./src/tokens/strokeStyle.ts";
+import {
+  StrokeStyle,
+  StrokeStyleValue,
+} from "./src/tokens/strokeStyle.ts";
 
 const SingleShadow = type({
   color: Color,
@@ -49,21 +59,6 @@ export const Shadow = type({
   $value: ValueAlias.or(SingleShadow).or(SingleShadow.array()),
 }).describe("Shadow");
 
-const StrokeStyleEnum = type(
-  "'solid' | 'dashed' | 'dotted' | 'double' | 'groove' | 'ridge' | 'outset' | 'inset'"
-);
-
-const StrokeStyleObject = type({
-  dashArray: NumberValue.array(),
-  lineCap: "'round' | 'butt' | 'square'",
-}).onUndeclaredKey("reject");
-
-export const StrokeStyle = type({
-  $type: "'strokeStyle'",
-  $value: ValueAlias.or(StrokeStyleEnum).or(StrokeStyleObject),
-}).describe("Stroke Style");
-
-const StrokeStyleValue = ValueAlias.or(StrokeStyleEnum).or(StrokeStyleObject);
 
 const GradientStop = type({
   color: ColorValue,
