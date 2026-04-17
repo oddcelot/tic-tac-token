@@ -1,0 +1,137 @@
+{
+  "$schema": "../../../schema.json",
+  "color": {
+    "brand": {
+      "primary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.4, 0.3, 0.9],
+          "alpha": 1,
+          "hex": "#6C4FE5"
+        }
+      },
+      "accent": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [1, 0.4, 0.5],
+          "alpha": 1,
+          "hex": "#FF6680"
+        }
+      }
+    },
+    "neutral": {
+      "background": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.97, 0.97, 0.98],
+          "alpha": 1,
+          "hex": "#F7F7F9"
+        }
+      },
+      "text": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.08, 0.09, 0.12],
+          "alpha": 1,
+          "hex": "#14161F"
+        }
+      },
+      "border": {
+        "$type": "color",
+        "$value": "{color.neutral.text}"
+      }
+    }
+  },
+  "space": {
+    "xs": { "$type": "dimension", "$value": { "value": 4, "unit": "px" } },
+    "sm": { "$type": "dimension", "$value": { "value": 8, "unit": "px" } },
+    "md": { "$type": "dimension", "$value": { "value": 16, "unit": "px" } },
+    "lg": { "$type": "dimension", "$value": { "value": 32, "unit": "px" } }
+  },
+  "font": {
+    "sans": {
+      "$type": "fontFamily",
+      "$value": ["Inter", "system-ui", "sans-serif"]
+    },
+    "mono": {
+      "$type": "fontFamily",
+      "$value": ["JetBrains Mono", "monospace"]
+    },
+    "weight": {
+      "regular": { "$type": "fontWeight", "$value": "regular" },
+      "bold": { "$type": "fontWeight", "$value": 700 }
+    },
+    "size": {
+      "body": { "$type": "fontSize", "$value": 14 },
+      "heading": { "$type": "fontSize", "$value": 28 }
+    }
+  },
+  "motion": {
+    "fast": {
+      "$type": "duration",
+      "$value": { "value": 150, "unit": "ms" }
+    },
+    "slow": {
+      "$type": "duration",
+      "$value": { "value": 600, "unit": "ms" }
+    },
+    "ease": {
+      "$type": "cubicBezier",
+      "$value": [0.4, 0, 0.2, 1]
+    },
+    "bounce": {
+      "$type": "cubicBezier",
+      "$value": [0.68, -0.55, 0.27, 1.55]
+    }
+  },
+  "shadow": {
+    "sm": {
+      "$type": "shadow",
+      "$value": {
+        "color": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0, 0, 0],
+            "alpha": 0.1,
+            "hex": "#0000001a"
+          }
+        },
+        "offsetX": { "value": 0, "unit": "px" },
+        "offsetY": { "value": 2, "unit": "px" },
+        "blur": { "value": 4, "unit": "px" },
+        "spread": { "value": 0, "unit": "px" }
+      }
+    },
+    "lg": {
+      "$type": "shadow",
+      "$value": {
+        "color": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0, 0, 0],
+            "alpha": 0.2,
+            "hex": "#00000033"
+          }
+        },
+        "offsetX": { "value": 0, "unit": "px" },
+        "offsetY": { "value": 12, "unit": "px" },
+        "blur": { "value": 32, "unit": "px" },
+        "spread": { "value": -4, "unit": "px" }
+      }
+    }
+  },
+  "stroke": {
+    "solid": { "$type": "stroke", "$value": "solid" },
+    "dashed": { "$type": "stroke", "$value": "dashed" }
+  },
+  "zIndex": {
+    "modal": { "$type": "number", "$value": 1000 },
+    "tooltip": { "$type": "number", "$value": 1500 }
+  }
+}
