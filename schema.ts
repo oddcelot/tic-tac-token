@@ -46,6 +46,8 @@ import {
 } from "./src/tokens/strokeStyle.ts";
 export { Shadow, SingleShadow } from "./src/tokens/shadow.ts";
 import { Shadow } from "./src/tokens/shadow.ts";
+export { Border } from "./src/tokens/border.ts";
+import { Border } from "./src/tokens/border.ts";
 
 
 const GradientStop = type({
@@ -66,15 +68,6 @@ export const Transition = type({
     timingFunction: CubicBezierValue,
   }),
 }).describe("Transition");
-
-export const Border = type({
-  $type: "'border'",
-  $value: ValueAlias.or({
-    color: ColorValue,
-    width: DimensionValue,
-    style: StrokeStyleValue,
-  }),
-}).describe("Border");
 
 export const Typography = type({
   $type: "'typography'",
