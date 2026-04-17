@@ -85,12 +85,13 @@ describe("color token (DTCG §8.1 + Color Module)", () => {
     expect(isInvalid(high)).toBe(true);
   });
 
-  it.fails(
-    "gap: the spec colorSpace 'xyz-d65' is not accepted (schema.ts:10 has typo 'xzy-d65')",
-    () => {
-      expect(isValid(Color(sampleColor({ colorSpace: "xyz-d65" })))).toBe(true);
-    },
-  );
+  it("accepts the spec colorSpace 'xyz-d65'", () => {
+    expect(isValid(Color(sampleColor({ colorSpace: "xyz-d65" })))).toBe(true);
+  });
+
+  it("rejects the old typo 'xzy-d65'", () => {
+    expect(isInvalid(Color(sampleColor({ colorSpace: "xzy-d65" })))).toBe(true);
+  });
 
   it.fails(
     "gap: hex must be exactly 6 digits per spec; schema allows 3-digit hex",
