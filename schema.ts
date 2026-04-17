@@ -30,13 +30,8 @@ import {
 } from "./src/tokens/fontWeight.ts";
 export { Duration, DurationValue } from "./src/tokens/duration.ts";
 import { Duration, DurationValue } from "./src/tokens/duration.ts";
-
-export const CubicBezier = type({
-  $type: "'cubicBezier'",
-  $value: ValueAlias.or(
-    type(["0 <= number <= 1", "number", "0 <= number <= 1", "number"])
-  ),
-}).describe("Cubic Bezier");
+export { CubicBezier, CubicBezierValue } from "./src/tokens/cubicBezier.ts";
+import { CubicBezier, CubicBezierValue } from "./src/tokens/cubicBezier.ts";
 
 export const Number = type({
   $type: "'number'",
@@ -84,10 +79,6 @@ export const Gradient = type({
   $type: "'gradient'",
   $value: ValueAlias.or(GradientStop.array()),
 }).describe("Gradient");
-
-const CubicBezierValue = ValueAlias.or(
-  type(["0 <= number <= 1", "number", "0 <= number <= 1", "number"])
-);
 
 export const Transition = type({
   $type: "'transition'",
