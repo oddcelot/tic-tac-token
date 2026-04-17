@@ -52,18 +52,9 @@ export { Transition } from "./src/tokens/transition.ts";
 import { Transition } from "./src/tokens/transition.ts";
 export { Gradient, GradientStop } from "./src/tokens/gradient.ts";
 import { Gradient } from "./src/tokens/gradient.ts";
+export { Typography } from "./src/tokens/typography.ts";
+import { Typography } from "./src/tokens/typography.ts";
 
-
-export const Typography = type({
-  $type: "'typography'",
-  $value: ValueAlias.or({
-    fontFamily: FontFamilyValue,
-    fontSize: DimensionValue,
-    fontWeight: FontWeightValue,
-    letterSpacing: DimensionValue,
-    lineHeight: NumberLiteralValue,
-  }),
-}).describe("Typography");
 
 export const Token = Color.or(Dimension)
   .or(FontFamily)
