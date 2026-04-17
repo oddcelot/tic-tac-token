@@ -14,12 +14,8 @@ const NumberValue = DimensionPrimitive;
 
 export { Color, ColorValue } from "./src/tokens/color.ts";
 import { Color, ColorValue } from "./src/tokens/color.ts";
-
-export const Dimension = type({
-  $type: "'dimension'",
-  /** `px` needs to be convered to `dp` on Android and `pt` on iOS  | `1rem` on Android is eqilvalent to `16sp` */
-  $value: ValueAlias.or(NumberValue),
-}).describe("Dimension");
+export { Dimension, DimensionValue } from "./src/tokens/dimension.ts";
+import { Dimension, DimensionValue } from "./src/tokens/dimension.ts";
 
 export const FontFamily = type({
   $type: "'fontFamily'",
@@ -122,7 +118,6 @@ export const StrokeStyle = type({
 }).describe("Stroke Style");
 
 const FontFamilyValue = ValueAlias.or("string | string[]");
-const DimensionValue = ValueAlias.or(NumberValue);
 const FontWeightValue = ValueAlias.or(
   type("1 <= number <= 1000").or(FontWeightNames)
 );
