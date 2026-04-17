@@ -28,14 +28,8 @@ import {
   FontWeightNames,
   FontWeightValue,
 } from "./src/tokens/fontWeight.ts";
-
-export const Duration = type({
-  $type: "'duration'",
-  $value: ValueAlias.or({
-    value: "number",
-    unit: "'ms' | 's'",
-  }),
-}).describe("Duration");
+export { Duration, DurationValue } from "./src/tokens/duration.ts";
+import { Duration, DurationValue } from "./src/tokens/duration.ts";
 
 export const CubicBezier = type({
   $type: "'cubicBezier'",
@@ -90,10 +84,6 @@ export const Gradient = type({
   $type: "'gradient'",
   $value: ValueAlias.or(GradientStop.array()),
 }).describe("Gradient");
-
-const DurationValue = ValueAlias.or(
-  type({ value: "number", unit: "'ms' | 's'" })
-);
 
 const CubicBezierValue = ValueAlias.or(
   type(["0 <= number <= 1", "number", "0 <= number <= 1", "number"])
