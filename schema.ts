@@ -139,6 +139,23 @@ const ColorValue = ValueAlias.or(
 
 const StrokeStyleValue = ValueAlias.or(StrokeStyleEnum).or(StrokeStyleObject);
 
+const DurationValue = ValueAlias.or(
+  type({ value: "number", unit: "'ms' | 's'" })
+);
+
+const CubicBezierValue = ValueAlias.or(
+  type(["0 <= number <= 1", "number", "0 <= number <= 1", "number"])
+);
+
+export const Transition = type({
+  $type: "'transition'",
+  $value: ValueAlias.or({
+    duration: DurationValue,
+    delay: DurationValue,
+    timingFunction: CubicBezierValue,
+  }),
+}).describe("Transition");
+
 export const Border = type({
   $type: "'border'",
   $value: ValueAlias.or({
@@ -176,6 +193,7 @@ export const Token = Color.or(Dimension)
   .or(Shadow)
   .or(StrokeStyle)
   .or(Border)
+  .or(Transition)
   .or(Typography)
   .and(CommonMetadata);
 
