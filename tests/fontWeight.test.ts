@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { FontWeight } from "../schema.ts";
+import { FontWeight } from "../src/index.ts";
 import { isInvalid, isValid } from "./helpers.ts";
 
 describe("fontWeight token (DTCG §8.4)", () => {

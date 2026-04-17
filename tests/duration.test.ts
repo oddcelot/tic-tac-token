@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Duration } from "../schema.ts";
+import { Duration } from "../src/index.ts";
 import { isInvalid, isValid } from "./helpers.ts";
 
 describe("duration token (DTCG §8.5)", () => {

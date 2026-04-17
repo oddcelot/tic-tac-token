@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { StrokeStyle } from "../schema.ts";
+import { StrokeStyle } from "../src/index.ts";
 import { isInvalid, isValid } from "./helpers.ts";
 
 describe("strokeStyle token — string enum form (DTCG §9.3)", () => {

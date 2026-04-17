@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CubicBezier } from "../schema.ts";
+import { CubicBezier } from "../src/index.ts";
 import { isInvalid, isValid } from "./helpers.ts";
 
 describe("cubicBezier token (DTCG §8.6)", () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Dimension } from "../schema.ts";
+import { Dimension } from "../src/index.ts";
 import { isInvalid, isValid } from "./helpers.ts";
 
 describe("dimension token (DTCG §8.2)", () => {

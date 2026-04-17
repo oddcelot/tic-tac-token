@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Transition } from "../schema.ts";
+import { Transition } from "../src/index.ts";
 import { isInvalid, isValid } from "./helpers.ts";
 
 const base = {

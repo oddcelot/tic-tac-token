@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { FontFamily } from "../schema.ts";
+import { FontFamily } from "../src/index.ts";
 import { isInvalid, isValid } from "./helpers.ts";
 
 describe("fontFamily token (DTCG §8.3)", () => {

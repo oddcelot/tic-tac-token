@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Border } from "../schema.ts";
+import { Border } from "../src/index.ts";
 import { isInvalid, isValid } from "./helpers.ts";
 
 const base = {

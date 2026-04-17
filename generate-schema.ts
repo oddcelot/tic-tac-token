@@ -1,11 +1,12 @@
-import { Token, Schema, Schema2 } from "./schema.ts";
 import { writeFileSync } from "node:fs";
+import { Token, TokensFile } from "./src/index.ts";
+
 console.log(Token.toJsonSchema());
 
 writeFileSync(
   "schema.json",
   JSON.stringify(
-    Schema2.toJsonSchema({
+    TokensFile.toJsonSchema({
       fallback: {
         default: (ctx) => ctx.base,
       },

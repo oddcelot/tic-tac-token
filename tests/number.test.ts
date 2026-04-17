@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Number as NumberToken } from "../schema.ts";
+import { Number as NumberToken } from "../src/index.ts";
 import { isInvalid, isValid } from "./helpers.ts";
 
 describe("number token (DTCG §8.7)", () => {

@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { Color } from "../schema.ts";
+import { Color } from "../src/index.ts";
 import { isInvalid, isValid } from "./helpers.ts";
 
-// The module-internal ValueAlias regex is /^{([^{}]+?)}$/ (schema.ts:4). We
+// The ValueAlias regex is /^{([^{}]+?)}$/ (src/tokens/shared.ts). We
 // exercise it via any of the token schemas that compose it — Color is fine.
 const aliased = (value: string) => Color({ $type: "color", $value: value });
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Shadow } from "../schema.ts";
+import { Shadow } from "../src/index.ts";
 import { isInvalid, isValid } from "./helpers.ts";
 
 const black = {

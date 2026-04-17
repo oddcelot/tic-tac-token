@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Gradient } from "../schema.ts";
+import { Gradient } from "../src/index.ts";
 import { isInvalid, isValid } from "./helpers.ts";
 
 const stop = (position: unknown, hex = "#ff0000") => ({

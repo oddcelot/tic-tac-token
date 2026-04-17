@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import * as schema from "../schema.ts";
+import * as schema from "../src/index.ts";
 import { isValid } from "./helpers.ts";
 
 describe("DTCG format features — $deprecated shape (spec: boolean | string)", () => {

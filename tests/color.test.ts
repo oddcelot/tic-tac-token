@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Color } from "../schema.ts";
+import { Color } from "../src/index.ts";
 import { isInvalid, isValid } from "./helpers.ts";
 
 const sampleColor = (overrides: Record<string, unknown> = {}) => ({
