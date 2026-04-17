@@ -123,7 +123,13 @@ export const StrokeStyle = type({
   }),
 }).describe("Stroke Style");
 
-const ExtenstionSchema = type({ ["string"]: "unknown" });
+const Extensions = type({ "[string]": "unknown" });
+
+const CommonMetadata = type({
+  "$description?": "string",
+  "$extensions?": Extensions,
+  "$deprecated?": "boolean | string",
+});
 
 export const Token = Color.or(Dimension)
   .or(FontFamily)
@@ -135,13 +141,7 @@ export const Token = Color.or(Dimension)
   .or(Shadow)
   .or(Stroke)
   .or(StrokeStyle)
-  .and(
-    type({
-      $description: "string?",
-      $extensions: ExtenstionSchema.optional(),
-      $deprecated: "string?",
-    })
-  );
+  .and(CommonMetadata);
 
 // export const Schema = type({
 //   "[string]": Token,
