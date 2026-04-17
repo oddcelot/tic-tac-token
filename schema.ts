@@ -139,6 +139,16 @@ const ColorValue = ValueAlias.or(
 
 const StrokeStyleValue = ValueAlias.or(StrokeStyleEnum).or(StrokeStyleObject);
 
+const GradientStop = type({
+  color: ColorValue,
+  position: ValueAlias.or("number"),
+}).onUndeclaredKey("reject");
+
+export const Gradient = type({
+  $type: "'gradient'",
+  $value: ValueAlias.or(GradientStop.array()),
+}).describe("Gradient");
+
 const DurationValue = ValueAlias.or(
   type({ value: "number", unit: "'ms' | 's'" })
 );
@@ -194,6 +204,7 @@ export const Token = Color.or(Dimension)
   .or(StrokeStyle)
   .or(Border)
   .or(Transition)
+  .or(Gradient)
   .or(Typography)
   .and(CommonMetadata);
 
