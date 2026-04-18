@@ -32,4 +32,21 @@ describe("curly-brace alias regex (DTCG §7.1)", () => {
   it("rejects empty alias body", () => {
     expect(isInvalid(aliased("{}"))).toBe(true);
   });
+
+  it("rejects a segment starting with $", () => {
+    expect(isInvalid(aliased("{$foo}"))).toBe(true);
+    expect(isInvalid(aliased("{foo.$bar}"))).toBe(true);
+  });
+
+  it("rejects an empty segment at the start", () => {
+    expect(isInvalid(aliased("{.foo}"))).toBe(true);
+  });
+
+  it("rejects an empty segment at the end", () => {
+    expect(isInvalid(aliased("{foo.}"))).toBe(true);
+  });
+
+  it("rejects an empty segment in the middle", () => {
+    expect(isInvalid(aliased("{foo..bar}"))).toBe(true);
+  });
 });
