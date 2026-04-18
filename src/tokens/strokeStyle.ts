@@ -1,12 +1,13 @@
 import { type } from "arktype";
-import { DimensionPrimitive, ValueAlias } from "./shared.ts";
+import { DimensionValue } from "./dimension.ts";
+import { ValueAlias } from "./shared.ts";
 
 export const StrokeStyleEnum = type(
   "'solid' | 'dashed' | 'dotted' | 'double' | 'groove' | 'ridge' | 'outset' | 'inset'"
 );
 
 export const StrokeStyleObject = type({
-  dashArray: DimensionPrimitive.array(),
+  dashArray: DimensionValue.array(),
   lineCap: "'round' | 'butt' | 'square'",
 }).onUndeclaredKey("reject");
 

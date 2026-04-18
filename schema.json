@@ -116,23 +116,31 @@
                                 "dashArray": {
                                   "type": "array",
                                   "items": {
-                                    "type": "object",
-                                    "properties": {
-                                      "unit": {
-                                        "enum": [
-                                          "px",
-                                          "rem"
-                                        ]
+                                    "anyOf": [
+                                      {
+                                        "type": "string",
+                                        "pattern": "^{([^{}]+?)}$"
                                       },
-                                      "value": {
-                                        "type": "number"
+                                      {
+                                        "type": "object",
+                                        "properties": {
+                                          "unit": {
+                                            "enum": [
+                                              "px",
+                                              "rem"
+                                            ]
+                                          },
+                                          "value": {
+                                            "type": "number"
+                                          }
+                                        },
+                                        "required": [
+                                          "unit",
+                                          "value"
+                                        ],
+                                        "additionalProperties": false
                                       }
-                                    },
-                                    "required": [
-                                      "unit",
-                                      "value"
-                                    ],
-                                    "additionalProperties": false
+                                    ]
                                   }
                                 },
                                 "lineCap": {
@@ -1317,23 +1325,31 @@
                         "dashArray": {
                           "type": "array",
                           "items": {
-                            "type": "object",
-                            "properties": {
-                              "unit": {
-                                "enum": [
-                                  "px",
-                                  "rem"
-                                ]
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "pattern": "^{([^{}]+?)}$"
                               },
-                              "value": {
-                                "type": "number"
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "unit": {
+                                    "enum": [
+                                      "px",
+                                      "rem"
+                                    ]
+                                  },
+                                  "value": {
+                                    "type": "number"
+                                  }
+                                },
+                                "required": [
+                                  "unit",
+                                  "value"
+                                ],
+                                "additionalProperties": false
                               }
-                            },
-                            "required": [
-                              "unit",
-                              "value"
-                            ],
-                            "additionalProperties": false
+                            ]
                           }
                         },
                         "lineCap": {
@@ -1841,23 +1857,31 @@
                           "dashArray": {
                             "type": "array",
                             "items": {
-                              "type": "object",
-                              "properties": {
-                                "unit": {
-                                  "enum": [
-                                    "px",
-                                    "rem"
-                                  ]
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "pattern": "^{([^{}]+?)}$"
                                 },
-                                "value": {
-                                  "type": "number"
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "unit": {
+                                      "enum": [
+                                        "px",
+                                        "rem"
+                                      ]
+                                    },
+                                    "value": {
+                                      "type": "number"
+                                    }
+                                  },
+                                  "required": [
+                                    "unit",
+                                    "value"
+                                  ],
+                                  "additionalProperties": false
                                 }
-                              },
-                              "required": [
-                                "unit",
-                                "value"
-                              ],
-                              "additionalProperties": false
+                              ]
                             }
                           },
                           "lineCap": {
@@ -3042,23 +3066,31 @@
                   "dashArray": {
                     "type": "array",
                     "items": {
-                      "type": "object",
-                      "properties": {
-                        "unit": {
-                          "enum": [
-                            "px",
-                            "rem"
-                          ]
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^{([^{}]+?)}$"
                         },
-                        "value": {
-                          "type": "number"
+                        {
+                          "type": "object",
+                          "properties": {
+                            "unit": {
+                              "enum": [
+                                "px",
+                                "rem"
+                              ]
+                            },
+                            "value": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "unit",
+                            "value"
+                          ],
+                          "additionalProperties": false
                         }
-                      },
-                      "required": [
-                        "unit",
-                        "value"
-                      ],
-                      "additionalProperties": false
+                      ]
                     }
                   },
                   "lineCap": {

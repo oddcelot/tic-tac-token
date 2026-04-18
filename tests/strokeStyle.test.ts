@@ -101,4 +101,22 @@ describe("strokeStyle token — object form (DTCG §9.3)", () => {
       ),
     ).toBe(true);
   });
+
+  it("accepts curly-brace alias entries in dashArray", () => {
+    expect(
+      isValid(
+        StrokeStyle({
+          $type: "strokeStyle",
+          $value: {
+            dashArray: [
+              "{sizing.dash}",
+              { value: 0.25, unit: "rem" },
+              "{sizing.gap}",
+            ],
+            lineCap: "round",
+          },
+        }),
+      ),
+    ).toBe(true);
+  });
 });
