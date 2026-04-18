@@ -9,5 +9,5 @@ export const GradientStop = type({
 
 export const Gradient = type({
   $type: "'gradient'",
-  $value: ValueAlias.or(GradientStop.array()),
+  $value: ValueAlias.or(GradientStop.array().atLeastLength(1)),
 }).describe("Gradient");

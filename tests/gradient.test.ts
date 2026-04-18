@@ -87,4 +87,10 @@ describe("gradient token (DTCG §9.7)", () => {
       isInvalid(Gradient({ $type: "gradient", $value: stop(0.5) })),
     ).toBe(true);
   });
+
+  it("rejects an empty gradient array (spec: minItems 1)", () => {
+    expect(
+      isInvalid(Gradient({ $type: "gradient", $value: [] })),
+    ).toBe(true);
+  });
 });

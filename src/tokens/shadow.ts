@@ -14,5 +14,5 @@ export const SingleShadow = type({
 
 export const Shadow = type({
   $type: "'shadow'",
-  $value: ValueAlias.or(SingleShadow).or(SingleShadow.array()),
+  $value: ValueAlias.or(SingleShadow).or(SingleShadow.array().atLeastLength(1)),
 }).describe("Shadow");

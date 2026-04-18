@@ -33,4 +33,10 @@ describe("fontFamily token (DTCG §8.3)", () => {
       ),
     ).toBe(true);
   });
+
+  it("rejects an empty fallback-stack array (spec: minItems 1)", () => {
+    expect(
+      isInvalid(FontFamily({ $type: "fontFamily", $value: [] })),
+    ).toBe(true);
+  });
 });

@@ -102,6 +102,17 @@ describe("strokeStyle token — object form (DTCG §9.3)", () => {
     ).toBe(true);
   });
 
+  it("rejects an empty dashArray (spec: minItems 1)", () => {
+    expect(
+      isInvalid(
+        StrokeStyle({
+          $type: "strokeStyle",
+          $value: { dashArray: [], lineCap: "round" },
+        }),
+      ),
+    ).toBe(true);
+  });
+
   it("accepts curly-brace alias entries in dashArray", () => {
     expect(
       isValid(

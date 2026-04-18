@@ -7,7 +7,7 @@ export const StrokeStyleEnum = type(
 );
 
 export const StrokeStyleObject = type({
-  dashArray: DimensionValue.array(),
+  dashArray: DimensionValue.array().atLeastLength(1),
   lineCap: "'round' | 'butt' | 'square'",
 }).onUndeclaredKey("reject");
 

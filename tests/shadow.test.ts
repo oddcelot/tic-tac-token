@@ -37,6 +37,12 @@ describe("shadow token (DTCG §9.6)", () => {
     ).toBe(true);
   });
 
+  it("rejects an empty shadow array (spec: minItems 1)", () => {
+    expect(
+      isInvalid(Shadow({ $type: "shadow", $value: [] })),
+    ).toBe(true);
+  });
+
   it("accepts a single shadow with inset: true", () => {
     expect(
       isValid(
