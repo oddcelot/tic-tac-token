@@ -15,24 +15,31 @@ self.MonacoEnvironment = {
   },
 };
 
+// The editor's model gets a stable `file:///` URI (see the createModel call
+// in onMount below) so that `$schema: "/schema.json"` in a document resolves
+// to the absolute URI `file:///schema.json`. We register the repo-emitted
+// schema under that exact URI and inline its content, so Monaco finds it
+// without needing a schema-request service (the browser has no way to
+// resolve `file://` URLs at runtime anyway).
+//
 // Two schemas are registered:
 //
-// 1. "/schema.json" — the schema emitted by `pnpm generate-schema` from our
-//    own arktype Token type. Served by the vite `rootSchemaPlugin` (see
-//    vite.config.ts). Used by default for every JSON file in the editor via
-//    fileMatch: ["*"]. Grades documents against this repo's implementation.
+// 1. "file:///schema.json" — our repo-emitted schema. Default for every
+//    JSON file in the editor via fileMatch: ["*"]. Grades documents
+//    against this repo's implementation.
 //
 // 2. The canonical DTCG 2025.10 format schema. Registered by URI only (no
-//    inline content) so Monaco will fetch it when a document declares
+//    inline content) so Monaco fetches it when a document declares
 //    `"$schema": "https://www.designtokens.org/schemas/2025.10/format.json"`.
-//    Useful for grading a document against the upstream spec, which in a few
-//    places is stricter than ours (see docs/dtcg-spec.md for diffs).
+//    Useful for grading a document against the upstream spec, which in a
+//    few places is stricter than ours (see docs/dtcg-spec.md for diffs).
+//    Requires network access + permissive CORS on designtokens.org.
 monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
   validate: true,
   allowComments: false,
   schemas: [
     {
-      uri: "/schema.json",
+      uri: "file:///schema.json",
       fileMatch: ["*"],
       schema: JSON.parse(schemaRaw),
     },
@@ -50,9 +57,15 @@ const App: Component = () => {
   const tokens = (): FlatToken[] => parseTokens(raw());
 
   onMount(() => {
+    // Give the model a file:/// URI so relative $schema references in the
+    // document resolve against a predictable absolute URI and match the
+    // schema registrations in monaco.languages.json.jsonDefaults above.
+    const modelUri = monaco.Uri.parse("file:///demo-tokens.json");
+    const model =
+      monaco.editor.getModel(modelUri) ??
+      monaco.editor.createModel(demoRaw, "json", modelUri);
     const editor = monaco.editor.create(editorElement, {
-      value: demoRaw,
-      language: "json",
+      model,
       automaticLayout: true,
       minimap: { enabled: false },
       tabSize: 2,
@@ -65,6 +78,7 @@ const App: Component = () => {
     onCleanup(() => {
       sub.dispose();
       editor.dispose();
+      model.dispose();
     });
   });
 
