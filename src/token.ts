@@ -26,7 +26,8 @@ export const Token = Color.or(Dimension)
   .or(Transition)
   .or(Gradient)
   .or(Typography)
-  .and(CommonMetadata);
+  .and(CommonMetadata)
+  .onUndeclaredKey("reject");
 
 export const TokensFile = type({
   "[string]": Token.or(type({ "[string]": Token })),
