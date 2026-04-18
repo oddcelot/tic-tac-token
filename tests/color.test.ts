@@ -24,6 +24,35 @@ describe("color token (DTCG §8.1 + Color Module)", () => {
     );
   });
 
+  it("accepts a color without hex (hex is optional per spec)", () => {
+    expect(
+      isValid(
+        Color({
+          $type: "color",
+          $value: {
+            colorSpace: "srgb",
+            components: [0.5, 0.5, 0.5],
+            alpha: 1,
+          },
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("accepts a color without alpha (alpha is optional per spec)", () => {
+    expect(
+      isValid(
+        Color({
+          $type: "color",
+          $value: {
+            colorSpace: "srgb",
+            components: [0.5, 0.5, 0.5],
+          },
+        }),
+      ),
+    ).toBe(true);
+  });
+
   it("rejects a bare string that is not a curly-brace alias", () => {
     expect(isInvalid(Color({ $type: "color", $value: "colors.accent" }))).toBe(
       true,

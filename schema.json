@@ -87,20 +87,19 @@
                                   ],
                                   "items": false
                                 },
-                                "hex": {
-                                  "type": "string",
-                                  "pattern": "^#[\\dA-Fa-f]{6}$"
-                                },
                                 "alpha": {
                                   "type": "number",
                                   "maximum": 1,
                                   "minimum": 0
+                                },
+                                "hex": {
+                                  "type": "string",
+                                  "pattern": "^#[\\dA-Fa-f]{6}$"
                                 }
                               },
                               "required": [
                                 "colorSpace",
-                                "components",
-                                "hex"
+                                "components"
                               ]
                             }
                           ]
@@ -304,20 +303,19 @@
                           ],
                           "items": false
                         },
-                        "hex": {
-                          "type": "string",
-                          "pattern": "^#[\\dA-Fa-f]{6}$"
-                        },
                         "alpha": {
                           "type": "number",
                           "maximum": 1,
                           "minimum": 0
+                        },
+                        "hex": {
+                          "type": "string",
+                          "pattern": "^#[\\dA-Fa-f]{6}$"
                         }
                       },
                       "required": [
                         "colorSpace",
-                        "components",
-                        "hex"
+                        "components"
                       ]
                     }
                   ]
@@ -740,20 +738,19 @@
                                     ],
                                     "items": false
                                   },
-                                  "hex": {
-                                    "type": "string",
-                                    "pattern": "^#[\\dA-Fa-f]{6}$"
-                                  },
                                   "alpha": {
                                     "type": "number",
                                     "maximum": 1,
                                     "minimum": 0
+                                  },
+                                  "hex": {
+                                    "type": "string",
+                                    "pattern": "^#[\\dA-Fa-f]{6}$"
                                   }
                                 },
                                 "required": [
                                   "colorSpace",
-                                  "components",
-                                  "hex"
+                                  "components"
                                 ]
                               }
                             ]
@@ -950,20 +947,19 @@
                                         ],
                                         "items": false
                                       },
-                                      "hex": {
-                                        "type": "string",
-                                        "pattern": "^#[\\dA-Fa-f]{6}$"
-                                      },
                                       "alpha": {
                                         "type": "number",
                                         "maximum": 1,
                                         "minimum": 0
+                                      },
+                                      "hex": {
+                                        "type": "string",
+                                        "pattern": "^#[\\dA-Fa-f]{6}$"
                                       }
                                     },
                                     "required": [
                                       "colorSpace",
-                                      "components",
-                                      "hex"
+                                      "components"
                                     ]
                                   }
                                 ]
@@ -1134,20 +1130,19 @@
                                       ],
                                       "items": false
                                     },
-                                    "hex": {
-                                      "type": "string",
-                                      "pattern": "^#[\\dA-Fa-f]{6}$"
-                                    },
                                     "alpha": {
                                       "type": "number",
                                       "maximum": 1,
                                       "minimum": 0
+                                    },
+                                    "hex": {
+                                      "type": "string",
+                                      "pattern": "^#[\\dA-Fa-f]{6}$"
                                     }
                                   },
                                   "required": [
                                     "colorSpace",
-                                    "components",
-                                    "hex"
+                                    "components"
                                   ]
                                 }
                               ]
@@ -1757,20 +1752,19 @@
                             ],
                             "items": false
                           },
-                          "hex": {
-                            "type": "string",
-                            "pattern": "^#[\\dA-Fa-f]{6}$"
-                          },
                           "alpha": {
                             "type": "number",
                             "maximum": 1,
                             "minimum": 0
+                          },
+                          "hex": {
+                            "type": "string",
+                            "pattern": "^#[\\dA-Fa-f]{6}$"
                           }
                         },
                         "required": [
                           "colorSpace",
-                          "components",
-                          "hex"
+                          "components"
                         ]
                       }
                     ]
@@ -1974,20 +1968,19 @@
                     ],
                     "items": false
                   },
-                  "hex": {
-                    "type": "string",
-                    "pattern": "^#[\\dA-Fa-f]{6}$"
-                  },
                   "alpha": {
                     "type": "number",
                     "maximum": 1,
                     "minimum": 0
+                  },
+                  "hex": {
+                    "type": "string",
+                    "pattern": "^#[\\dA-Fa-f]{6}$"
                   }
                 },
                 "required": [
                   "colorSpace",
-                  "components",
-                  "hex"
+                  "components"
                 ]
               }
             ]
@@ -2410,20 +2403,19 @@
                               ],
                               "items": false
                             },
-                            "hex": {
-                              "type": "string",
-                              "pattern": "^#[\\dA-Fa-f]{6}$"
-                            },
                             "alpha": {
                               "type": "number",
                               "maximum": 1,
                               "minimum": 0
+                            },
+                            "hex": {
+                              "type": "string",
+                              "pattern": "^#[\\dA-Fa-f]{6}$"
                             }
                           },
                           "required": [
                             "colorSpace",
-                            "components",
-                            "hex"
+                            "components"
                           ]
                         }
                       ]
@@ -2620,20 +2612,19 @@
                                   ],
                                   "items": false
                                 },
-                                "hex": {
-                                  "type": "string",
-                                  "pattern": "^#[\\dA-Fa-f]{6}$"
-                                },
                                 "alpha": {
                                   "type": "number",
                                   "maximum": 1,
                                   "minimum": 0
+                                },
+                                "hex": {
+                                  "type": "string",
+                                  "pattern": "^#[\\dA-Fa-f]{6}$"
                                 }
                               },
                               "required": [
                                 "colorSpace",
-                                "components",
-                                "hex"
+                                "components"
                               ]
                             }
                           ]
@@ -2804,20 +2795,19 @@
                                 ],
                                 "items": false
                               },
-                              "hex": {
-                                "type": "string",
-                                "pattern": "^#[\\dA-Fa-f]{6}$"
-                              },
                               "alpha": {
                                 "type": "number",
                                 "maximum": 1,
                                 "minimum": 0
+                              },
+                              "hex": {
+                                "type": "string",
+                                "pattern": "^#[\\dA-Fa-f]{6}$"
                               }
                             },
                             "required": [
                               "colorSpace",
-                              "components",
-                              "hex"
+                              "components"
                             ]
                           }
                         ]
