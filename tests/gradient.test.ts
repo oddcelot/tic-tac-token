@@ -50,13 +50,15 @@ describe("gradient token (DTCG §9.7)", () => {
     ).toBe(true);
   });
 
-  it("accepts out-of-range positions (spec: consumer clamps, validator does not reject)", () => {
+  it("rejects positions outside [0, 1] (per DTCG 2025.10 JSON schema)", () => {
     expect(
-      isValid(
-        Gradient({
-          $type: "gradient",
-          $value: [stop(-99), stop(42)],
-        }),
+      isInvalid(
+        Gradient({ $type: "gradient", $value: [stop(-0.01), stop(1)] }),
+      ),
+    ).toBe(true);
+    expect(
+      isInvalid(
+        Gradient({ $type: "gradient", $value: [stop(0), stop(1.01)] }),
       ),
     ).toBe(true);
   });

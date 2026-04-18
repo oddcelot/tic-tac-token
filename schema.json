@@ -758,7 +758,9 @@
                           "position": {
                             "anyOf": [
                               {
-                                "type": "number"
+                                "type": "number",
+                                "maximum": 1,
+                                "minimum": 0
                               },
                               {
                                 "type": "string",
@@ -2397,7 +2399,9 @@
                     "position": {
                       "anyOf": [
                         {
-                          "type": "number"
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
                         },
                         {
                           "type": "string",

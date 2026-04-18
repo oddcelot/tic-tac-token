@@ -4,7 +4,7 @@ import { ValueAlias } from "./shared.ts";
 
 export const GradientStop = type({
   color: ColorValue,
-  position: ValueAlias.or("number"),
+  position: ValueAlias.or("0 <= number <= 1"),
 }).onUndeclaredKey("reject");
 
 export const Gradient = type({
