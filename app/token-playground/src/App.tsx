@@ -15,14 +15,29 @@ self.MonacoEnvironment = {
   },
 };
 
-monaco.json.jsonDefaults.setDiagnosticsOptions({
+// Two schemas are registered:
+//
+// 1. "/schema.json" — the schema emitted by `pnpm generate-schema` from our
+//    own arktype Token type. Served by the vite `rootSchemaPlugin` (see
+//    vite.config.ts). Used by default for every JSON file in the editor via
+//    fileMatch: ["*"]. Grades documents against this repo's implementation.
+//
+// 2. The canonical DTCG 2025.10 format schema. Registered by URI only (no
+//    inline content) so Monaco will fetch it when a document declares
+//    `"$schema": "https://www.designtokens.org/schemas/2025.10/format.json"`.
+//    Useful for grading a document against the upstream spec, which in a few
+//    places is stricter than ours (see docs/dtcg-spec.md for diffs).
+monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
   validate: true,
   allowComments: false,
   schemas: [
     {
-      uri: "file:///schema.json",
+      uri: "/schema.json",
       fileMatch: ["*"],
       schema: JSON.parse(schemaRaw),
+    },
+    {
+      uri: "https://www.designtokens.org/schemas/2025.10/format.json",
     },
   ],
 });

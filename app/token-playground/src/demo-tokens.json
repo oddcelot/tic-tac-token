@@ -1,5 +1,5 @@
 {
-  "$schema": "../../../schema.json",
+  "$schema": "/schema.json",
   "color": {
     "brand": {
       "primary": {
@@ -66,8 +66,11 @@
       "bold": { "$type": "fontWeight", "$value": 700 }
     },
     "size": {
-      "body": { "$type": "fontSize", "$value": 14 },
-      "heading": { "$type": "fontSize", "$value": 28 }
+      "body": { "$type": "dimension", "$value": { "value": 14, "unit": "px" } },
+      "heading": {
+        "$type": "dimension",
+        "$value": { "value": 28, "unit": "px" }
+      }
     }
   },
   "motion": {
@@ -85,7 +88,7 @@
     },
     "bounce": {
       "$type": "cubicBezier",
-      "$value": [0.68, -0.55, 0.27, 1.55]
+      "$value": [0.68, -0.55, 0.27, 1]
     }
   },
   "shadow": {
@@ -93,13 +96,10 @@
       "$type": "shadow",
       "$value": {
         "color": {
-          "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [0, 0, 0],
-            "alpha": 0.1,
-            "hex": "#0000001a"
-          }
+          "colorSpace": "srgb",
+          "components": [0, 0, 0],
+          "alpha": 0.1,
+          "hex": "#000000"
         },
         "offsetX": { "value": 0, "unit": "px" },
         "offsetY": { "value": 2, "unit": "px" },
@@ -111,13 +111,10 @@
       "$type": "shadow",
       "$value": {
         "color": {
-          "$type": "color",
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [0, 0, 0],
-            "alpha": 0.2,
-            "hex": "#00000033"
-          }
+          "colorSpace": "srgb",
+          "components": [0, 0, 0],
+          "alpha": 0.2,
+          "hex": "#000000"
         },
         "offsetX": { "value": 0, "unit": "px" },
         "offsetY": { "value": 12, "unit": "px" },
@@ -127,8 +124,8 @@
     }
   },
   "stroke": {
-    "solid": { "$type": "stroke", "$value": "solid" },
-    "dashed": { "$type": "stroke", "$value": "dashed" }
+    "solid": { "$type": "strokeStyle", "$value": "solid" },
+    "dashed": { "$type": "strokeStyle", "$value": "dashed" }
   },
   "zIndex": {
     "modal": { "$type": "number", "$value": 1000 },
