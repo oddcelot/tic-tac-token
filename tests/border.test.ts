@@ -76,4 +76,15 @@ describe("border token (DTCG §9.4)", () => {
       true,
     );
   });
+
+  it("rejects an unknown key on the $value object", () => {
+    expect(
+      isInvalid(
+        Border({
+          $type: "border",
+          $value: { ...base, radius: { value: 4, unit: "px" } } as never,
+        }),
+      ),
+    ).toBe(true);
+  });
 });

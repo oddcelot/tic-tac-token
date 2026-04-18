@@ -60,4 +60,15 @@ describe("dimension token (DTCG §8.2)", () => {
       isValid(Dimension({ $type: "dimension", $value: "{sizing.base}" })),
     ).toBe(true);
   });
+
+  it("rejects an unknown key on the $value object", () => {
+    expect(
+      isInvalid(
+        Dimension({
+          $type: "dimension",
+          $value: { value: 16, unit: "px", extra: "nope" } as never,
+        }),
+      ),
+    ).toBe(true);
+  });
 });

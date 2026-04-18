@@ -36,4 +36,15 @@ describe("duration token (DTCG §8.5)", () => {
       isValid(Duration({ $type: "duration", $value: "{motion.slow}" })),
     ).toBe(true);
   });
+
+  it("rejects an unknown key on the $value object", () => {
+    expect(
+      isInvalid(
+        Duration({
+          $type: "duration",
+          $value: { value: 100, unit: "ms", extra: "nope" } as never,
+        }),
+      ),
+    ).toBe(true);
+  });
 });

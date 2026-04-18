@@ -83,4 +83,15 @@ describe("typography token (DTCG §9.8)", () => {
       ),
     ).toBe(true);
   });
+
+  it("rejects an unknown key on the $value object", () => {
+    expect(
+      isInvalid(
+        Typography({
+          $type: "typography",
+          $value: { ...base, textTransform: "uppercase" } as never,
+        }),
+      ),
+    ).toBe(true);
+  });
 });

@@ -5,9 +5,11 @@ import { ValueAlias } from "./shared.ts";
 
 export const Transition = type({
   $type: "'transition'",
-  $value: ValueAlias.or({
-    duration: DurationValue,
-    delay: DurationValue,
-    timingFunction: CubicBezierValue,
-  }),
+  $value: ValueAlias.or(
+    type({
+      duration: DurationValue,
+      delay: DurationValue,
+      timingFunction: CubicBezierValue,
+    }).onUndeclaredKey("reject"),
+  ),
 }).describe("Transition");

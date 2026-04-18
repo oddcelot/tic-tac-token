@@ -7,11 +7,13 @@ import { ValueAlias } from "./shared.ts";
 
 export const Typography = type({
   $type: "'typography'",
-  $value: ValueAlias.or({
-    fontFamily: FontFamilyValue,
-    fontSize: DimensionValue,
-    fontWeight: FontWeightValue,
-    letterSpacing: DimensionValue,
-    lineHeight: NumberLiteralValue,
-  }),
+  $value: ValueAlias.or(
+    type({
+      fontFamily: FontFamilyValue,
+      fontSize: DimensionValue,
+      fontWeight: FontWeightValue,
+      letterSpacing: DimensionValue,
+      lineHeight: NumberLiteralValue,
+    }).onUndeclaredKey("reject"),
+  ),
 }).describe("Typography");

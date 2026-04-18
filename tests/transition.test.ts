@@ -57,4 +57,15 @@ describe("transition token (DTCG §9.5)", () => {
       ),
     ).toBe(true);
   });
+
+  it("rejects an unknown key on the $value object", () => {
+    expect(
+      isInvalid(
+        Transition({
+          $type: "transition",
+          $value: { ...base, repeat: "infinite" } as never,
+        }),
+      ),
+    ).toBe(true);
+  });
 });

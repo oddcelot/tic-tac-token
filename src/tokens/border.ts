@@ -6,9 +6,11 @@ import { StrokeStyleValue } from "./strokeStyle.ts";
 
 export const Border = type({
   $type: "'border'",
-  $value: ValueAlias.or({
-    color: ColorValue,
-    width: DimensionValue,
-    style: StrokeStyleValue,
-  }),
+  $value: ValueAlias.or(
+    type({
+      color: ColorValue,
+      width: DimensionValue,
+      style: StrokeStyleValue,
+    }).onUndeclaredKey("reject"),
+  ),
 }).describe("Border");

@@ -131,7 +131,8 @@
                                     "required": [
                                       "unit",
                                       "value"
-                                    ]
+                                    ],
+                                    "additionalProperties": false
                                   }
                                 },
                                 "lineCap": {
@@ -196,7 +197,8 @@
                               "required": [
                                 "unit",
                                 "value"
-                              ]
+                              ],
+                              "additionalProperties": false
                             }
                           ]
                         }
@@ -205,7 +207,8 @@
                         "color",
                         "style",
                         "width"
-                      ]
+                      ],
+                      "additionalProperties": false
                     }
                   ]
                 },
@@ -433,7 +436,8 @@
                       "required": [
                         "unit",
                         "value"
-                      ]
+                      ],
+                      "additionalProperties": false
                     }
                   ]
                 },
@@ -489,7 +493,8 @@
                       "required": [
                         "unit",
                         "value"
-                      ]
+                      ],
+                      "additionalProperties": false
                     }
                   ]
                 },
@@ -876,7 +881,8 @@
                             "required": [
                               "unit",
                               "value"
-                            ]
+                            ],
+                            "additionalProperties": false
                           },
                           "color": {
                             "anyOf": [
@@ -975,7 +981,8 @@
                             "required": [
                               "unit",
                               "value"
-                            ]
+                            ],
+                            "additionalProperties": false
                           },
                           "offsetY": {
                             "type": "object",
@@ -993,7 +1000,8 @@
                             "required": [
                               "unit",
                               "value"
-                            ]
+                            ],
+                            "additionalProperties": false
                           },
                           "spread": {
                             "type": "object",
@@ -1011,7 +1019,8 @@
                             "required": [
                               "unit",
                               "value"
-                            ]
+                            ],
+                            "additionalProperties": false
                           },
                           "inset": {
                             "type": "boolean"
@@ -1046,7 +1055,8 @@
                           "required": [
                             "unit",
                             "value"
-                          ]
+                          ],
+                          "additionalProperties": false
                         },
                         "color": {
                           "anyOf": [
@@ -1145,7 +1155,8 @@
                           "required": [
                             "unit",
                             "value"
-                          ]
+                          ],
+                          "additionalProperties": false
                         },
                         "offsetY": {
                           "type": "object",
@@ -1163,7 +1174,8 @@
                           "required": [
                             "unit",
                             "value"
-                          ]
+                          ],
+                          "additionalProperties": false
                         },
                         "spread": {
                           "type": "object",
@@ -1181,7 +1193,8 @@
                           "required": [
                             "unit",
                             "value"
-                          ]
+                          ],
+                          "additionalProperties": false
                         },
                         "inset": {
                           "type": "boolean"
@@ -1255,7 +1268,8 @@
                             "required": [
                               "unit",
                               "value"
-                            ]
+                            ],
+                            "additionalProperties": false
                           }
                         },
                         "lineCap": {
@@ -1359,7 +1373,8 @@
                               "required": [
                                 "unit",
                                 "value"
-                              ]
+                              ],
+                              "additionalProperties": false
                             }
                           ]
                         },
@@ -1385,7 +1400,8 @@
                               "required": [
                                 "unit",
                                 "value"
-                              ]
+                              ],
+                              "additionalProperties": false
                             }
                           ]
                         },
@@ -1425,7 +1441,8 @@
                         "delay",
                         "duration",
                         "timingFunction"
-                      ]
+                      ],
+                      "additionalProperties": false
                     }
                   ]
                 },
@@ -1503,7 +1520,8 @@
                               "required": [
                                 "unit",
                                 "value"
-                              ]
+                              ],
+                              "additionalProperties": false
                             }
                           ]
                         },
@@ -1596,7 +1614,8 @@
                               "required": [
                                 "unit",
                                 "value"
-                              ]
+                              ],
+                              "additionalProperties": false
                             }
                           ]
                         },
@@ -1618,7 +1637,8 @@
                         "fontWeight",
                         "letterSpacing",
                         "lineHeight"
-                      ]
+                      ],
+                      "additionalProperties": false
                     }
                   ]
                 },
@@ -1772,7 +1792,8 @@
                               "required": [
                                 "unit",
                                 "value"
-                              ]
+                              ],
+                              "additionalProperties": false
                             }
                           },
                           "lineCap": {
@@ -1837,7 +1858,8 @@
                         "required": [
                           "unit",
                           "value"
-                        ]
+                        ],
+                        "additionalProperties": false
                       }
                     ]
                   }
@@ -1846,7 +1868,8 @@
                   "color",
                   "style",
                   "width"
-                ]
+                ],
+                "additionalProperties": false
               }
             ]
           },
@@ -2074,7 +2097,8 @@
                 "required": [
                   "unit",
                   "value"
-                ]
+                ],
+                "additionalProperties": false
               }
             ]
           },
@@ -2130,7 +2154,8 @@
                 "required": [
                   "unit",
                   "value"
-                ]
+                ],
+                "additionalProperties": false
               }
             ]
           },
@@ -2517,7 +2542,8 @@
                       "required": [
                         "unit",
                         "value"
-                      ]
+                      ],
+                      "additionalProperties": false
                     },
                     "color": {
                       "anyOf": [
@@ -2616,7 +2642,8 @@
                       "required": [
                         "unit",
                         "value"
-                      ]
+                      ],
+                      "additionalProperties": false
                     },
                     "offsetY": {
                       "type": "object",
@@ -2634,7 +2661,8 @@
                       "required": [
                         "unit",
                         "value"
-                      ]
+                      ],
+                      "additionalProperties": false
                     },
                     "spread": {
                       "type": "object",
@@ -2652,7 +2680,8 @@
                       "required": [
                         "unit",
                         "value"
-                      ]
+                      ],
+                      "additionalProperties": false
                     },
                     "inset": {
                       "type": "boolean"
@@ -2687,7 +2716,8 @@
                     "required": [
                       "unit",
                       "value"
-                    ]
+                    ],
+                    "additionalProperties": false
                   },
                   "color": {
                     "anyOf": [
@@ -2786,7 +2816,8 @@
                     "required": [
                       "unit",
                       "value"
-                    ]
+                    ],
+                    "additionalProperties": false
                   },
                   "offsetY": {
                     "type": "object",
@@ -2804,7 +2835,8 @@
                     "required": [
                       "unit",
                       "value"
-                    ]
+                    ],
+                    "additionalProperties": false
                   },
                   "spread": {
                     "type": "object",
@@ -2822,7 +2854,8 @@
                     "required": [
                       "unit",
                       "value"
-                    ]
+                    ],
+                    "additionalProperties": false
                   },
                   "inset": {
                     "type": "boolean"
@@ -2896,7 +2929,8 @@
                       "required": [
                         "unit",
                         "value"
-                      ]
+                      ],
+                      "additionalProperties": false
                     }
                   },
                   "lineCap": {
@@ -3000,7 +3034,8 @@
                         "required": [
                           "unit",
                           "value"
-                        ]
+                        ],
+                        "additionalProperties": false
                       }
                     ]
                   },
@@ -3026,7 +3061,8 @@
                         "required": [
                           "unit",
                           "value"
-                        ]
+                        ],
+                        "additionalProperties": false
                       }
                     ]
                   },
@@ -3066,7 +3102,8 @@
                   "delay",
                   "duration",
                   "timingFunction"
-                ]
+                ],
+                "additionalProperties": false
               }
             ]
           },
@@ -3144,7 +3181,8 @@
                         "required": [
                           "unit",
                           "value"
-                        ]
+                        ],
+                        "additionalProperties": false
                       }
                     ]
                   },
@@ -3237,7 +3275,8 @@
                         "required": [
                           "unit",
                           "value"
-                        ]
+                        ],
+                        "additionalProperties": false
                       }
                     ]
                   },
@@ -3259,7 +3298,8 @@
                   "fontWeight",
                   "letterSpacing",
                   "lineHeight"
-                ]
+                ],
+                "additionalProperties": false
               }
             ]
           },
