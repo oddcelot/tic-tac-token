@@ -12,7 +12,11 @@ export const SingleShadow = type({
   "inset?": "boolean",
 }).onUndeclaredKey("reject");
 
+export const ShadowValue = ValueAlias.or(SingleShadow).or(
+  SingleShadow.array().atLeastLength(1),
+);
+
 export const Shadow = type({
   $type: "'shadow'",
-  $value: ValueAlias.or(SingleShadow).or(SingleShadow.array().atLeastLength(1)),
+  $value: ShadowValue,
 }).describe("Shadow");

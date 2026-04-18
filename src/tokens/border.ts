@@ -4,13 +4,15 @@ import { DimensionValue } from "./dimension.ts";
 import { ValueAlias } from "./shared.ts";
 import { StrokeStyleValue } from "./strokeStyle.ts";
 
+export const BorderValue = ValueAlias.or(
+  type({
+    color: ColorValue,
+    width: DimensionValue,
+    style: StrokeStyleValue,
+  }).onUndeclaredKey("reject"),
+);
+
 export const Border = type({
   $type: "'border'",
-  $value: ValueAlias.or(
-    type({
-      color: ColorValue,
-      width: DimensionValue,
-      style: StrokeStyleValue,
-    }).onUndeclaredKey("reject"),
-  ),
+  $value: BorderValue,
 }).describe("Border");

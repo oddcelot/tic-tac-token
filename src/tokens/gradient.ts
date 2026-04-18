@@ -7,7 +7,11 @@ export const GradientStop = type({
   position: ValueAlias.or("0 <= number <= 1"),
 }).onUndeclaredKey("reject");
 
+export const GradientValue = ValueAlias.or(
+  GradientStop.array().atLeastLength(1),
+);
+
 export const Gradient = type({
   $type: "'gradient'",
-  $value: ValueAlias.or(GradientStop.array().atLeastLength(1)),
+  $value: GradientValue,
 }).describe("Gradient");

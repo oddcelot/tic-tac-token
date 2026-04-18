@@ -4039,6 +4039,3442 @@
         "$value"
       ],
       "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "array",
+              "minItems": 4,
+              "prefixItems": [
+                {
+                  "type": "number",
+                  "maximum": 1,
+                  "minimum": 0
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number",
+                  "maximum": 1,
+                  "minimum": 0
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "items": false
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "blur": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "unit": {
+                            "enum": [
+                              "px",
+                              "rem"
+                            ]
+                          },
+                          "value": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "unit",
+                          "value"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  },
+                  "color": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "colorSpace": {
+                            "enum": [
+                              "a98-rgb",
+                              "display-p3",
+                              "prophoto-rgb",
+                              "rec2020",
+                              "srgb",
+                              "srgb-linear"
+                            ]
+                          },
+                          "components": {
+                            "type": "array",
+                            "minItems": 3,
+                            "prefixItems": [
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 1,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 1,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 1,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              }
+                            ],
+                            "items": false
+                          },
+                          "alpha": {
+                            "type": "number",
+                            "maximum": 1,
+                            "minimum": 0
+                          },
+                          "hex": {
+                            "type": "string",
+                            "pattern": "^#[\\dA-Fa-f]{6}$"
+                          }
+                        },
+                        "required": [
+                          "colorSpace",
+                          "components"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "colorSpace": {
+                            "enum": [
+                              "xyz-d50",
+                              "xyz-d65"
+                            ]
+                          },
+                          "components": {
+                            "type": "array",
+                            "minItems": 3,
+                            "prefixItems": [
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 1,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 1,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 1,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              }
+                            ],
+                            "items": false
+                          },
+                          "alpha": {
+                            "type": "number",
+                            "maximum": 1,
+                            "minimum": 0
+                          },
+                          "hex": {
+                            "type": "string",
+                            "pattern": "^#[\\dA-Fa-f]{6}$"
+                          }
+                        },
+                        "required": [
+                          "colorSpace",
+                          "components"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "colorSpace": {
+                            "const": "hsl"
+                          },
+                          "components": {
+                            "type": "array",
+                            "minItems": 3,
+                            "prefixItems": [
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "exclusiveMaximum": 360,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 100,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 100,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              }
+                            ],
+                            "items": false
+                          },
+                          "alpha": {
+                            "type": "number",
+                            "maximum": 1,
+                            "minimum": 0
+                          },
+                          "hex": {
+                            "type": "string",
+                            "pattern": "^#[\\dA-Fa-f]{6}$"
+                          }
+                        },
+                        "required": [
+                          "colorSpace",
+                          "components"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "colorSpace": {
+                            "const": "hwb"
+                          },
+                          "components": {
+                            "type": "array",
+                            "minItems": 3,
+                            "prefixItems": [
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "exclusiveMaximum": 360,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 100,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 100,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              }
+                            ],
+                            "items": false
+                          },
+                          "alpha": {
+                            "type": "number",
+                            "maximum": 1,
+                            "minimum": 0
+                          },
+                          "hex": {
+                            "type": "string",
+                            "pattern": "^#[\\dA-Fa-f]{6}$"
+                          }
+                        },
+                        "required": [
+                          "colorSpace",
+                          "components"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "colorSpace": {
+                            "const": "lab"
+                          },
+                          "components": {
+                            "type": "array",
+                            "minItems": 3,
+                            "prefixItems": [
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 100,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              }
+                            ],
+                            "items": false
+                          },
+                          "alpha": {
+                            "type": "number",
+                            "maximum": 1,
+                            "minimum": 0
+                          },
+                          "hex": {
+                            "type": "string",
+                            "pattern": "^#[\\dA-Fa-f]{6}$"
+                          }
+                        },
+                        "required": [
+                          "colorSpace",
+                          "components"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "colorSpace": {
+                            "const": "lch"
+                          },
+                          "components": {
+                            "type": "array",
+                            "minItems": 3,
+                            "prefixItems": [
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 100,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "exclusiveMaximum": 360,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              }
+                            ],
+                            "items": false
+                          },
+                          "alpha": {
+                            "type": "number",
+                            "maximum": 1,
+                            "minimum": 0
+                          },
+                          "hex": {
+                            "type": "string",
+                            "pattern": "^#[\\dA-Fa-f]{6}$"
+                          }
+                        },
+                        "required": [
+                          "colorSpace",
+                          "components"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "colorSpace": {
+                            "const": "oklab"
+                          },
+                          "components": {
+                            "type": "array",
+                            "minItems": 3,
+                            "prefixItems": [
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 1,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              }
+                            ],
+                            "items": false
+                          },
+                          "alpha": {
+                            "type": "number",
+                            "maximum": 1,
+                            "minimum": 0
+                          },
+                          "hex": {
+                            "type": "string",
+                            "pattern": "^#[\\dA-Fa-f]{6}$"
+                          }
+                        },
+                        "required": [
+                          "colorSpace",
+                          "components"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "colorSpace": {
+                            "const": "oklch"
+                          },
+                          "components": {
+                            "type": "array",
+                            "minItems": 3,
+                            "prefixItems": [
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 1,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "exclusiveMaximum": 360,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              }
+                            ],
+                            "items": false
+                          },
+                          "alpha": {
+                            "type": "number",
+                            "maximum": 1,
+                            "minimum": 0
+                          },
+                          "hex": {
+                            "type": "string",
+                            "pattern": "^#[\\dA-Fa-f]{6}$"
+                          }
+                        },
+                        "required": [
+                          "colorSpace",
+                          "components"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  },
+                  "offsetX": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "unit": {
+                            "enum": [
+                              "px",
+                              "rem"
+                            ]
+                          },
+                          "value": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "unit",
+                          "value"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  },
+                  "offsetY": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "unit": {
+                            "enum": [
+                              "px",
+                              "rem"
+                            ]
+                          },
+                          "value": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "unit",
+                          "value"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  },
+                  "spread": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "unit": {
+                            "enum": [
+                              "px",
+                              "rem"
+                            ]
+                          },
+                          "value": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "unit",
+                          "value"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  },
+                  "inset": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "blur",
+                  "color",
+                  "offsetX",
+                  "offsetY",
+                  "spread"
+                ],
+                "additionalProperties": false
+              }
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "color": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "colorSpace": {
+                            "enum": [
+                              "a98-rgb",
+                              "display-p3",
+                              "prophoto-rgb",
+                              "rec2020",
+                              "srgb",
+                              "srgb-linear"
+                            ]
+                          },
+                          "components": {
+                            "type": "array",
+                            "minItems": 3,
+                            "prefixItems": [
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 1,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 1,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 1,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              }
+                            ],
+                            "items": false
+                          },
+                          "alpha": {
+                            "type": "number",
+                            "maximum": 1,
+                            "minimum": 0
+                          },
+                          "hex": {
+                            "type": "string",
+                            "pattern": "^#[\\dA-Fa-f]{6}$"
+                          }
+                        },
+                        "required": [
+                          "colorSpace",
+                          "components"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "colorSpace": {
+                            "enum": [
+                              "xyz-d50",
+                              "xyz-d65"
+                            ]
+                          },
+                          "components": {
+                            "type": "array",
+                            "minItems": 3,
+                            "prefixItems": [
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 1,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 1,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 1,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              }
+                            ],
+                            "items": false
+                          },
+                          "alpha": {
+                            "type": "number",
+                            "maximum": 1,
+                            "minimum": 0
+                          },
+                          "hex": {
+                            "type": "string",
+                            "pattern": "^#[\\dA-Fa-f]{6}$"
+                          }
+                        },
+                        "required": [
+                          "colorSpace",
+                          "components"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "colorSpace": {
+                            "const": "hsl"
+                          },
+                          "components": {
+                            "type": "array",
+                            "minItems": 3,
+                            "prefixItems": [
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "exclusiveMaximum": 360,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 100,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 100,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              }
+                            ],
+                            "items": false
+                          },
+                          "alpha": {
+                            "type": "number",
+                            "maximum": 1,
+                            "minimum": 0
+                          },
+                          "hex": {
+                            "type": "string",
+                            "pattern": "^#[\\dA-Fa-f]{6}$"
+                          }
+                        },
+                        "required": [
+                          "colorSpace",
+                          "components"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "colorSpace": {
+                            "const": "hwb"
+                          },
+                          "components": {
+                            "type": "array",
+                            "minItems": 3,
+                            "prefixItems": [
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "exclusiveMaximum": 360,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 100,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 100,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              }
+                            ],
+                            "items": false
+                          },
+                          "alpha": {
+                            "type": "number",
+                            "maximum": 1,
+                            "minimum": 0
+                          },
+                          "hex": {
+                            "type": "string",
+                            "pattern": "^#[\\dA-Fa-f]{6}$"
+                          }
+                        },
+                        "required": [
+                          "colorSpace",
+                          "components"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "colorSpace": {
+                            "const": "lab"
+                          },
+                          "components": {
+                            "type": "array",
+                            "minItems": 3,
+                            "prefixItems": [
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 100,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              }
+                            ],
+                            "items": false
+                          },
+                          "alpha": {
+                            "type": "number",
+                            "maximum": 1,
+                            "minimum": 0
+                          },
+                          "hex": {
+                            "type": "string",
+                            "pattern": "^#[\\dA-Fa-f]{6}$"
+                          }
+                        },
+                        "required": [
+                          "colorSpace",
+                          "components"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "colorSpace": {
+                            "const": "lch"
+                          },
+                          "components": {
+                            "type": "array",
+                            "minItems": 3,
+                            "prefixItems": [
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 100,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "exclusiveMaximum": 360,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              }
+                            ],
+                            "items": false
+                          },
+                          "alpha": {
+                            "type": "number",
+                            "maximum": 1,
+                            "minimum": 0
+                          },
+                          "hex": {
+                            "type": "string",
+                            "pattern": "^#[\\dA-Fa-f]{6}$"
+                          }
+                        },
+                        "required": [
+                          "colorSpace",
+                          "components"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "colorSpace": {
+                            "const": "oklab"
+                          },
+                          "components": {
+                            "type": "array",
+                            "minItems": 3,
+                            "prefixItems": [
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 1,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              }
+                            ],
+                            "items": false
+                          },
+                          "alpha": {
+                            "type": "number",
+                            "maximum": 1,
+                            "minimum": 0
+                          },
+                          "hex": {
+                            "type": "string",
+                            "pattern": "^#[\\dA-Fa-f]{6}$"
+                          }
+                        },
+                        "required": [
+                          "colorSpace",
+                          "components"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "colorSpace": {
+                            "const": "oklch"
+                          },
+                          "components": {
+                            "type": "array",
+                            "minItems": 3,
+                            "prefixItems": [
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "maximum": 1,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number",
+                                    "exclusiveMaximum": 360,
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
+                              }
+                            ],
+                            "items": false
+                          },
+                          "alpha": {
+                            "type": "number",
+                            "maximum": 1,
+                            "minimum": 0
+                          },
+                          "hex": {
+                            "type": "string",
+                            "pattern": "^#[\\dA-Fa-f]{6}$"
+                          }
+                        },
+                        "required": [
+                          "colorSpace",
+                          "components"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  },
+                  "position": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "maximum": 1,
+                        "minimum": 0
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "color",
+                  "position"
+                ],
+                "additionalProperties": false
+              }
+            },
+            {
+              "type": "object",
+              "properties": {
+                "blur": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "unit": {
+                          "enum": [
+                            "px",
+                            "rem"
+                          ]
+                        },
+                        "value": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "unit",
+                        "value"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                "color": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "colorSpace": {
+                          "enum": [
+                            "a98-rgb",
+                            "display-p3",
+                            "prophoto-rgb",
+                            "rec2020",
+                            "srgb",
+                            "srgb-linear"
+                          ]
+                        },
+                        "components": {
+                          "type": "array",
+                          "minItems": 3,
+                          "prefixItems": [
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 1,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 1,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 1,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            }
+                          ],
+                          "items": false
+                        },
+                        "alpha": {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        "hex": {
+                          "type": "string",
+                          "pattern": "^#[\\dA-Fa-f]{6}$"
+                        }
+                      },
+                      "required": [
+                        "colorSpace",
+                        "components"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "colorSpace": {
+                          "enum": [
+                            "xyz-d50",
+                            "xyz-d65"
+                          ]
+                        },
+                        "components": {
+                          "type": "array",
+                          "minItems": 3,
+                          "prefixItems": [
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 1,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 1,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 1,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            }
+                          ],
+                          "items": false
+                        },
+                        "alpha": {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        "hex": {
+                          "type": "string",
+                          "pattern": "^#[\\dA-Fa-f]{6}$"
+                        }
+                      },
+                      "required": [
+                        "colorSpace",
+                        "components"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "colorSpace": {
+                          "const": "hsl"
+                        },
+                        "components": {
+                          "type": "array",
+                          "minItems": 3,
+                          "prefixItems": [
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "exclusiveMaximum": 360,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 100,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 100,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            }
+                          ],
+                          "items": false
+                        },
+                        "alpha": {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        "hex": {
+                          "type": "string",
+                          "pattern": "^#[\\dA-Fa-f]{6}$"
+                        }
+                      },
+                      "required": [
+                        "colorSpace",
+                        "components"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "colorSpace": {
+                          "const": "hwb"
+                        },
+                        "components": {
+                          "type": "array",
+                          "minItems": 3,
+                          "prefixItems": [
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "exclusiveMaximum": 360,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 100,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 100,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            }
+                          ],
+                          "items": false
+                        },
+                        "alpha": {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        "hex": {
+                          "type": "string",
+                          "pattern": "^#[\\dA-Fa-f]{6}$"
+                        }
+                      },
+                      "required": [
+                        "colorSpace",
+                        "components"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "colorSpace": {
+                          "const": "lab"
+                        },
+                        "components": {
+                          "type": "array",
+                          "minItems": 3,
+                          "prefixItems": [
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 100,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            }
+                          ],
+                          "items": false
+                        },
+                        "alpha": {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        "hex": {
+                          "type": "string",
+                          "pattern": "^#[\\dA-Fa-f]{6}$"
+                        }
+                      },
+                      "required": [
+                        "colorSpace",
+                        "components"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "colorSpace": {
+                          "const": "lch"
+                        },
+                        "components": {
+                          "type": "array",
+                          "minItems": 3,
+                          "prefixItems": [
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 100,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "exclusiveMaximum": 360,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            }
+                          ],
+                          "items": false
+                        },
+                        "alpha": {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        "hex": {
+                          "type": "string",
+                          "pattern": "^#[\\dA-Fa-f]{6}$"
+                        }
+                      },
+                      "required": [
+                        "colorSpace",
+                        "components"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "colorSpace": {
+                          "const": "oklab"
+                        },
+                        "components": {
+                          "type": "array",
+                          "minItems": 3,
+                          "prefixItems": [
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 1,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            }
+                          ],
+                          "items": false
+                        },
+                        "alpha": {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        "hex": {
+                          "type": "string",
+                          "pattern": "^#[\\dA-Fa-f]{6}$"
+                        }
+                      },
+                      "required": [
+                        "colorSpace",
+                        "components"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "colorSpace": {
+                          "const": "oklch"
+                        },
+                        "components": {
+                          "type": "array",
+                          "minItems": 3,
+                          "prefixItems": [
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 1,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "exclusiveMaximum": 360,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            }
+                          ],
+                          "items": false
+                        },
+                        "alpha": {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        "hex": {
+                          "type": "string",
+                          "pattern": "^#[\\dA-Fa-f]{6}$"
+                        }
+                      },
+                      "required": [
+                        "colorSpace",
+                        "components"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                "offsetX": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "unit": {
+                          "enum": [
+                            "px",
+                            "rem"
+                          ]
+                        },
+                        "value": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "unit",
+                        "value"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                "offsetY": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "unit": {
+                          "enum": [
+                            "px",
+                            "rem"
+                          ]
+                        },
+                        "value": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "unit",
+                        "value"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                "spread": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "unit": {
+                          "enum": [
+                            "px",
+                            "rem"
+                          ]
+                        },
+                        "value": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "unit",
+                        "value"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                "inset": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "blur",
+                "color",
+                "offsetX",
+                "offsetY",
+                "spread"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "color": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "colorSpace": {
+                          "enum": [
+                            "a98-rgb",
+                            "display-p3",
+                            "prophoto-rgb",
+                            "rec2020",
+                            "srgb",
+                            "srgb-linear"
+                          ]
+                        },
+                        "components": {
+                          "type": "array",
+                          "minItems": 3,
+                          "prefixItems": [
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 1,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 1,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 1,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            }
+                          ],
+                          "items": false
+                        },
+                        "alpha": {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        "hex": {
+                          "type": "string",
+                          "pattern": "^#[\\dA-Fa-f]{6}$"
+                        }
+                      },
+                      "required": [
+                        "colorSpace",
+                        "components"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "colorSpace": {
+                          "enum": [
+                            "xyz-d50",
+                            "xyz-d65"
+                          ]
+                        },
+                        "components": {
+                          "type": "array",
+                          "minItems": 3,
+                          "prefixItems": [
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 1,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 1,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 1,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            }
+                          ],
+                          "items": false
+                        },
+                        "alpha": {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        "hex": {
+                          "type": "string",
+                          "pattern": "^#[\\dA-Fa-f]{6}$"
+                        }
+                      },
+                      "required": [
+                        "colorSpace",
+                        "components"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "colorSpace": {
+                          "const": "hsl"
+                        },
+                        "components": {
+                          "type": "array",
+                          "minItems": 3,
+                          "prefixItems": [
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "exclusiveMaximum": 360,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 100,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 100,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            }
+                          ],
+                          "items": false
+                        },
+                        "alpha": {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        "hex": {
+                          "type": "string",
+                          "pattern": "^#[\\dA-Fa-f]{6}$"
+                        }
+                      },
+                      "required": [
+                        "colorSpace",
+                        "components"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "colorSpace": {
+                          "const": "hwb"
+                        },
+                        "components": {
+                          "type": "array",
+                          "minItems": 3,
+                          "prefixItems": [
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "exclusiveMaximum": 360,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 100,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 100,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            }
+                          ],
+                          "items": false
+                        },
+                        "alpha": {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        "hex": {
+                          "type": "string",
+                          "pattern": "^#[\\dA-Fa-f]{6}$"
+                        }
+                      },
+                      "required": [
+                        "colorSpace",
+                        "components"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "colorSpace": {
+                          "const": "lab"
+                        },
+                        "components": {
+                          "type": "array",
+                          "minItems": 3,
+                          "prefixItems": [
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 100,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            }
+                          ],
+                          "items": false
+                        },
+                        "alpha": {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        "hex": {
+                          "type": "string",
+                          "pattern": "^#[\\dA-Fa-f]{6}$"
+                        }
+                      },
+                      "required": [
+                        "colorSpace",
+                        "components"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "colorSpace": {
+                          "const": "lch"
+                        },
+                        "components": {
+                          "type": "array",
+                          "minItems": 3,
+                          "prefixItems": [
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 100,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "exclusiveMaximum": 360,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            }
+                          ],
+                          "items": false
+                        },
+                        "alpha": {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        "hex": {
+                          "type": "string",
+                          "pattern": "^#[\\dA-Fa-f]{6}$"
+                        }
+                      },
+                      "required": [
+                        "colorSpace",
+                        "components"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "colorSpace": {
+                          "const": "oklab"
+                        },
+                        "components": {
+                          "type": "array",
+                          "minItems": 3,
+                          "prefixItems": [
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 1,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            }
+                          ],
+                          "items": false
+                        },
+                        "alpha": {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        "hex": {
+                          "type": "string",
+                          "pattern": "^#[\\dA-Fa-f]{6}$"
+                        }
+                      },
+                      "required": [
+                        "colorSpace",
+                        "components"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "colorSpace": {
+                          "const": "oklch"
+                        },
+                        "components": {
+                          "type": "array",
+                          "minItems": 3,
+                          "prefixItems": [
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "maximum": 1,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "exclusiveMaximum": 360,
+                                  "minimum": 0
+                                },
+                                {
+                                  "const": "none"
+                                }
+                              ]
+                            }
+                          ],
+                          "items": false
+                        },
+                        "alpha": {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        "hex": {
+                          "type": "string",
+                          "pattern": "^#[\\dA-Fa-f]{6}$"
+                        }
+                      },
+                      "required": [
+                        "colorSpace",
+                        "components"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                "style": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "dashArray": {
+                          "type": "array",
+                          "minItems": 1,
+                          "items": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "unit": {
+                                    "enum": [
+                                      "px",
+                                      "rem"
+                                    ]
+                                  },
+                                  "value": {
+                                    "type": "number"
+                                  }
+                                },
+                                "required": [
+                                  "unit",
+                                  "value"
+                                ],
+                                "additionalProperties": false
+                              }
+                            ]
+                          }
+                        },
+                        "lineCap": {
+                          "enum": [
+                            "butt",
+                            "round",
+                            "square"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "dashArray",
+                        "lineCap"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "const": "dashed"
+                    },
+                    {
+                      "const": "dotted"
+                    },
+                    {
+                      "const": "double"
+                    },
+                    {
+                      "const": "groove"
+                    },
+                    {
+                      "const": "inset"
+                    },
+                    {
+                      "const": "outset"
+                    },
+                    {
+                      "const": "ridge"
+                    },
+                    {
+                      "const": "solid"
+                    }
+                  ]
+                },
+                "width": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "unit": {
+                          "enum": [
+                            "px",
+                            "rem"
+                          ]
+                        },
+                        "value": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "unit",
+                        "value"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "color",
+                "style",
+                "width"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "colorSpace": {
+                  "enum": [
+                    "a98-rgb",
+                    "display-p3",
+                    "prophoto-rgb",
+                    "rec2020",
+                    "srgb",
+                    "srgb-linear"
+                  ]
+                },
+                "components": {
+                  "type": "array",
+                  "minItems": 3,
+                  "prefixItems": [
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    },
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    },
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    }
+                  ],
+                  "items": false
+                },
+                "alpha": {
+                  "type": "number",
+                  "maximum": 1,
+                  "minimum": 0
+                },
+                "hex": {
+                  "type": "string",
+                  "pattern": "^#[\\dA-Fa-f]{6}$"
+                }
+              },
+              "required": [
+                "colorSpace",
+                "components"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "colorSpace": {
+                  "enum": [
+                    "xyz-d50",
+                    "xyz-d65"
+                  ]
+                },
+                "components": {
+                  "type": "array",
+                  "minItems": 3,
+                  "prefixItems": [
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    },
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    },
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    }
+                  ],
+                  "items": false
+                },
+                "alpha": {
+                  "type": "number",
+                  "maximum": 1,
+                  "minimum": 0
+                },
+                "hex": {
+                  "type": "string",
+                  "pattern": "^#[\\dA-Fa-f]{6}$"
+                }
+              },
+              "required": [
+                "colorSpace",
+                "components"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "colorSpace": {
+                  "const": "hsl"
+                },
+                "components": {
+                  "type": "array",
+                  "minItems": 3,
+                  "prefixItems": [
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "exclusiveMaximum": 360,
+                          "minimum": 0
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    },
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "maximum": 100,
+                          "minimum": 0
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    },
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "maximum": 100,
+                          "minimum": 0
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    }
+                  ],
+                  "items": false
+                },
+                "alpha": {
+                  "type": "number",
+                  "maximum": 1,
+                  "minimum": 0
+                },
+                "hex": {
+                  "type": "string",
+                  "pattern": "^#[\\dA-Fa-f]{6}$"
+                }
+              },
+              "required": [
+                "colorSpace",
+                "components"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "colorSpace": {
+                  "const": "hwb"
+                },
+                "components": {
+                  "type": "array",
+                  "minItems": 3,
+                  "prefixItems": [
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "exclusiveMaximum": 360,
+                          "minimum": 0
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    },
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "maximum": 100,
+                          "minimum": 0
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    },
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "maximum": 100,
+                          "minimum": 0
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    }
+                  ],
+                  "items": false
+                },
+                "alpha": {
+                  "type": "number",
+                  "maximum": 1,
+                  "minimum": 0
+                },
+                "hex": {
+                  "type": "string",
+                  "pattern": "^#[\\dA-Fa-f]{6}$"
+                }
+              },
+              "required": [
+                "colorSpace",
+                "components"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "colorSpace": {
+                  "const": "lab"
+                },
+                "components": {
+                  "type": "array",
+                  "minItems": 3,
+                  "prefixItems": [
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "maximum": 100,
+                          "minimum": 0
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    },
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    },
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    }
+                  ],
+                  "items": false
+                },
+                "alpha": {
+                  "type": "number",
+                  "maximum": 1,
+                  "minimum": 0
+                },
+                "hex": {
+                  "type": "string",
+                  "pattern": "^#[\\dA-Fa-f]{6}$"
+                }
+              },
+              "required": [
+                "colorSpace",
+                "components"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "colorSpace": {
+                  "const": "lch"
+                },
+                "components": {
+                  "type": "array",
+                  "minItems": 3,
+                  "prefixItems": [
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "maximum": 100,
+                          "minimum": 0
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    },
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "minimum": 0
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    },
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "exclusiveMaximum": 360,
+                          "minimum": 0
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    }
+                  ],
+                  "items": false
+                },
+                "alpha": {
+                  "type": "number",
+                  "maximum": 1,
+                  "minimum": 0
+                },
+                "hex": {
+                  "type": "string",
+                  "pattern": "^#[\\dA-Fa-f]{6}$"
+                }
+              },
+              "required": [
+                "colorSpace",
+                "components"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "colorSpace": {
+                  "const": "oklab"
+                },
+                "components": {
+                  "type": "array",
+                  "minItems": 3,
+                  "prefixItems": [
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    },
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    },
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    }
+                  ],
+                  "items": false
+                },
+                "alpha": {
+                  "type": "number",
+                  "maximum": 1,
+                  "minimum": 0
+                },
+                "hex": {
+                  "type": "string",
+                  "pattern": "^#[\\dA-Fa-f]{6}$"
+                }
+              },
+              "required": [
+                "colorSpace",
+                "components"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "colorSpace": {
+                  "const": "oklch"
+                },
+                "components": {
+                  "type": "array",
+                  "minItems": 3,
+                  "prefixItems": [
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    },
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "minimum": 0
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    },
+                    {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "exclusiveMaximum": 360,
+                          "minimum": 0
+                        },
+                        {
+                          "const": "none"
+                        }
+                      ]
+                    }
+                  ],
+                  "items": false
+                },
+                "alpha": {
+                  "type": "number",
+                  "maximum": 1,
+                  "minimum": 0
+                },
+                "hex": {
+                  "type": "string",
+                  "pattern": "^#[\\dA-Fa-f]{6}$"
+                }
+              },
+              "required": [
+                "colorSpace",
+                "components"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "dashArray": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "unit": {
+                            "enum": [
+                              "px",
+                              "rem"
+                            ]
+                          },
+                          "value": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "unit",
+                          "value"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  }
+                },
+                "lineCap": {
+                  "enum": [
+                    "butt",
+                    "round",
+                    "square"
+                  ]
+                }
+              },
+              "required": [
+                "dashArray",
+                "lineCap"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "delay": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "unit": {
+                          "enum": [
+                            "ms",
+                            "s"
+                          ]
+                        },
+                        "value": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "unit",
+                        "value"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                "duration": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "unit": {
+                          "enum": [
+                            "ms",
+                            "s"
+                          ]
+                        },
+                        "value": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "unit",
+                        "value"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                "timingFunction": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                    },
+                    {
+                      "type": "array",
+                      "minItems": 4,
+                      "prefixItems": [
+                        {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "number",
+                          "maximum": 1,
+                          "minimum": 0
+                        },
+                        {
+                          "type": "number"
+                        }
+                      ],
+                      "items": false
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "delay",
+                "duration",
+                "timingFunction"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fontFamily": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  ]
+                },
+                "fontSize": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "unit": {
+                          "enum": [
+                            "px",
+                            "rem"
+                          ]
+                        },
+                        "value": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "unit",
+                        "value"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                "fontWeight": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "maximum": 1000,
+                      "minimum": 1
+                    },
+                    {
+                      "type": "string",
+                      "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                    },
+                    {
+                      "const": "black"
+                    },
+                    {
+                      "const": "bold"
+                    },
+                    {
+                      "const": "book"
+                    },
+                    {
+                      "const": "demi-bold"
+                    },
+                    {
+                      "const": "extra-black"
+                    },
+                    {
+                      "const": "extra-bold"
+                    },
+                    {
+                      "const": "extra-light"
+                    },
+                    {
+                      "const": "hairline"
+                    },
+                    {
+                      "const": "heavy"
+                    },
+                    {
+                      "const": "light"
+                    },
+                    {
+                      "const": "medium"
+                    },
+                    {
+                      "const": "normal"
+                    },
+                    {
+                      "const": "regular"
+                    },
+                    {
+                      "const": "semi-bold"
+                    },
+                    {
+                      "const": "thin"
+                    },
+                    {
+                      "const": "ultra-black"
+                    },
+                    {
+                      "const": "ultra-bold"
+                    },
+                    {
+                      "const": "ultra-light"
+                    }
+                  ]
+                },
+                "letterSpacing": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "unit": {
+                          "enum": [
+                            "px",
+                            "rem"
+                          ]
+                        },
+                        "value": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "unit",
+                        "value"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                "lineHeight": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "string",
+                      "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "fontFamily",
+                "fontSize",
+                "fontWeight",
+                "letterSpacing",
+                "lineHeight"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "unit": {
+                  "enum": [
+                    "ms",
+                    "s"
+                  ]
+                },
+                "value": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "unit",
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "unit": {
+                  "enum": [
+                    "px",
+                    "rem"
+                  ]
+                },
+                "value": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "unit",
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "$deprecated": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "$description": {
+          "type": "string"
+        },
+        "$extensions": {
+          "type": "object",
+          "additionalProperties": {}
+        }
+      },
+      "required": [
+        "$value"
+      ],
+      "additionalProperties": false
     }
   ]
 }
