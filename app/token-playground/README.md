@@ -33,4 +33,26 @@ Your app is ready to be deployed!
 
 You can deploy the `dist` folder to any static host provider (netlify, surge, now, etc.)
 
+## Schema validation in the editor
+
+The Monaco editor validates the document on the left against two JSON schemas:
+
+- **`/schema.json`** — the schema emitted from this repo's arktype Token
+  type by `pnpm generate-schema` at the repo root. Served by the Vite
+  dev server (and emitted as a static build asset) from the repo-root
+  `schema.json` via the `rootSchemaPlugin` in `vite.config.ts`. This is
+  the default schema applied to every JSON file in the editor (`fileMatch: ["*"]`).
+  Grades the document against **this repo's implementation**.
+
+- **`https://www.designtokens.org/schemas/2025.10/format.json`** — the
+  canonical Design Tokens Community Group format schema. Registered by
+  URI only, with no inlined content, so Monaco fetches it when a
+  document declares `"$schema": "https://www.designtokens.org/schemas/2025.10/format.json"`.
+  Grades the document against **the upstream DTCG spec** — which is
+  stricter than ours in a few places (see `docs/dtcg-spec.md`).
+
+To switch the editor from repo-schema grading to DTCG-canonical grading,
+change the `$schema` line at the top of the document in the editor. Both
+registrations live in `src/App.tsx`.
+
 ## This project was created with the [Solid CLI](https://github.com/solidjs-community/solid-cli)
