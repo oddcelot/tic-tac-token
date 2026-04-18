@@ -85,6 +85,10 @@ const $ = scope({
   Token: TokenShape,
   Group: {
     "+": "reject",
+    // $schema is a spec-tolerated (though non-normative) URI reference at the
+    // root of a tokens file, see format.json#/properties/$schema. We allow it
+    // on any Group for simplicity — a nested group with $schema is harmless.
+    "$schema?": "string",
     "$type?": TokenTypeName,
     "$description?": "string",
     "$extensions?": Extensions,

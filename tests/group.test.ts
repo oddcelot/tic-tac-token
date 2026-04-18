@@ -115,6 +115,24 @@ describe("Group (DTCG §5 + format/group.json)", () => {
     ).toBe(true);
   });
 
+  it("accepts a $schema URI reference at the root", () => {
+    expect(
+      isValid(
+        Group({
+          $schema: "/schema.json",
+          primary: colorToken,
+        }),
+      ),
+    ).toBe(true);
+    expect(
+      isValid(
+        Group({
+          $schema: "https://www.designtokens.org/schemas/2025.10/format.json",
+        }),
+      ),
+    ).toBe(true);
+  });
+
   it("accepts $deprecated as boolean or string on a group", () => {
     expect(isValid(Group({ $deprecated: true }))).toBe(true);
     expect(
