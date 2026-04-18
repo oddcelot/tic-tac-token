@@ -877,97 +877,84 @@
                             ]
                           },
                           "color": {
-                            "type": "object",
-                            "description": "Color",
-                            "properties": {
-                              "$type": {
-                                "const": "color"
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "pattern": "^{([^{}]+?)}$"
                               },
-                              "$value": {
-                                "anyOf": [
-                                  {
-                                    "type": "string",
-                                    "pattern": "^{([^{}]+?)}$"
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "colorSpace": {
+                                    "enum": [
+                                      "a98-rgb",
+                                      "display-p3",
+                                      "hsl",
+                                      "hwb",
+                                      "lab",
+                                      "lch",
+                                      "oklab",
+                                      "oklch",
+                                      "prophoto-rgb",
+                                      "rec2020",
+                                      "srgb",
+                                      "srgb-linear",
+                                      "xyz-d50",
+                                      "xyz-d65"
+                                    ]
                                   },
-                                  {
-                                    "type": "object",
-                                    "properties": {
-                                      "colorSpace": {
-                                        "enum": [
-                                          "a98-rgb",
-                                          "display-p3",
-                                          "hsl",
-                                          "hwb",
-                                          "lab",
-                                          "lch",
-                                          "oklab",
-                                          "oklch",
-                                          "prophoto-rgb",
-                                          "rec2020",
-                                          "srgb",
-                                          "srgb-linear",
-                                          "xyz-d50",
-                                          "xyz-d65"
+                                  "components": {
+                                    "type": "array",
+                                    "minItems": 3,
+                                    "prefixItems": [
+                                      {
+                                        "anyOf": [
+                                          {
+                                            "type": "number"
+                                          },
+                                          {
+                                            "const": "none"
+                                          }
                                         ]
                                       },
-                                      "components": {
-                                        "type": "array",
-                                        "minItems": 3,
-                                        "prefixItems": [
+                                      {
+                                        "anyOf": [
                                           {
-                                            "anyOf": [
-                                              {
-                                                "type": "number"
-                                              },
-                                              {
-                                                "const": "none"
-                                              }
-                                            ]
+                                            "type": "number"
                                           },
                                           {
-                                            "anyOf": [
-                                              {
-                                                "type": "number"
-                                              },
-                                              {
-                                                "const": "none"
-                                              }
-                                            ]
-                                          },
-                                          {
-                                            "anyOf": [
-                                              {
-                                                "type": "number"
-                                              },
-                                              {
-                                                "const": "none"
-                                              }
-                                            ]
+                                            "const": "none"
                                           }
-                                        ],
-                                        "items": false
+                                        ]
                                       },
-                                      "alpha": {
-                                        "type": "number",
-                                        "maximum": 1,
-                                        "minimum": 0
-                                      },
-                                      "hex": {
-                                        "type": "string",
-                                        "pattern": "^#[\\dA-Fa-f]{6}$"
+                                      {
+                                        "anyOf": [
+                                          {
+                                            "type": "number"
+                                          },
+                                          {
+                                            "const": "none"
+                                          }
+                                        ]
                                       }
-                                    },
-                                    "required": [
-                                      "colorSpace",
-                                      "components"
-                                    ]
+                                    ],
+                                    "items": false
+                                  },
+                                  "alpha": {
+                                    "type": "number",
+                                    "maximum": 1,
+                                    "minimum": 0
+                                  },
+                                  "hex": {
+                                    "type": "string",
+                                    "pattern": "^#[\\dA-Fa-f]{6}$"
                                   }
+                                },
+                                "required": [
+                                  "colorSpace",
+                                  "components"
                                 ]
                               }
-                            },
-                            "required": [
-                              "$type",
-                              "$value"
                             ]
                           },
                           "offsetX": {
@@ -1060,97 +1047,84 @@
                           ]
                         },
                         "color": {
-                          "type": "object",
-                          "description": "Color",
-                          "properties": {
-                            "$type": {
-                              "const": "color"
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "pattern": "^{([^{}]+?)}$"
                             },
-                            "$value": {
-                              "anyOf": [
-                                {
-                                  "type": "string",
-                                  "pattern": "^{([^{}]+?)}$"
+                            {
+                              "type": "object",
+                              "properties": {
+                                "colorSpace": {
+                                  "enum": [
+                                    "a98-rgb",
+                                    "display-p3",
+                                    "hsl",
+                                    "hwb",
+                                    "lab",
+                                    "lch",
+                                    "oklab",
+                                    "oklch",
+                                    "prophoto-rgb",
+                                    "rec2020",
+                                    "srgb",
+                                    "srgb-linear",
+                                    "xyz-d50",
+                                    "xyz-d65"
+                                  ]
                                 },
-                                {
-                                  "type": "object",
-                                  "properties": {
-                                    "colorSpace": {
-                                      "enum": [
-                                        "a98-rgb",
-                                        "display-p3",
-                                        "hsl",
-                                        "hwb",
-                                        "lab",
-                                        "lch",
-                                        "oklab",
-                                        "oklch",
-                                        "prophoto-rgb",
-                                        "rec2020",
-                                        "srgb",
-                                        "srgb-linear",
-                                        "xyz-d50",
-                                        "xyz-d65"
+                                "components": {
+                                  "type": "array",
+                                  "minItems": 3,
+                                  "prefixItems": [
+                                    {
+                                      "anyOf": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "const": "none"
+                                        }
                                       ]
                                     },
-                                    "components": {
-                                      "type": "array",
-                                      "minItems": 3,
-                                      "prefixItems": [
+                                    {
+                                      "anyOf": [
                                         {
-                                          "anyOf": [
-                                            {
-                                              "type": "number"
-                                            },
-                                            {
-                                              "const": "none"
-                                            }
-                                          ]
+                                          "type": "number"
                                         },
                                         {
-                                          "anyOf": [
-                                            {
-                                              "type": "number"
-                                            },
-                                            {
-                                              "const": "none"
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          "anyOf": [
-                                            {
-                                              "type": "number"
-                                            },
-                                            {
-                                              "const": "none"
-                                            }
-                                          ]
+                                          "const": "none"
                                         }
-                                      ],
-                                      "items": false
+                                      ]
                                     },
-                                    "alpha": {
-                                      "type": "number",
-                                      "maximum": 1,
-                                      "minimum": 0
-                                    },
-                                    "hex": {
-                                      "type": "string",
-                                      "pattern": "^#[\\dA-Fa-f]{6}$"
+                                    {
+                                      "anyOf": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "const": "none"
+                                        }
+                                      ]
                                     }
-                                  },
-                                  "required": [
-                                    "colorSpace",
-                                    "components"
-                                  ]
+                                  ],
+                                  "items": false
+                                },
+                                "alpha": {
+                                  "type": "number",
+                                  "maximum": 1,
+                                  "minimum": 0
+                                },
+                                "hex": {
+                                  "type": "string",
+                                  "pattern": "^#[\\dA-Fa-f]{6}$"
                                 }
+                              },
+                              "required": [
+                                "colorSpace",
+                                "components"
                               ]
                             }
-                          },
-                          "required": [
-                            "$type",
-                            "$value"
                           ]
                         },
                         "offsetX": {
@@ -2542,97 +2516,84 @@
                       ]
                     },
                     "color": {
-                      "type": "object",
-                      "description": "Color",
-                      "properties": {
-                        "$type": {
-                          "const": "color"
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^{([^{}]+?)}$"
                         },
-                        "$value": {
-                          "anyOf": [
-                            {
-                              "type": "string",
-                              "pattern": "^{([^{}]+?)}$"
+                        {
+                          "type": "object",
+                          "properties": {
+                            "colorSpace": {
+                              "enum": [
+                                "a98-rgb",
+                                "display-p3",
+                                "hsl",
+                                "hwb",
+                                "lab",
+                                "lch",
+                                "oklab",
+                                "oklch",
+                                "prophoto-rgb",
+                                "rec2020",
+                                "srgb",
+                                "srgb-linear",
+                                "xyz-d50",
+                                "xyz-d65"
+                              ]
                             },
-                            {
-                              "type": "object",
-                              "properties": {
-                                "colorSpace": {
-                                  "enum": [
-                                    "a98-rgb",
-                                    "display-p3",
-                                    "hsl",
-                                    "hwb",
-                                    "lab",
-                                    "lch",
-                                    "oklab",
-                                    "oklch",
-                                    "prophoto-rgb",
-                                    "rec2020",
-                                    "srgb",
-                                    "srgb-linear",
-                                    "xyz-d50",
-                                    "xyz-d65"
+                            "components": {
+                              "type": "array",
+                              "minItems": 3,
+                              "prefixItems": [
+                                {
+                                  "anyOf": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "const": "none"
+                                    }
                                   ]
                                 },
-                                "components": {
-                                  "type": "array",
-                                  "minItems": 3,
-                                  "prefixItems": [
+                                {
+                                  "anyOf": [
                                     {
-                                      "anyOf": [
-                                        {
-                                          "type": "number"
-                                        },
-                                        {
-                                          "const": "none"
-                                        }
-                                      ]
+                                      "type": "number"
                                     },
                                     {
-                                      "anyOf": [
-                                        {
-                                          "type": "number"
-                                        },
-                                        {
-                                          "const": "none"
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "anyOf": [
-                                        {
-                                          "type": "number"
-                                        },
-                                        {
-                                          "const": "none"
-                                        }
-                                      ]
+                                      "const": "none"
                                     }
-                                  ],
-                                  "items": false
+                                  ]
                                 },
-                                "alpha": {
-                                  "type": "number",
-                                  "maximum": 1,
-                                  "minimum": 0
-                                },
-                                "hex": {
-                                  "type": "string",
-                                  "pattern": "^#[\\dA-Fa-f]{6}$"
+                                {
+                                  "anyOf": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "const": "none"
+                                    }
+                                  ]
                                 }
-                              },
-                              "required": [
-                                "colorSpace",
-                                "components"
-                              ]
+                              ],
+                              "items": false
+                            },
+                            "alpha": {
+                              "type": "number",
+                              "maximum": 1,
+                              "minimum": 0
+                            },
+                            "hex": {
+                              "type": "string",
+                              "pattern": "^#[\\dA-Fa-f]{6}$"
                             }
+                          },
+                          "required": [
+                            "colorSpace",
+                            "components"
                           ]
                         }
-                      },
-                      "required": [
-                        "$type",
-                        "$value"
                       ]
                     },
                     "offsetX": {
@@ -2725,97 +2686,84 @@
                     ]
                   },
                   "color": {
-                    "type": "object",
-                    "description": "Color",
-                    "properties": {
-                      "$type": {
-                        "const": "color"
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^{([^{}]+?)}$"
                       },
-                      "$value": {
-                        "anyOf": [
-                          {
-                            "type": "string",
-                            "pattern": "^{([^{}]+?)}$"
+                      {
+                        "type": "object",
+                        "properties": {
+                          "colorSpace": {
+                            "enum": [
+                              "a98-rgb",
+                              "display-p3",
+                              "hsl",
+                              "hwb",
+                              "lab",
+                              "lch",
+                              "oklab",
+                              "oklch",
+                              "prophoto-rgb",
+                              "rec2020",
+                              "srgb",
+                              "srgb-linear",
+                              "xyz-d50",
+                              "xyz-d65"
+                            ]
                           },
-                          {
-                            "type": "object",
-                            "properties": {
-                              "colorSpace": {
-                                "enum": [
-                                  "a98-rgb",
-                                  "display-p3",
-                                  "hsl",
-                                  "hwb",
-                                  "lab",
-                                  "lch",
-                                  "oklab",
-                                  "oklch",
-                                  "prophoto-rgb",
-                                  "rec2020",
-                                  "srgb",
-                                  "srgb-linear",
-                                  "xyz-d50",
-                                  "xyz-d65"
+                          "components": {
+                            "type": "array",
+                            "minItems": 3,
+                            "prefixItems": [
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
                                 ]
                               },
-                              "components": {
-                                "type": "array",
-                                "minItems": 3,
-                                "prefixItems": [
+                              {
+                                "anyOf": [
                                   {
-                                    "anyOf": [
-                                      {
-                                        "type": "number"
-                                      },
-                                      {
-                                        "const": "none"
-                                      }
-                                    ]
+                                    "type": "number"
                                   },
                                   {
-                                    "anyOf": [
-                                      {
-                                        "type": "number"
-                                      },
-                                      {
-                                        "const": "none"
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "anyOf": [
-                                      {
-                                        "type": "number"
-                                      },
-                                      {
-                                        "const": "none"
-                                      }
-                                    ]
+                                    "const": "none"
                                   }
-                                ],
-                                "items": false
+                                ]
                               },
-                              "alpha": {
-                                "type": "number",
-                                "maximum": 1,
-                                "minimum": 0
-                              },
-                              "hex": {
-                                "type": "string",
-                                "pattern": "^#[\\dA-Fa-f]{6}$"
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "const": "none"
+                                  }
+                                ]
                               }
-                            },
-                            "required": [
-                              "colorSpace",
-                              "components"
-                            ]
+                            ],
+                            "items": false
+                          },
+                          "alpha": {
+                            "type": "number",
+                            "maximum": 1,
+                            "minimum": 0
+                          },
+                          "hex": {
+                            "type": "string",
+                            "pattern": "^#[\\dA-Fa-f]{6}$"
                           }
+                        },
+                        "required": [
+                          "colorSpace",
+                          "components"
                         ]
                       }
-                    },
-                    "required": [
-                      "$type",
-                      "$value"
                     ]
                   },
                   "offsetX": {

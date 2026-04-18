@@ -3,13 +3,10 @@ import { Shadow } from "../src/index.ts";
 import { isInvalid, isValid } from "./helpers.ts";
 
 const black = {
-  $type: "color",
-  $value: {
-    colorSpace: "srgb",
-    components: [0, 0, 0],
-    alpha: 0.5,
-    hex: "#000000",
-  },
+  colorSpace: "srgb",
+  components: [0, 0, 0],
+  alpha: 0.5,
+  hex: "#000000",
 } as const;
 
 const singleShadow = {
@@ -65,6 +62,31 @@ describe("shadow token (DTCG §9.6)", () => {
   it("accepts a curly-brace alias", () => {
     expect(
       isValid(Shadow({ $type: "shadow", $value: "{elevation.low}" })),
+    ).toBe(true);
+  });
+
+  it("accepts a curly-brace alias for the color sub-value", () => {
+    expect(
+      isValid(
+        Shadow({
+          $type: "shadow",
+          $value: { ...singleShadow, color: "{colors.shadow}" },
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("rejects a nested Color token as the color sub-value (must be bare ColorValue)", () => {
+    expect(
+      isInvalid(
+        Shadow({
+          $type: "shadow",
+          $value: {
+            ...singleShadow,
+            color: { $type: "color", $value: black },
+          },
+        }),
+      ),
     ).toBe(true);
   });
 });

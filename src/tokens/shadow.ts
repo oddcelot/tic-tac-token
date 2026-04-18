@@ -1,9 +1,9 @@
 import { type } from "arktype";
-import { Color } from "./color.ts";
+import { ColorValue } from "./color.ts";
 import { DimensionPrimitive, ValueAlias } from "./shared.ts";
 
 export const SingleShadow = type({
-  color: Color,
+  color: ColorValue,
   offsetX: DimensionPrimitive,
   offsetY: DimensionPrimitive,
   blur: DimensionPrimitive,
