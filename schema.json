@@ -866,23 +866,31 @@
                         "type": "object",
                         "properties": {
                           "blur": {
-                            "type": "object",
-                            "properties": {
-                              "unit": {
-                                "enum": [
-                                  "px",
-                                  "rem"
-                                ]
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "pattern": "^{([^{}]+?)}$"
                               },
-                              "value": {
-                                "type": "number"
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "unit": {
+                                    "enum": [
+                                      "px",
+                                      "rem"
+                                    ]
+                                  },
+                                  "value": {
+                                    "type": "number"
+                                  }
+                                },
+                                "required": [
+                                  "unit",
+                                  "value"
+                                ],
+                                "additionalProperties": false
                               }
-                            },
-                            "required": [
-                              "unit",
-                              "value"
-                            ],
-                            "additionalProperties": false
+                            ]
                           },
                           "color": {
                             "anyOf": [
@@ -966,61 +974,85 @@
                             ]
                           },
                           "offsetX": {
-                            "type": "object",
-                            "properties": {
-                              "unit": {
-                                "enum": [
-                                  "px",
-                                  "rem"
-                                ]
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "pattern": "^{([^{}]+?)}$"
                               },
-                              "value": {
-                                "type": "number"
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "unit": {
+                                    "enum": [
+                                      "px",
+                                      "rem"
+                                    ]
+                                  },
+                                  "value": {
+                                    "type": "number"
+                                  }
+                                },
+                                "required": [
+                                  "unit",
+                                  "value"
+                                ],
+                                "additionalProperties": false
                               }
-                            },
-                            "required": [
-                              "unit",
-                              "value"
-                            ],
-                            "additionalProperties": false
+                            ]
                           },
                           "offsetY": {
-                            "type": "object",
-                            "properties": {
-                              "unit": {
-                                "enum": [
-                                  "px",
-                                  "rem"
-                                ]
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "pattern": "^{([^{}]+?)}$"
                               },
-                              "value": {
-                                "type": "number"
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "unit": {
+                                    "enum": [
+                                      "px",
+                                      "rem"
+                                    ]
+                                  },
+                                  "value": {
+                                    "type": "number"
+                                  }
+                                },
+                                "required": [
+                                  "unit",
+                                  "value"
+                                ],
+                                "additionalProperties": false
                               }
-                            },
-                            "required": [
-                              "unit",
-                              "value"
-                            ],
-                            "additionalProperties": false
+                            ]
                           },
                           "spread": {
-                            "type": "object",
-                            "properties": {
-                              "unit": {
-                                "enum": [
-                                  "px",
-                                  "rem"
-                                ]
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "pattern": "^{([^{}]+?)}$"
                               },
-                              "value": {
-                                "type": "number"
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "unit": {
+                                    "enum": [
+                                      "px",
+                                      "rem"
+                                    ]
+                                  },
+                                  "value": {
+                                    "type": "number"
+                                  }
+                                },
+                                "required": [
+                                  "unit",
+                                  "value"
+                                ],
+                                "additionalProperties": false
                               }
-                            },
-                            "required": [
-                              "unit",
-                              "value"
-                            ],
-                            "additionalProperties": false
+                            ]
                           },
                           "inset": {
                             "type": "boolean"
@@ -1040,23 +1072,31 @@
                       "type": "object",
                       "properties": {
                         "blur": {
-                          "type": "object",
-                          "properties": {
-                            "unit": {
-                              "enum": [
-                                "px",
-                                "rem"
-                              ]
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "pattern": "^{([^{}]+?)}$"
                             },
-                            "value": {
-                              "type": "number"
+                            {
+                              "type": "object",
+                              "properties": {
+                                "unit": {
+                                  "enum": [
+                                    "px",
+                                    "rem"
+                                  ]
+                                },
+                                "value": {
+                                  "type": "number"
+                                }
+                              },
+                              "required": [
+                                "unit",
+                                "value"
+                              ],
+                              "additionalProperties": false
                             }
-                          },
-                          "required": [
-                            "unit",
-                            "value"
-                          ],
-                          "additionalProperties": false
+                          ]
                         },
                         "color": {
                           "anyOf": [
@@ -1140,61 +1180,85 @@
                           ]
                         },
                         "offsetX": {
-                          "type": "object",
-                          "properties": {
-                            "unit": {
-                              "enum": [
-                                "px",
-                                "rem"
-                              ]
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "pattern": "^{([^{}]+?)}$"
                             },
-                            "value": {
-                              "type": "number"
+                            {
+                              "type": "object",
+                              "properties": {
+                                "unit": {
+                                  "enum": [
+                                    "px",
+                                    "rem"
+                                  ]
+                                },
+                                "value": {
+                                  "type": "number"
+                                }
+                              },
+                              "required": [
+                                "unit",
+                                "value"
+                              ],
+                              "additionalProperties": false
                             }
-                          },
-                          "required": [
-                            "unit",
-                            "value"
-                          ],
-                          "additionalProperties": false
+                          ]
                         },
                         "offsetY": {
-                          "type": "object",
-                          "properties": {
-                            "unit": {
-                              "enum": [
-                                "px",
-                                "rem"
-                              ]
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "pattern": "^{([^{}]+?)}$"
                             },
-                            "value": {
-                              "type": "number"
+                            {
+                              "type": "object",
+                              "properties": {
+                                "unit": {
+                                  "enum": [
+                                    "px",
+                                    "rem"
+                                  ]
+                                },
+                                "value": {
+                                  "type": "number"
+                                }
+                              },
+                              "required": [
+                                "unit",
+                                "value"
+                              ],
+                              "additionalProperties": false
                             }
-                          },
-                          "required": [
-                            "unit",
-                            "value"
-                          ],
-                          "additionalProperties": false
+                          ]
                         },
                         "spread": {
-                          "type": "object",
-                          "properties": {
-                            "unit": {
-                              "enum": [
-                                "px",
-                                "rem"
-                              ]
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "pattern": "^{([^{}]+?)}$"
                             },
-                            "value": {
-                              "type": "number"
+                            {
+                              "type": "object",
+                              "properties": {
+                                "unit": {
+                                  "enum": [
+                                    "px",
+                                    "rem"
+                                  ]
+                                },
+                                "value": {
+                                  "type": "number"
+                                }
+                              },
+                              "required": [
+                                "unit",
+                                "value"
+                              ],
+                              "additionalProperties": false
                             }
-                          },
-                          "required": [
-                            "unit",
-                            "value"
-                          ],
-                          "additionalProperties": false
+                          ]
                         },
                         "inset": {
                           "type": "boolean"
@@ -2527,23 +2591,31 @@
                   "type": "object",
                   "properties": {
                     "blur": {
-                      "type": "object",
-                      "properties": {
-                        "unit": {
-                          "enum": [
-                            "px",
-                            "rem"
-                          ]
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^{([^{}]+?)}$"
                         },
-                        "value": {
-                          "type": "number"
+                        {
+                          "type": "object",
+                          "properties": {
+                            "unit": {
+                              "enum": [
+                                "px",
+                                "rem"
+                              ]
+                            },
+                            "value": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "unit",
+                            "value"
+                          ],
+                          "additionalProperties": false
                         }
-                      },
-                      "required": [
-                        "unit",
-                        "value"
-                      ],
-                      "additionalProperties": false
+                      ]
                     },
                     "color": {
                       "anyOf": [
@@ -2627,61 +2699,85 @@
                       ]
                     },
                     "offsetX": {
-                      "type": "object",
-                      "properties": {
-                        "unit": {
-                          "enum": [
-                            "px",
-                            "rem"
-                          ]
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^{([^{}]+?)}$"
                         },
-                        "value": {
-                          "type": "number"
+                        {
+                          "type": "object",
+                          "properties": {
+                            "unit": {
+                              "enum": [
+                                "px",
+                                "rem"
+                              ]
+                            },
+                            "value": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "unit",
+                            "value"
+                          ],
+                          "additionalProperties": false
                         }
-                      },
-                      "required": [
-                        "unit",
-                        "value"
-                      ],
-                      "additionalProperties": false
+                      ]
                     },
                     "offsetY": {
-                      "type": "object",
-                      "properties": {
-                        "unit": {
-                          "enum": [
-                            "px",
-                            "rem"
-                          ]
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^{([^{}]+?)}$"
                         },
-                        "value": {
-                          "type": "number"
+                        {
+                          "type": "object",
+                          "properties": {
+                            "unit": {
+                              "enum": [
+                                "px",
+                                "rem"
+                              ]
+                            },
+                            "value": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "unit",
+                            "value"
+                          ],
+                          "additionalProperties": false
                         }
-                      },
-                      "required": [
-                        "unit",
-                        "value"
-                      ],
-                      "additionalProperties": false
+                      ]
                     },
                     "spread": {
-                      "type": "object",
-                      "properties": {
-                        "unit": {
-                          "enum": [
-                            "px",
-                            "rem"
-                          ]
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^{([^{}]+?)}$"
                         },
-                        "value": {
-                          "type": "number"
+                        {
+                          "type": "object",
+                          "properties": {
+                            "unit": {
+                              "enum": [
+                                "px",
+                                "rem"
+                              ]
+                            },
+                            "value": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "unit",
+                            "value"
+                          ],
+                          "additionalProperties": false
                         }
-                      },
-                      "required": [
-                        "unit",
-                        "value"
-                      ],
-                      "additionalProperties": false
+                      ]
                     },
                     "inset": {
                       "type": "boolean"
@@ -2701,23 +2797,31 @@
                 "type": "object",
                 "properties": {
                   "blur": {
-                    "type": "object",
-                    "properties": {
-                      "unit": {
-                        "enum": [
-                          "px",
-                          "rem"
-                        ]
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^{([^{}]+?)}$"
                       },
-                      "value": {
-                        "type": "number"
+                      {
+                        "type": "object",
+                        "properties": {
+                          "unit": {
+                            "enum": [
+                              "px",
+                              "rem"
+                            ]
+                          },
+                          "value": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "unit",
+                          "value"
+                        ],
+                        "additionalProperties": false
                       }
-                    },
-                    "required": [
-                      "unit",
-                      "value"
-                    ],
-                    "additionalProperties": false
+                    ]
                   },
                   "color": {
                     "anyOf": [
@@ -2801,61 +2905,85 @@
                     ]
                   },
                   "offsetX": {
-                    "type": "object",
-                    "properties": {
-                      "unit": {
-                        "enum": [
-                          "px",
-                          "rem"
-                        ]
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^{([^{}]+?)}$"
                       },
-                      "value": {
-                        "type": "number"
+                      {
+                        "type": "object",
+                        "properties": {
+                          "unit": {
+                            "enum": [
+                              "px",
+                              "rem"
+                            ]
+                          },
+                          "value": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "unit",
+                          "value"
+                        ],
+                        "additionalProperties": false
                       }
-                    },
-                    "required": [
-                      "unit",
-                      "value"
-                    ],
-                    "additionalProperties": false
+                    ]
                   },
                   "offsetY": {
-                    "type": "object",
-                    "properties": {
-                      "unit": {
-                        "enum": [
-                          "px",
-                          "rem"
-                        ]
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^{([^{}]+?)}$"
                       },
-                      "value": {
-                        "type": "number"
+                      {
+                        "type": "object",
+                        "properties": {
+                          "unit": {
+                            "enum": [
+                              "px",
+                              "rem"
+                            ]
+                          },
+                          "value": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "unit",
+                          "value"
+                        ],
+                        "additionalProperties": false
                       }
-                    },
-                    "required": [
-                      "unit",
-                      "value"
-                    ],
-                    "additionalProperties": false
+                    ]
                   },
                   "spread": {
-                    "type": "object",
-                    "properties": {
-                      "unit": {
-                        "enum": [
-                          "px",
-                          "rem"
-                        ]
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^{([^{}]+?)}$"
                       },
-                      "value": {
-                        "type": "number"
+                      {
+                        "type": "object",
+                        "properties": {
+                          "unit": {
+                            "enum": [
+                              "px",
+                              "rem"
+                            ]
+                          },
+                          "value": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "unit",
+                          "value"
+                        ],
+                        "additionalProperties": false
                       }
-                    },
-                    "required": [
-                      "unit",
-                      "value"
-                    ],
-                    "additionalProperties": false
+                    ]
                   },
                   "inset": {
                     "type": "boolean"

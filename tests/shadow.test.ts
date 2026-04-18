@@ -76,6 +76,23 @@ describe("shadow token (DTCG §9.6)", () => {
     ).toBe(true);
   });
 
+  it("accepts curly-brace aliases for dimension sub-values", () => {
+    expect(
+      isValid(
+        Shadow({
+          $type: "shadow",
+          $value: {
+            ...singleShadow,
+            offsetX: "{space.2}",
+            offsetY: "{space.2}",
+            blur: "{space.4}",
+            spread: "{space.0}",
+          },
+        }),
+      ),
+    ).toBe(true);
+  });
+
   it("rejects a nested Color token as the color sub-value (must be bare ColorValue)", () => {
     expect(
       isInvalid(

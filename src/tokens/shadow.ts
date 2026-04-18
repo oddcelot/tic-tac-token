@@ -1,13 +1,14 @@
 import { type } from "arktype";
 import { ColorValue } from "./color.ts";
-import { DimensionPrimitive, ValueAlias } from "./shared.ts";
+import { DimensionValue } from "./dimension.ts";
+import { ValueAlias } from "./shared.ts";
 
 export const SingleShadow = type({
   color: ColorValue,
-  offsetX: DimensionPrimitive,
-  offsetY: DimensionPrimitive,
-  blur: DimensionPrimitive,
-  spread: DimensionPrimitive,
+  offsetX: DimensionValue,
+  offsetY: DimensionValue,
+  blur: DimensionValue,
+  spread: DimensionValue,
   "inset?": "boolean",
 }).onUndeclaredKey("reject");
 
