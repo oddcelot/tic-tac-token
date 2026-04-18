@@ -8,7 +8,12 @@ import { FontFamily } from "./tokens/fontFamily.ts";
 import { FontWeight } from "./tokens/fontWeight.ts";
 import { Gradient } from "./tokens/gradient.ts";
 import { Number } from "./tokens/number.ts";
-import { CommonMetadata, Extensions, ValueAlias } from "./tokens/shared.ts";
+import {
+  CommonMetadata,
+  Extensions,
+  JsonPointerRef,
+  ValueAlias,
+} from "./tokens/shared.ts";
 import { Shadow } from "./tokens/shadow.ts";
 import { StrokeStyle } from "./tokens/strokeStyle.ts";
 import { Transition } from "./tokens/transition.ts";
@@ -17,6 +22,14 @@ import { Typography } from "./tokens/typography.ts";
 export const TokenTypeName = type(
   "'color' | 'dimension' | 'fontFamily' | 'fontWeight' | 'duration' | 'cubicBezier' | 'number' | 'strokeStyle' | 'border' | 'transition' | 'shadow' | 'gradient' | 'typography'",
 );
+
+// A $ref-only token: per DTCG 2025.10, $ref is the JSON Pointer alternative
+// to $value and the two are mutually exclusive. $type is optional here
+// because the referenced target's type is authoritative.
+const TokenRef = type({
+  $ref: JsonPointerRef,
+  "$type?": TokenTypeName,
+});
 
 const TokenShape = Color.or(Dimension)
   .or(FontFamily)
@@ -31,7 +44,8 @@ const TokenShape = Color.or(Dimension)
   .or(Gradient)
   .or(Typography)
   .and(CommonMetadata)
-  .onUndeclaredKey("reject");
+  .onUndeclaredKey("reject")
+  .or(TokenRef.and(CommonMetadata).onUndeclaredKey("reject"));
 
 // Reserved $-keys are declared explicitly; user-defined child names must match
 // the DTCG token/group name pattern (no $-prefix, no '{', '}', or '.').

@@ -7,6 +7,11 @@ export const ValueAlias = type(
   "/^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$/",
 );
 
+// Per DTCG 2025.10 format.json#/definitions/jsonPointerReference.
+// RFC 6901 JSON Pointer starting with '#/'. Further segment validation is
+// left to consumers — the spec only constrains the prefix.
+export const JsonPointerRef = type("/^#\\//");
+
 export const DimensionPrimitive = type({
   value: "number",
   unit: "'rem' | 'px'",

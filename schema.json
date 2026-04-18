@@ -3,6 +3,53 @@
   "anyOf": [
     {
       "type": "object",
+      "properties": {
+        "$ref": {
+          "type": "string",
+          "pattern": "^#/"
+        },
+        "$deprecated": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "$description": {
+          "type": "string"
+        },
+        "$extensions": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "$type": {
+          "enum": [
+            "border",
+            "color",
+            "cubicBezier",
+            "dimension",
+            "duration",
+            "fontFamily",
+            "fontWeight",
+            "gradient",
+            "number",
+            "shadow",
+            "strokeStyle",
+            "transition",
+            "typography"
+          ]
+        }
+      },
+      "required": [
+        "$ref"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
       "description": "Border",
       "properties": {
         "$type": {
