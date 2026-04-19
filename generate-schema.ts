@@ -39,7 +39,18 @@ const nameSegment = "[^${}.][^{}.]*";
 const curlyBraceRef = `^\\{${nameSegment}(\\.${nameSegment})*\\}$`;
 const nameRef = `^${nameSegment}$`;
 
-const group = {
+// The root document is itself a Group; we inline the Group shape at the
+// top level (rather than putting it under $defs and referencing with a
+// top-level $ref) so JSON Schema validators that don't treat top-level
+// $ref-with-siblings uniformly — notably Monaco / vscode-json-languageservice
+// — still evaluate every keyword at the root. Self-recursion inside
+// patternProperties uses "$ref": "#" to point back at the root.
+const documentSchema = {
+  $schema: "https://json-schema.org/draft/2020-12/schema",
+  $id: "https://tic-tac-token.local/schema.json",
+  title: "DTCG Tokens Document",
+  description:
+    "Schema for a design-tokens file. The root is a Group; nested keys are Groups or Tokens.",
   type: "object",
   properties: {
     $schema: { type: "string" },
@@ -52,21 +63,11 @@ const group = {
   },
   patternProperties: {
     [nameRef]: {
-      oneOf: [{ $ref: "#/$defs/group" }, { $ref: "#/$defs/token" }],
+      oneOf: [{ $ref: "#" }, { $ref: "#/$defs/token" }],
     },
   },
   additionalProperties: false,
-} as const;
-
-const documentSchema = {
-  $schema: "https://json-schema.org/draft/2020-12/schema",
-  $id: "https://tic-tac-token.local/schema.json",
-  title: "DTCG Tokens Document",
-  description:
-    "Schema for a design-tokens file. The root is a Group; nested keys are Groups or Tokens.",
-  $ref: "#/$defs/group",
   $defs: {
-    group,
     token: tokenSchema,
   },
 };

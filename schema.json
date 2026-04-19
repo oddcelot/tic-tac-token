@@ -3,69 +3,66 @@
   "$id": "https://tic-tac-token.local/schema.json",
   "title": "DTCG Tokens Document",
   "description": "Schema for a design-tokens file. The root is a Group; nested keys are Groups or Tokens.",
-  "$ref": "#/$defs/group",
-  "$defs": {
-    "group": {
-      "type": "object",
-      "properties": {
-        "$schema": {
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "$type": {
+      "enum": [
+        "color",
+        "dimension",
+        "fontFamily",
+        "fontWeight",
+        "duration",
+        "cubicBezier",
+        "number",
+        "strokeStyle",
+        "border",
+        "transition",
+        "shadow",
+        "gradient",
+        "typography"
+      ]
+    },
+    "$description": {
+      "type": "string"
+    },
+    "$extensions": {
+      "type": "object"
+    },
+    "$extends": {
+      "type": "string",
+      "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+    },
+    "$deprecated": {
+      "oneOf": [
+        {
+          "type": "boolean"
+        },
+        {
           "type": "string"
+        }
+      ]
+    },
+    "$root": {
+      "$ref": "#/$defs/token"
+    }
+  },
+  "patternProperties": {
+    "^[^${}.][^{}.]*$": {
+      "oneOf": [
+        {
+          "$ref": "#"
         },
-        "$type": {
-          "enum": [
-            "color",
-            "dimension",
-            "fontFamily",
-            "fontWeight",
-            "duration",
-            "cubicBezier",
-            "number",
-            "strokeStyle",
-            "border",
-            "transition",
-            "shadow",
-            "gradient",
-            "typography"
-          ]
-        },
-        "$description": {
-          "type": "string"
-        },
-        "$extensions": {
-          "type": "object"
-        },
-        "$extends": {
-          "type": "string",
-          "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
-        },
-        "$deprecated": {
-          "oneOf": [
-            {
-              "type": "boolean"
-            },
-            {
-              "type": "string"
-            }
-          ]
-        },
-        "$root": {
+        {
           "$ref": "#/$defs/token"
         }
-      },
-      "patternProperties": {
-        "^[^${}.][^{}.]*$": {
-          "oneOf": [
-            {
-              "$ref": "#/$defs/group"
-            },
-            {
-              "$ref": "#/$defs/token"
-            }
-          ]
-        }
-      },
-      "additionalProperties": false
-    },
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
     "token": {
       "anyOf": [
         {
