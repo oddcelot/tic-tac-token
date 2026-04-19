@@ -1,0 +1,21 @@
+{
+  "lsp": {
+    "json-language-server": {
+      "settings": {
+        "json": {
+          "schemas": [
+            {
+              "fileMatch": [
+                "example.json",
+                "*.tokens",
+                "*.tokens.json",
+                "app/token-playground/src/demo-tokens.json"
+              ],
+              "url": "./schema.json"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
