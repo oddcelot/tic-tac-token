@@ -1,4 +1,10 @@
-import { createSignal, onCleanup, onMount, type Component } from "solid-js";
+import {
+  createEffect,
+  createSignal,
+  onCleanup,
+  onMount,
+  type Component,
+} from "solid-js";
 import Resizable from "@corvu/resizable";
 import * as monaco from "monaco-editor";
 import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
@@ -7,6 +13,7 @@ import demoRaw from "./demo-tokens.json?raw";
 import schemaRaw from "../../../schema.json?raw";
 import { parseTokens, type FlatToken } from "./tokens";
 import KitchenSink from "./KitchenSink";
+import { ThemeToggle, type Theme } from "./ThemeToggle";
 
 self.MonacoEnvironment = {
   getWorker(_, label) {
@@ -51,10 +58,34 @@ monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
 
 injectKeyframes();
 
+const THEME_STORAGE_KEY = "tic-tac-token.theme";
+
+const initialTheme = (): Theme => {
+  if (typeof window === "undefined") return "light";
+  const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+  if (stored === "light" || stored === "dark") return stored;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+};
+
 const App: Component = () => {
   let editorElement!: HTMLDivElement;
   const [raw, setRaw] = createSignal(demoRaw);
+  const [theme, setTheme] = createSignal<Theme>(initialTheme());
   const tokens = (): FlatToken[] => parseTokens(raw());
+
+  // Apply theme to <html>, Monaco, and localStorage whenever it changes.
+  createEffect(() => {
+    const t = theme();
+    if (typeof document !== "undefined") {
+      document.documentElement.classList.toggle("dark", t === "dark");
+    }
+    monaco.editor.setTheme(t === "dark" ? "vs-dark" : "vs");
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(THEME_STORAGE_KEY, t);
+    }
+  });
 
   onMount(() => {
     // Give the model a file:/// URI so relative $schema references in the
@@ -69,6 +100,7 @@ const App: Component = () => {
       automaticLayout: true,
       minimap: { enabled: false },
       tabSize: 2,
+      theme: theme() === "dark" ? "vs-dark" : "vs",
     });
 
     const sub = editor.onDidChangeModelContent(() => {
@@ -83,12 +115,16 @@ const App: Component = () => {
   });
 
   return (
-    <div class="size-full p-4">
-      <Resizable class="size-full">
+    <div class="flex size-full flex-col gap-3 bg-white p-4 text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+      <header class="flex items-center justify-between">
+        <h1 class="text-sm font-semibold tracking-wide">Token Playground</h1>
+        <ThemeToggle theme={theme()} onChange={setTheme} />
+      </header>
+      <Resizable class="min-h-0 flex-1">
         <Resizable.Panel
           initialSize={0.5}
           minSize={0.2}
-          class="overflow-hidden rounded-lg bg-corvu-100"
+          class="overflow-hidden rounded-lg bg-corvu-100 dark:bg-gray-900"
         >
           <div ref={editorElement} class="size-full" />
         </Resizable.Panel>
@@ -96,12 +132,12 @@ const App: Component = () => {
           aria-label="Resize Handle"
           class="group basis-3 px-0.75"
         >
-          <div class="size-full rounded-sm transition-colors group-data-active:bg-corvu-300 group-data-dragging:bg-corvu-100" />
+          <div class="size-full rounded-sm transition-colors group-data-active:bg-corvu-300 group-data-dragging:bg-corvu-100 dark:group-data-active:bg-gray-700 dark:group-data-dragging:bg-gray-800" />
         </Resizable.Handle>
         <Resizable.Panel
           initialSize={0.5}
           minSize={0.25}
-          class="overflow-hidden rounded-lg bg-corvu-100"
+          class="overflow-hidden rounded-lg bg-corvu-100 dark:bg-gray-900"
         >
           <KitchenSink tokens={tokens()} />
         </Resizable.Panel>

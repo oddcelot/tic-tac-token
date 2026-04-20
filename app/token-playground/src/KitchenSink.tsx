@@ -43,7 +43,7 @@ export const KitchenSink: Component<{ tokens: FlatToken[] }> = (props) => {
       <Show
         when={props.tokens.length > 0}
         fallback={
-          <div class="text-sm text-gray-500">
+          <div class="text-sm text-gray-500 dark:text-gray-400">
             No tokens parsed. Check JSON for syntax errors.
           </div>
         }
@@ -52,7 +52,7 @@ export const KitchenSink: Component<{ tokens: FlatToken[] }> = (props) => {
           <For each={grouped()}>
             {([type, tokens]) => (
               <section>
-                <h3 class="mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                <h3 class="mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wide dark:text-gray-400">
                   {type}
                 </h3>
                 <div class="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-3">
@@ -71,14 +71,20 @@ export const KitchenSink: Component<{ tokens: FlatToken[] }> = (props) => {
 
 const Swatch: Component<{ token: FlatToken }> = (props) => {
   return (
-    <div class="rounded-md border border-gray-200 bg-white p-2 text-xs">
+    <div class="rounded-md border border-gray-200 bg-white p-2 text-xs dark:border-gray-700 dark:bg-gray-800">
       <div class="mb-2 flex min-h-16 items-center justify-center">
         <Preview token={props.token} />
       </div>
-      <div class="truncate font-mono text-gray-900" title={props.token.path}>
+      <div
+        class="truncate font-mono text-gray-900 dark:text-gray-100"
+        title={props.token.path}
+      >
         {props.token.path}
       </div>
-      <div class="truncate text-gray-500" title={formatValue(props.token)}>
+      <div
+        class="truncate text-gray-500 dark:text-gray-400"
+        title={formatValue(props.token)}
+      >
         {formatValue(props.token)}
       </div>
     </div>
@@ -91,7 +97,7 @@ const Preview: Component<{ token: FlatToken }> = (props) => {
       const css = colorToCss(props.token.$value);
       return (
         <div
-          class="h-12 w-12 rounded-full border border-gray-200"
+          class="h-12 w-12 rounded-full border border-gray-200 dark:border-gray-700"
           style={{ "background-color": css ?? "transparent" }}
         />
       );
@@ -139,7 +145,7 @@ const Preview: Component<{ token: FlatToken }> = (props) => {
     case "duration": {
       const css = durationToCss(props.token.$value);
       return (
-        <div class="relative h-2 w-full overflow-hidden rounded bg-gray-100">
+        <div class="relative h-2 w-full overflow-hidden rounded bg-gray-100 dark:bg-gray-700">
           <div
             class="absolute inset-y-0 left-0 w-4 rounded bg-emerald-500"
             style={{
@@ -152,7 +158,7 @@ const Preview: Component<{ token: FlatToken }> = (props) => {
     case "cubicBezier": {
       const css = bezierToCss(props.token.$value);
       return (
-        <div class="relative h-2 w-full overflow-hidden rounded bg-gray-100">
+        <div class="relative h-2 w-full overflow-hidden rounded bg-gray-100 dark:bg-gray-700">
           <div
             class="absolute inset-y-0 left-0 h-2 w-2 rounded-full bg-rose-500"
             style={{
