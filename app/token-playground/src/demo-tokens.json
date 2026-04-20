@@ -9,6 +9,16 @@
           "components": [0.4, 0.3, 0.9],
           "alpha": 1,
           "hex": "#6C4FE5"
+        },
+        "$extensions": {
+          "tic-tac-token.modes": {
+            "dark": {
+              "colorSpace": "srgb",
+              "components": [0.56, 0.47, 1],
+              "alpha": 1,
+              "hex": "#8F78FF"
+            }
+          }
         }
       },
       "accent": {
@@ -18,6 +28,16 @@
           "components": [1, 0.4, 0.5],
           "alpha": 1,
           "hex": "#FF6680"
+        },
+        "$extensions": {
+          "tic-tac-token.modes": {
+            "dark": {
+              "colorSpace": "srgb",
+              "components": [1, 0.56, 0.64],
+              "alpha": 1,
+              "hex": "#FF8FA3"
+            }
+          }
         }
       }
     },
@@ -29,6 +49,16 @@
           "components": [0.97, 0.97, 0.98],
           "alpha": 1,
           "hex": "#F7F7F9"
+        },
+        "$extensions": {
+          "tic-tac-token.modes": {
+            "dark": {
+              "colorSpace": "srgb",
+              "components": [0.08, 0.09, 0.12],
+              "alpha": 1,
+              "hex": "#14161F"
+            }
+          }
         }
       },
       "text": {
@@ -38,6 +68,16 @@
           "components": [0.08, 0.09, 0.12],
           "alpha": 1,
           "hex": "#14161F"
+        },
+        "$extensions": {
+          "tic-tac-token.modes": {
+            "dark": {
+              "colorSpace": "srgb",
+              "components": [0.95, 0.96, 0.97],
+              "alpha": 1,
+              "hex": "#F2F4F7"
+            }
+          }
         }
       },
       "border": {

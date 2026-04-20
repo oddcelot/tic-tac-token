@@ -11,7 +11,7 @@ import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import JsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
 import demoRaw from "./demo-tokens.json?raw";
 import schemaRaw from "../../../schema.json?raw";
-import { parseTokens, type FlatToken } from "./tokens";
+import { parseTokens, type FlatToken, type TokenMode } from "./tokens";
 import KitchenSink from "./KitchenSink";
 import { ThemeToggle, type Theme } from "./ThemeToggle";
 
@@ -59,6 +59,7 @@ monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
 injectKeyframes();
 
 const THEME_STORAGE_KEY = "tic-tac-token.theme";
+const SCHEME_STORAGE_KEY = "tic-tac-token.scheme";
 
 const initialTheme = (): Theme => {
   if (typeof window === "undefined") return "light";
@@ -69,11 +70,18 @@ const initialTheme = (): Theme => {
     : "light";
 };
 
+const initialScheme = (): TokenMode => {
+  if (typeof window === "undefined") return "light";
+  const stored = window.localStorage.getItem(SCHEME_STORAGE_KEY);
+  return stored === "dark" ? "dark" : "light";
+};
+
 const App: Component = () => {
   let editorElement!: HTMLDivElement;
   const [raw, setRaw] = createSignal(demoRaw);
   const [theme, setTheme] = createSignal<Theme>(initialTheme());
-  const tokens = (): FlatToken[] => parseTokens(raw());
+  const [scheme, setScheme] = createSignal<TokenMode>(initialScheme());
+  const tokens = (): FlatToken[] => parseTokens(raw(), scheme());
 
   // Apply theme to <html>, Monaco, and localStorage whenever it changes.
   createEffect(() => {
@@ -84,6 +92,14 @@ const App: Component = () => {
     monaco.editor.setTheme(t === "dark" ? "vs-dark" : "vs");
     if (typeof window !== "undefined") {
       window.localStorage.setItem(THEME_STORAGE_KEY, t);
+    }
+  });
+
+  // Persist the token scheme (mode) — its effect on the preview happens
+  // via the parseTokens call in `tokens()` above.
+  createEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(SCHEME_STORAGE_KEY, scheme());
     }
   });
 
@@ -139,7 +155,11 @@ const App: Component = () => {
           minSize={0.25}
           class="overflow-hidden rounded-lg bg-corvu-100 dark:bg-gray-900"
         >
-          <KitchenSink tokens={tokens()} />
+          <KitchenSink
+            tokens={tokens()}
+            scheme={scheme()}
+            onSchemeChange={setScheme}
+          />
         </Resizable.Panel>
       </Resizable>
     </div>

@@ -9,8 +9,10 @@ import {
   fontWeightToCss,
   shadowToCss,
   type FlatToken,
+  type TokenMode,
   type TokenType,
 } from "./tokens";
+import { SchemeToggle } from "./SchemeToggle";
 
 const TYPE_ORDER: TokenType[] = [
   "color",
@@ -26,7 +28,11 @@ const TYPE_ORDER: TokenType[] = [
   "number",
 ];
 
-export const KitchenSink: Component<{ tokens: FlatToken[] }> = (props) => {
+export const KitchenSink: Component<{
+  tokens: FlatToken[];
+  scheme: TokenMode;
+  onSchemeChange: (mode: TokenMode) => void;
+}> = (props) => {
   const grouped = () => {
     const map = new Map<TokenType, FlatToken[]>();
     for (const t of props.tokens) {
@@ -39,32 +45,40 @@ export const KitchenSink: Component<{ tokens: FlatToken[] }> = (props) => {
   };
 
   return (
-    <div class="size-full overflow-auto p-4">
-      <Show
-        when={props.tokens.length > 0}
-        fallback={
-          <div class="text-sm text-gray-500 dark:text-gray-400">
-            No tokens parsed. Check JSON for syntax errors.
+    <div class="flex size-full flex-col overflow-hidden">
+      <div class="flex items-center justify-between border-b border-gray-200 px-4 py-2 dark:border-gray-700">
+        <span class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          Preview
+        </span>
+        <SchemeToggle mode={props.scheme} onChange={props.onSchemeChange} />
+      </div>
+      <div class="flex-1 overflow-auto p-4">
+        <Show
+          when={props.tokens.length > 0}
+          fallback={
+            <div class="text-sm text-gray-500 dark:text-gray-400">
+              No tokens parsed. Check JSON for syntax errors.
+            </div>
+          }
+        >
+          <div class="space-y-6">
+            <For each={grouped()}>
+              {([type, tokens]) => (
+                <section>
+                  <h3 class="mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wide dark:text-gray-400">
+                    {type}
+                  </h3>
+                  <div class="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-3">
+                    <For each={tokens}>
+                      {(token) => <Swatch token={token} />}
+                    </For>
+                  </div>
+                </section>
+              )}
+            </For>
           </div>
-        }
-      >
-        <div class="space-y-6">
-          <For each={grouped()}>
-            {([type, tokens]) => (
-              <section>
-                <h3 class="mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wide dark:text-gray-400">
-                  {type}
-                </h3>
-                <div class="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-3">
-                  <For each={tokens}>
-                    {(token) => <Swatch token={token} />}
-                  </For>
-                </div>
-              </section>
-            )}
-          </For>
-        </div>
-      </Show>
+        </Show>
+      </div>
     </div>
   );
 };

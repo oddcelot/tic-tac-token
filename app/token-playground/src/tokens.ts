@@ -11,11 +11,32 @@ export type TokenType =
   | "stroke"
   | "strokeStyle";
 
+export type TokenMode = "light" | "dark";
+
+// Custom extension namespace for per-scheme token overrides. A token may
+// carry a map of mode -> replacement $value under this key, e.g.:
+//
+//   {
+//     "$type": "color",
+//     "$value": { ...light... },
+//     "$extensions": {
+//       "tic-tac-token.modes": {
+//         "dark": { ...dark... }
+//       }
+//     }
+//   }
+//
+// When a mode is active, applyMode() substitutes the matching override
+// into the token's $value. Non-spec — DTCG 2025.10 has no native color-
+// scheme mechanism; this is a playground-local convention.
+export const MODES_EXTENSION = "tic-tac-token.modes";
+
 export type FlatToken = {
   path: string;
   $type: TokenType;
   $value: unknown;
   $description?: string;
+  $extensions?: Record<string, unknown>;
 };
 
 const ALIAS_RE = /^\{([^{}]+)\}$/;
@@ -34,6 +55,10 @@ export function flattenTokens(
         $value: rec.$value,
         $description:
           typeof rec.$description === "string" ? rec.$description : undefined,
+        $extensions:
+          rec.$extensions && typeof rec.$extensions === "object"
+            ? (rec.$extensions as Record<string, unknown>)
+            : undefined,
       },
     ];
   }
@@ -72,10 +97,31 @@ export function resolveAliases(tokens: FlatToken[]): FlatToken[] {
   return tokens.map((t) => resolve({ ...t }, new Set([t.path])));
 }
 
-export function parseTokens(raw: string): FlatToken[] {
+// Replace each token's $value with the override for the given mode, if one
+// is declared under $extensions["tic-tac-token.modes"][mode]. Runs BEFORE
+// alias resolution so aliases pointing at a mode-switched token pick up
+// the mode-specific value.
+export function applyMode(
+  tokens: FlatToken[],
+  mode: TokenMode,
+): FlatToken[] {
+  if (mode === "light") return tokens;
+  return tokens.map((t) => {
+    const modes = t.$extensions?.[MODES_EXTENSION];
+    if (modes && typeof modes === "object" && mode in (modes as object)) {
+      return { ...t, $value: (modes as Record<string, unknown>)[mode] };
+    }
+    return t;
+  });
+}
+
+export function parseTokens(
+  raw: string,
+  mode: TokenMode = "light",
+): FlatToken[] {
   try {
     const parsed = JSON.parse(raw);
-    return resolveAliases(flattenTokens(parsed));
+    return resolveAliases(applyMode(flattenTokens(parsed), mode));
   } catch {
     return [];
   }
