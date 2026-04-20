@@ -14,6 +14,7 @@ import schemaRaw from "../../../schema.json?raw";
 import { parseTokens, type FlatToken, type TokenMode } from "./tokens";
 import KitchenSink from "./KitchenSink";
 import { ThemeToggle, type Theme } from "./ThemeToggle";
+import { Outline } from "./Outline";
 
 self.MonacoEnvironment = {
   getWorker(_, label) {
@@ -76,11 +77,15 @@ const initialScheme = (): TokenMode => {
   return stored === "dark" ? "dark" : "light";
 };
 
+const MODEL_URI = monaco.Uri.parse("file:///demo-tokens.json");
+
 const App: Component = () => {
   let editorElement!: HTMLDivElement;
   const [raw, setRaw] = createSignal(demoRaw);
   const [theme, setTheme] = createSignal<Theme>(initialTheme());
   const [scheme, setScheme] = createSignal<TokenMode>(initialScheme());
+  const [editorRef, setEditorRef] =
+    createSignal<monaco.editor.IStandaloneCodeEditor | null>(null);
   const tokens = (): FlatToken[] => parseTokens(raw(), scheme());
 
   // Apply theme to <html>, Monaco, and localStorage whenever it changes.
@@ -107,10 +112,9 @@ const App: Component = () => {
     // Give the model a file:/// URI so relative $schema references in the
     // document resolve against a predictable absolute URI and match the
     // schema registrations in monaco.languages.json.jsonDefaults above.
-    const modelUri = monaco.Uri.parse("file:///demo-tokens.json");
     const model =
-      monaco.editor.getModel(modelUri) ??
-      monaco.editor.createModel(demoRaw, "json", modelUri);
+      monaco.editor.getModel(MODEL_URI) ??
+      monaco.editor.createModel(demoRaw, "json", MODEL_URI);
     const editor = monaco.editor.create(editorElement, {
       model,
       automaticLayout: true,
@@ -118,6 +122,7 @@ const App: Component = () => {
       tabSize: 2,
       theme: theme() === "dark" ? "vs-dark" : "vs",
     });
+    setEditorRef(editor);
 
     const sub = editor.onDidChangeModelContent(() => {
       setRaw(editor.getValue());
@@ -127,6 +132,7 @@ const App: Component = () => {
       sub.dispose();
       editor.dispose();
       model.dispose();
+      setEditorRef(null);
     });
   });
 
@@ -138,7 +144,7 @@ const App: Component = () => {
       </header>
       <Resizable class="min-h-0 flex-1">
         <Resizable.Panel
-          initialSize={0.5}
+          initialSize={0.4}
           minSize={0.2}
           class="overflow-hidden rounded-lg bg-corvu-100 dark:bg-gray-900"
         >
@@ -151,8 +157,21 @@ const App: Component = () => {
           <div class="size-full rounded-sm transition-colors group-data-active:bg-corvu-300 group-data-dragging:bg-corvu-100 dark:group-data-active:bg-gray-700 dark:group-data-dragging:bg-gray-800" />
         </Resizable.Handle>
         <Resizable.Panel
-          initialSize={0.5}
-          minSize={0.25}
+          initialSize={0.2}
+          minSize={0.1}
+          class="overflow-hidden rounded-lg bg-corvu-100 dark:bg-gray-900"
+        >
+          <Outline raw={raw()} editor={editorRef} modelUri={MODEL_URI} />
+        </Resizable.Panel>
+        <Resizable.Handle
+          aria-label="Resize Handle"
+          class="group basis-3 px-0.75"
+        >
+          <div class="size-full rounded-sm transition-colors group-data-active:bg-corvu-300 group-data-dragging:bg-corvu-100 dark:group-data-active:bg-gray-700 dark:group-data-dragging:bg-gray-800" />
+        </Resizable.Handle>
+        <Resizable.Panel
+          initialSize={0.4}
+          minSize={0.2}
           class="overflow-hidden rounded-lg bg-corvu-100 dark:bg-gray-900"
         >
           <KitchenSink
