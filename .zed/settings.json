@@ -1,4 +1,9 @@
 {
+  "languages": {
+    "JSON": {
+      "language_servers": ["json-language-server", "dtcg-tokens-lsp"]
+    }
+  },
   "lsp": {
     "json-language-server": {
       "settings": {
@@ -15,6 +20,12 @@
             }
           ]
         }
+      }
+    },
+    "dtcg-tokens-lsp": {
+      "binary": {
+        "path": "node",
+        "arguments": ["./lsp/dist/server.js", "--stdio"]
       }
     },
     "vtsls": {
