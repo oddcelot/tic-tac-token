@@ -1,0 +1,11 @@
+id = "dtcg-tokens"
+name = "DTCG Tokens"
+version = "0.1.0"
+schema_version = 1
+description = "Language server for DTCG 2025.10 design-tokens files. Diagnostics, hover with resolved values + color swatches."
+authors = []
+repository = ""
+
+[language_servers.dtcg-tokens-lsp]
+name = "DTCG Tokens LSP"
+languages = ["JSON"]
