@@ -12,8 +12,11 @@ export const SingleShadow = type({
   "inset?": "boolean",
 }).onUndeclaredKey("reject");
 
+// Per DTCG 2025.10 §9.6: the array form "may mix inline objects with
+// `{shadow.ref}` strings" — each element is either a SingleShadow value or
+// a curly-brace alias to another shadow token.
 export const ShadowValue = ValueAlias.or(SingleShadow).or(
-  SingleShadow.array().atLeastLength(1),
+  SingleShadow.or(ValueAlias).array().atLeastLength(1),
 );
 
 export const Shadow = type({

@@ -93,4 +93,37 @@ describe("gradient token (DTCG §9.7)", () => {
       isInvalid(Gradient({ $type: "gradient", $value: [] })),
     ).toBe(true);
   });
+
+  it("accepts an array that mixes inline stops and curly-brace refs (§9.7)", () => {
+    expect(
+      isValid(
+        Gradient({
+          $type: "gradient",
+          $value: [stop(0), "{gradients.mid}", stop(1)],
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("accepts an array of pure curly-brace refs", () => {
+    expect(
+      isValid(
+        Gradient({
+          $type: "gradient",
+          $value: ["{gradients.start}", "{gradients.end}"],
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("rejects an array element that is a bare non-alias string", () => {
+    expect(
+      isInvalid(
+        Gradient({
+          $type: "gradient",
+          $value: [stop(0), "not-a-ref"],
+        }),
+      ),
+    ).toBe(true);
+  });
 });

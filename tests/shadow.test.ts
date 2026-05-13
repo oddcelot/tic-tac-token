@@ -99,6 +99,39 @@ describe("shadow token (DTCG §9.6)", () => {
     ).toBe(true);
   });
 
+  it("accepts an array that mixes inline objects and curly-brace refs (§9.6)", () => {
+    expect(
+      isValid(
+        Shadow({
+          $type: "shadow",
+          $value: [singleShadow, "{elevation.deep}"],
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("accepts an array of pure curly-brace refs", () => {
+    expect(
+      isValid(
+        Shadow({
+          $type: "shadow",
+          $value: ["{elevation.low}", "{elevation.high}"],
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("rejects an array element that is a bare non-alias string", () => {
+    expect(
+      isInvalid(
+        Shadow({
+          $type: "shadow",
+          $value: [singleShadow, "not-a-ref"],
+        }),
+      ),
+    ).toBe(true);
+  });
+
   it("rejects a nested Color token as the color sub-value (must be bare ColorValue)", () => {
     expect(
       isInvalid(
