@@ -9,6 +9,10 @@ use zed_extension_api::{self as zed, LanguageServerId, Result};
 // layer (see `lsp/src/server.ts: isTokenDocument`), so attaching it to
 // the broader JSON language is safe — non-token JSON files get no
 // diagnostics or hover from this server.
+//
+// `node_binary_path()` returns the path to Zed's managed Node runtime.
+// Without it, Zed would treat the bare string "node" as a path relative
+// to the extension's work directory and fail to spawn.
 struct DtcgTokensExtension;
 
 impl zed::Extension for DtcgTokensExtension {
@@ -21,9 +25,10 @@ impl zed::Extension for DtcgTokensExtension {
         _language_server_id: &LanguageServerId,
         worktree: &zed::Worktree,
     ) -> Result<zed::Command> {
+        let node = zed::node_binary_path()?;
         let server_path = format!("{}/lsp/dist/server.js", worktree.root_path());
         Ok(zed::Command {
-            command: "node".into(),
+            command: node,
             args: vec![server_path, "--stdio".into()],
             env: vec![],
         })
