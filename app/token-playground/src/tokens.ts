@@ -41,6 +41,82 @@ export type FlatToken = {
 
 const ALIAS_RE = /^\{([^{}]+)\}$/;
 
+// JSON Pointer (RFC 6901) dereference. Strips the leading "#/" then walks
+// each escaped segment (~1 → /, ~0 → ~). Returns undefined for any miss.
+function jsonPointerGet(root: unknown, pointer: string): unknown {
+  if (!pointer.startsWith("#/")) return undefined;
+  const segments = pointer
+    .slice(2)
+    .split("/")
+    .map((s) => s.replace(/~1/g, "/").replace(/~0/g, "~"));
+  let cur: unknown = root;
+  for (const seg of segments) {
+    if (cur == null) return undefined;
+    if (Array.isArray(cur)) {
+      const i = Number(seg);
+      if (!Number.isInteger(i)) return undefined;
+      cur = cur[i];
+    } else if (typeof cur === "object") {
+      cur = (cur as Record<string, unknown>)[seg];
+    } else {
+      return undefined;
+    }
+  }
+  return cur;
+}
+
+// Resolve every `{ "$ref": "#/..." }` object and every token-root `$ref`
+// (a token that uses `$ref` in place of `$value`) by replacing them with
+// the target's value. Walks the whole document so refs nested inside any
+// composite sub-value are resolved.
+//
+// Two forms per DTCG 2025.10 §4.2:
+//   1. Token-root: { $type, $ref } — the ref replaces $value.
+//   2. Nested:     { $ref } anywhere a primitive or composite sub-value is
+//                  expected — the ref object is replaced by the target.
+//
+// Cycles are detected via a visited-pointer set; on cycle the original
+// $ref object is left in place so callers can surface it.
+function resolveRefs(node: unknown, root: unknown, stack: Set<string>): unknown {
+  if (Array.isArray(node)) {
+    return node.map((item) => resolveRefs(item, root, stack));
+  }
+  if (!node || typeof node !== "object") return node;
+
+  const rec = node as Record<string, unknown>;
+
+  if (typeof rec.$ref === "string") {
+    const onlyRef = Object.keys(rec).every((k) => k === "$ref");
+    const tokenRootRef =
+      "$type" in rec && !("$value" in rec) && typeof rec.$type === "string";
+
+    if (onlyRef) {
+      if (stack.has(rec.$ref)) return node;
+      const target = jsonPointerGet(root, rec.$ref);
+      if (target === undefined) return node;
+      const next = new Set(stack);
+      next.add(rec.$ref);
+      return resolveRefs(target, root, next);
+    }
+
+    if (tokenRootRef) {
+      if (stack.has(rec.$ref)) return node;
+      const target = jsonPointerGet(root, rec.$ref);
+      if (target === undefined) return node;
+      const next = new Set(stack);
+      next.add(rec.$ref);
+      const resolvedTarget = resolveRefs(target, root, next);
+      return { ...rec, $value: resolvedTarget };
+    }
+  }
+
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(rec)) {
+    out[k] = resolveRefs(v, root, stack);
+  }
+  return out;
+}
+
 export function flattenTokens(
   obj: unknown,
   prefix: string[] = [],
@@ -121,7 +197,8 @@ export function parseTokens(
 ): FlatToken[] {
   try {
     const parsed = JSON.parse(raw);
-    return resolveAliases(applyMode(flattenTokens(parsed), mode));
+    const dereffed = resolveRefs(parsed, parsed, new Set());
+    return resolveAliases(applyMode(flattenTokens(dereffed), mode));
   } catch {
     return [];
   }
