@@ -1,25 +1,46 @@
 {
-  "name": "tic-tac-token",
-  "version": "1.0.0",
-  "description": "",
+  "name": "dtcg-tokens",
+  "version": "0.1.0",
+  "description": "Runtime validator for the Design Tokens Format Module (DTCG) 2025.10. Standard-Schema-compatible, arktype-backed.",
   "type": "module",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./schema.json": "./schema.json"
+  },
+  "files": [
+    "dist",
+    "schema.json",
+    "README.md"
+  ],
+  "keywords": [
+    "dtcg",
+    "design-tokens",
+    "design-tokens-format",
+    "arktype",
+    "standard-schema",
+    "validator",
+    "json-schema"
+  ],
+  "license": "ISC",
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
     "build": "tsc --noEmit",
     "build:dist": "tsc -p tsconfig.build.json",
-    "generate-schema": "node generate-schema.ts"
+    "generate-schema": "node generate-schema.ts",
+    "prepublishOnly": "pnpm test && pnpm generate-schema && pnpm build:dist"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "arktype": "^2.2.0",
-    "typescript": "^6.0.3"
+    "arktype": "^2.2.0"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",
+    "typescript": "^6.0.3",
     "vitest": "^4.1.4"
   }
 }
