@@ -3,14 +3,19 @@ import { type } from "arktype";
 // Per DTCG 2025.10 format.json#/definitions/curlyBraceReference.
 // Matches '{name}' or '{group.nested.name}' where each segment starts with a
 // non-$, non-{, non-}, non-. character and contains no {, }, or . thereafter.
+//
+// Passed as a RegExp literal (not a string pattern) so arktype's literal
+// regex type checker doesn't flag the `\}` escape. The escape is required
+// for JSON Schema draft-2020 strict-Unicode validators like ajv with the
+// `u` flag, which reject a lone `}` as "Lone quantifier brackets".
 export const ValueAlias = type(
-  "/^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*}$/",
+  /^\{[^${}.][^{}.]*(\.[^${}.][^{}.]*)*\}$/,
 );
 
 // Per DTCG 2025.10 format.json#/definitions/jsonPointerReference.
 // RFC 6901 JSON Pointer starting with '#/'. Further segment validation is
 // left to consumers — the spec only constrains the prefix.
-export const JsonPointerRef = type("/^#\\//");
+export const JsonPointerRef = type(/^#\//);
 
 // Nested $ref form. Spec allows `{ "$ref": "#/..." }` anywhere an inline
 // value or `{alias}` string is accepted (any composite sub-value, any
