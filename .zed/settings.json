@@ -16,6 +16,13 @@
           ]
         }
       }
+    },
+    "vtsls": {
+      "initialization_options": {
+        "preferences": {
+          "autoImportSpecifierExcludeRegexes": ["^(node:)?os$"]
+        }
+      }
     }
   }
 }
