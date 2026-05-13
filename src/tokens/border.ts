@@ -1,10 +1,10 @@
 import { type } from "arktype";
 import { ColorValue } from "./color.ts";
 import { DimensionValue } from "./dimension.ts";
-import { ValueAlias } from "./shared.ts";
+import { JsonPointerRefObject, ValueAlias } from "./shared.ts";
 import { StrokeStyleValue } from "./strokeStyle.ts";
 
-export const BorderValue = ValueAlias.or(
+export const BorderValue = ValueAlias.or(JsonPointerRefObject).or(
   type({
     color: ColorValue,
     width: DimensionValue,

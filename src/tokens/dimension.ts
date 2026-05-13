@@ -1,7 +1,13 @@
 import { type } from "arktype";
-import { DimensionPrimitive, ValueAlias } from "./shared.ts";
+import {
+  DimensionPrimitive,
+  JsonPointerRefObject,
+  ValueAlias,
+} from "./shared.ts";
 
-export const DimensionValue = ValueAlias.or(DimensionPrimitive);
+export const DimensionValue = ValueAlias.or(JsonPointerRefObject).or(
+  DimensionPrimitive
+);
 
 export const Dimension = type({
   $type: "'dimension'",

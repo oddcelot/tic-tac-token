@@ -1,17 +1,23 @@
 import { type } from "arktype";
-import { ValueAlias } from "./shared.ts";
+import { JsonPointerRefObject, ValueAlias } from "./shared.ts";
 
 // Component type helpers, mirroring the named component types in
 // DTCG 2025.10 format/values/color.json (zeroToOneComponent,
 // percentageComponent, hueComponent, chromaComponent, unboundedComponent).
 // Every component may also be the literal string "none" to indicate an
 // unresolved/undefined channel (semantically distinct from 0 during
-// interpolation).
-const zeroOneComponent = "(0 <= number <= 1) | 'none'";
-const percentComponent = "(0 <= number <= 100) | 'none'";
-const hueComponent = "(0 <= number < 360) | 'none'";
-const chromaComponent = "(number >= 0) | 'none'";
-const unboundedComponent = "number | 'none'";
+// interpolation). Each component may additionally be a nested `$ref`
+// object (DTCG §7 / nested-ref form, e.g. the spec's `primaryHue` example
+// that refs `#/.../components/0`).
+const zeroOneComponent =
+  type("(0 <= number <= 1) | 'none'").or(JsonPointerRefObject);
+const percentComponent =
+  type("(0 <= number <= 100) | 'none'").or(JsonPointerRefObject);
+const hueComponent =
+  type("(0 <= number < 360) | 'none'").or(JsonPointerRefObject);
+const chromaComponent =
+  type("(number >= 0) | 'none'").or(JsonPointerRefObject);
+const unboundedComponent = type("number | 'none'").or(JsonPointerRefObject);
 
 const rgbComponents = type([
   zeroOneComponent,
@@ -39,9 +45,10 @@ const oklchComponents = type([zeroOneComponent, chromaComponent, hueComponent]);
 
 // Optional fields shared by every color-space variant. Spread into each
 // branch below so the discriminated union can key on colorSpace cleanly.
+// Both alpha and hex may also be a nested `$ref` object.
 const colorCommon = {
-  "alpha?": "0 <= number <= 1",
-  "hex?": type("/^#[\\dA-Fa-f]{6}$/"),
+  "alpha?": type("0 <= number <= 1").or(JsonPointerRefObject),
+  "hex?": type("/^#[\\dA-Fa-f]{6}$/").or(JsonPointerRefObject),
 } as const;
 
 const rgbColor = type({
@@ -93,7 +100,8 @@ const oklchColor = type({
   ...colorCommon,
 }).onUndeclaredKey("reject");
 
-export const ColorValue = ValueAlias.or(rgbColor)
+export const ColorValue = ValueAlias.or(JsonPointerRefObject)
+  .or(rgbColor)
   .or(xyzColor)
   .or(hslColor)
   .or(hwbColor)

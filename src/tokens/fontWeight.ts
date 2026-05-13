@@ -1,5 +1,5 @@
 import { type } from "arktype";
-import { ValueAlias } from "./shared.ts";
+import { JsonPointerRefObject, ValueAlias } from "./shared.ts";
 
 export const FontWeightNames = type.enumerated(
   "thin",
@@ -22,7 +22,7 @@ export const FontWeightNames = type.enumerated(
   "ultra-black"
 );
 
-export const FontWeightValue = ValueAlias.or(
+export const FontWeightValue = ValueAlias.or(JsonPointerRefObject).or(
   type("1 <= number <= 1000").or(FontWeightNames)
 );
 

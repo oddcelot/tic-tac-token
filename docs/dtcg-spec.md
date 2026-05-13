@@ -19,7 +19,7 @@ This document is a dense, LLM-oriented reference for validating implementations 
 | Media type | `application/design-tokens+json` (preferred, SHOULD support). `application/json` MAY be used; tools MUST accept both. |
 | File extension | `.tokens` (preferred) or `.tokens.json` |
 | Encoding | JSON per [RFC 8259] |
-| Root optional property | `$schema` — points to the JSON Schema URL above |
+| Root optional property | `$schema` — points to the JSON Schema URL above. The spec defines `$schema` only at the document root. This implementation tolerates it on nested groups as a permissive extension. |
 
 ---
 
@@ -41,7 +41,7 @@ This document is a dense, LLM-oriented reference for validating implementations 
 | `$extensions` | optional | optional | object keyed by reverse-DNS vendor keys; tools MUST preserve unknown entries |
 | `$deprecated` | optional | optional | `true` / `false` / string explanation |
 | `$extends` | — | optional | curly-brace ref to another group (deep-merge inheritance, no cycles) |
-| `$ref` | optional | — | RFC 6901 JSON Pointer |
+| `$ref` | optional | — | RFC 6901 JSON Pointer. **Mutually exclusive with `$value`** — a token has one or the other, never both. When a token uses `$ref`, `$type` is optional because the referenced target's `$type` is authoritative. |
 
 ### Name / character restrictions (§5.1.1)
 
@@ -95,11 +95,31 @@ Example:
 - Can target any document location (sub-properties, array indices, metadata).
 - Escape: `~` → `~0`, `/` → `~1`.
 - Replaces the entire token/value object at the location where it appears.
+- May appear at the **token root** (as the whole token's value, mutually exclusive with `$value`) **or as a sub-value inside any composite or primitive `$value`**. Anywhere an inline value or a `"{alias}"` string is accepted, a `{ "$ref": "#/..." }` object is also accepted.
 
-Example:
+Token-root form:
 
 ```json
 { "$type": "color", "$ref": "#/colors/blue/$value" }
+```
+
+Nested-`$ref` form — replace a single sub-property of a composite value (from spec):
+
+```json
+{
+  "$type": "dimension",
+  "$value": {
+    "value": { "$ref": "#/base/spacing/$value/value" },
+    "unit": "rem"
+  }
+}
+```
+
+```json
+{
+  "$type": "number",
+  "$value": { "$ref": "#/base/blue/$value/components/0" }
+}
 ```
 
 ### 4.3 Group inheritance `$extends`
@@ -175,7 +195,7 @@ Both fields are required even when `value` is `0`.
 
 ### 5.3 `fontFamily` (§8.3)
 
-`$value` is a string (single family) or an array of strings (ordered fallback stack):
+`$value` is a string (single family) or an array of strings (ordered fallback stack). The array form MUST have at least one element.
 
 ```json
 { "$type": "fontFamily", "$value": "Comic Sans MS" }
@@ -235,7 +255,13 @@ Out-of-range numbers and any other strings (including case variants) MUST be rej
 
 ## §6 Composite Types (§9)
 
-Each composite sub-value may be either an inline value OR an alias to a token of the matching sub-type. Arrays may mix inline elements and refs; refs in arrays always resolve to single elements (no flattening).
+Each composite sub-value may be **any of three shapes**:
+
+1. an **inline value** of the matching sub-type,
+2. a **curly-brace alias string** `"{group.token}"` referencing a token of the matching sub-type,
+3. a **JSON Pointer object** `{ "$ref": "#/..." }` resolving to a compatible value (see §4.2).
+
+The same three shapes apply recursively to primitive leaves nested inside composite sub-values (e.g. a single component of a `color`, or `value`/`unit` of a `dimension`). Arrays may mix inline elements and refs; refs in arrays always resolve to single elements (no flattening).
 
 ### 6.1 `strokeStyle` (§9.3)
 
@@ -362,7 +388,8 @@ All five properties appear in the spec schema without "optional" markers:
 - `duration.unit` strict enum `ms | s`. `value` is any number, not integer-only.
 - `fontWeight` string must exactly match an alias (lowercase, hyphenated). Numeric must be `[1, 1000]`.
 - `cubicBezier` array must be length 4. Indices 0 and 2 in `[0, 1]`.
-- `gradient.position` out-of-range is **clamped**, not rejected.
+- `gradient.position` out-of-range is **clamped** by the resolver, not rejected by the validator. Static `$value` validation accepts any number; clamping to `[0, 1]` happens downstream.
+- A typeless token (`$value` present, no `$type` on the token, no inheritable `$type` from an ancestor group, and not a `$ref`) is invalid. Validators MUST NOT guess `$type` from `$value`'s shape. In practice, a single-token validator without group context treats a typeless `$value` as `unknown` and defers shape validation to the resolver pass that has access to group-inherited `$type`.
 - `strokeStyle` cannot mix string and object within one token.
 - `shadow` can be single object or array; each element can be an object or `{ref}` string.
 - Root `$root` token is addressable via `{group.$root}` — the only exception to the `$`-prefix rule inside a user-defined name.

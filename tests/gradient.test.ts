@@ -50,14 +50,14 @@ describe("gradient token (DTCG §9.7)", () => {
     ).toBe(true);
   });
 
-  it("rejects positions outside [0, 1] (per DTCG 2025.10 JSON schema)", () => {
+  it("accepts positions outside [0, 1] (resolver clamps per DTCG §6.5)", () => {
     expect(
-      isInvalid(
+      isValid(
         Gradient({ $type: "gradient", $value: [stop(-0.01), stop(1)] }),
       ),
     ).toBe(true);
     expect(
-      isInvalid(
+      isValid(
         Gradient({ $type: "gradient", $value: [stop(0), stop(1.01)] }),
       ),
     ).toBe(true);

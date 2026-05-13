@@ -2,11 +2,12 @@ import { describe, expect, it } from "vitest";
 import { Group, Token } from "../src/index.ts";
 import { isInvalid, isValid } from "./helpers.ts";
 
-// The DTCG JSON schema allows a token to omit $type — in that case $value
-// is validated against the union of all value shapes ("guess by shape").
-// This is the prose/schema contradiction we're matching the schema on.
+// Per DTCG 2025.10 prose, tools MUST NOT guess $type from $value's shape.
+// A typeless token's $value is therefore accepted as `unknown` at the
+// single-token level; shape validation is deferred to the resolver pass
+// that has access to the group-inherited $type.
 
-describe("typeless token (DTCG format/token.json fallback)", () => {
+describe("typeless token (DTCG §3 prose: no shape guessing)", () => {
   it("accepts a typeless color-shaped $value", () => {
     expect(
       isValid(
@@ -49,9 +50,9 @@ describe("typeless token (DTCG format/token.json fallback)", () => {
     ).toBe(true);
   });
 
-  it("rejects a typeless $value that matches no known value shape", () => {
+  it("accepts a typeless $value of arbitrary shape (resolver validates against inherited $type)", () => {
     expect(
-      isInvalid(Token({ $value: { arbitrary: "nonsense" } })),
+      isValid(Token({ $value: { arbitrary: "nonsense" } })),
     ).toBe(true);
   });
 

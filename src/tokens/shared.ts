@@ -12,9 +12,18 @@ export const ValueAlias = type(
 // left to consumers — the spec only constrains the prefix.
 export const JsonPointerRef = type("/^#\\//");
 
+// Nested $ref form. Spec allows `{ "$ref": "#/..." }` anywhere an inline
+// value or `{alias}` string is accepted (any composite sub-value, any
+// primitive leaf inside a composite, or as a whole $value). Distinct from
+// the token-root TokenRef in src/token.ts, which is the standalone token
+// form (mutually exclusive with $value).
+export const JsonPointerRefObject = type({
+  $ref: JsonPointerRef,
+}).onUndeclaredKey("reject");
+
 export const DimensionPrimitive = type({
-  value: "number",
-  unit: "'rem' | 'px'",
+  value: type("number").or(JsonPointerRefObject),
+  unit: type("'rem' | 'px'").or(JsonPointerRefObject),
 }).onUndeclaredKey("reject");
 
 export const Extensions = type({ "[string]": "unknown" });

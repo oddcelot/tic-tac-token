@@ -1,7 +1,11 @@
 import { type } from "arktype";
-import { ValueAlias } from "./shared.ts";
+import { JsonPointerRefObject, ValueAlias } from "./shared.ts";
 
-export const FontFamilyValue = ValueAlias.or("string").or("string[] >= 1");
+const familyEntry = type("string").or(JsonPointerRefObject);
+
+export const FontFamilyValue = ValueAlias.or(JsonPointerRefObject)
+  .or("string")
+  .or(familyEntry.array().atLeastLength(1));
 
 export const FontFamily = type({
   $type: "'fontFamily'",

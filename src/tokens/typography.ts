@@ -3,9 +3,9 @@ import { DimensionValue } from "./dimension.ts";
 import { FontFamilyValue } from "./fontFamily.ts";
 import { FontWeightValue } from "./fontWeight.ts";
 import { NumberLiteralValue } from "./number.ts";
-import { ValueAlias } from "./shared.ts";
+import { JsonPointerRefObject, ValueAlias } from "./shared.ts";
 
-export const TypographyValue = ValueAlias.or(
+export const TypographyValue = ValueAlias.or(JsonPointerRefObject).or(
   type({
     fontFamily: FontFamilyValue,
     fontSize: DimensionValue,
