@@ -1,0 +1,39 @@
+{
+  "name": "dtcg-tokens-lsp",
+  "version": "0.1.0",
+  "description": "Language server for DTCG 2025.10 design-tokens files. Diagnostics, hover, and (soon) navigation/completion for .tokens.json and .tokens files.",
+  "type": "module",
+  "main": "./dist/server.js",
+  "bin": {
+    "dtcg-tokens-lsp": "./dist/server.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "dtcg",
+    "design-tokens",
+    "language-server",
+    "lsp",
+    "vscode"
+  ],
+  "license": "ISC",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build": "tsc --noEmit",
+    "build:dist": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "dtcg-tokens": "workspace:*",
+    "jsonc-parser": "^3.3.1",
+    "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-textdocument": "^1.0.12"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.4"
+  }
+}
