@@ -26,6 +26,9 @@
     "allowImportingTsExtensions": true,
     "rewriteRelativeImportExtensions": true,
     "verbatimModuleSyntax": true,
-    "strictNullChecks": true
-  }
+    "strictNullChecks": true,
+    "types": ["node"]
+  },
+  "include": ["src/**/*", "tests/**/*", "generate-schema.ts"],
+  "exclude": ["node_modules", "app", "figma-plugin"]
 }

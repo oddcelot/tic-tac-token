@@ -7,7 +7,7 @@
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
-    "build": "tsc --noEmit generate-schema.ts",
+    "build": "tsc --noEmit",
     "generate-schema": "node generate-schema.ts"
   },
   "keywords": [],
