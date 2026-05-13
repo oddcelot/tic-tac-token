@@ -8,6 +8,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "build": "tsc --noEmit",
+    "build:dist": "tsc -p tsconfig.build.json",
     "generate-schema": "node generate-schema.ts"
   },
   "keywords": [],
