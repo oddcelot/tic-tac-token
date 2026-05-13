@@ -19,7 +19,17 @@ const analyses = new Map<string, Awaited<ReturnType<typeof analyze>>>();
 const pending = new Map<string, NodeJS.Timeout>();
 const DEBOUNCE_MS = 150;
 
+// The server is registered against `JSON` in editors that lack a
+// dedicated DTCG language, so it sees every JSON file the user opens.
+// Filter to the DTCG-conventional extensions only — anything else
+// returns empty diagnostics and no hover, leaving the document
+// untouched.
+function isTokenDocument(uri: string): boolean {
+  return /\.tokens(\.json)?($|\?|#)/.test(uri);
+}
+
 async function refresh(uri: string, text: string): Promise<void> {
+  if (!isTokenDocument(uri)) return;
   const analysis = await analyze(text);
   analyses.set(uri, analysis);
   const diagnostics = diagnosticsFromAnalysis(analysis);
@@ -27,6 +37,7 @@ async function refresh(uri: string, text: string): Promise<void> {
 }
 
 function scheduleRefresh(uri: string, text: string): void {
+  if (!isTokenDocument(uri)) return;
   const existing = pending.get(uri);
   if (existing) clearTimeout(existing);
   const timeout = setTimeout(() => {
@@ -63,6 +74,7 @@ documents.onDidClose((event) => {
 });
 
 connection.onHover(async (params) => {
+  if (!isTokenDocument(params.textDocument.uri)) return null;
   let analysis = analyses.get(params.textDocument.uri);
   if (!analysis) {
     const doc = documents.get(params.textDocument.uri);

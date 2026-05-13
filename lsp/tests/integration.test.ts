@@ -136,6 +136,28 @@ describe("LSP server (integration)", () => {
     expect(notification.params.diagnostics.length).toBeGreaterThan(0);
   }, 15000);
 
+  it("ignores non-token JSON files (no diagnostics, null hover)", async () => {
+    await client.send("initialize", { processId: process.pid, rootUri: null, capabilities: {} });
+    client.notify("initialized", {});
+    const uri = "file:///random/package.json";
+    const text = JSON.stringify({ name: "x", arbitrary: "junk" });
+    client.notify("textDocument/didOpen", {
+      textDocument: { uri, languageId: "json", version: 1, text },
+    });
+    // Race a short timer against publishDiagnostics; the server should NOT
+    // publish for a non-token URI.
+    const diagnostics = await Promise.race([
+      client.waitForNotification("textDocument/publishDiagnostics"),
+      new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 500)),
+    ]);
+    expect(diagnostics).toBeUndefined();
+    const hover = (await client.send("textDocument/hover", {
+      textDocument: { uri },
+      position: { line: 0, character: 0 },
+    })) as { result: unknown };
+    expect(hover.result).toBeNull();
+  }, 10000);
+
   it("responds to hover with markdown for a token", async () => {
     await client.send("initialize", { processId: process.pid, rootUri: null, capabilities: {} });
     client.notify("initialized", {});
