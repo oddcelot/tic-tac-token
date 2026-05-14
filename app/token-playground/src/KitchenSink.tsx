@@ -5,7 +5,6 @@ import {
   dimensionToCss,
   durationToCss,
   fontFamilyToCss,
-  fontSizeToCss,
   fontWeightToCss,
   shadowToCss,
   type FlatToken,
@@ -19,13 +18,15 @@ const TYPE_ORDER: TokenType[] = [
   "dimension",
   "fontFamily",
   "fontWeight",
-  "fontSize",
   "shadow",
   "duration",
   "cubicBezier",
-  "stroke",
   "strokeStyle",
   "number",
+  "border",
+  "transition",
+  "gradient",
+  "typography",
 ];
 
 export const KitchenSink: Component<{
@@ -141,12 +142,6 @@ const Preview: Component<{ token: FlatToken }> = (props) => {
         </div>
       );
     }
-    case "fontSize": {
-      const css = fontSizeToCss(props.token.$value);
-      return (
-        <div style={{ "font-size": css ?? "inherit" }}>Aa</div>
-      );
-    }
     case "shadow": {
       const css = shadowToCss(props.token.$value);
       return (
@@ -182,17 +177,15 @@ const Preview: Component<{ token: FlatToken }> = (props) => {
         </div>
       );
     }
-    case "stroke": {
-      const style = String(props.token.$value ?? "solid");
+    case "strokeStyle": {
+      const style =
+        typeof props.token.$value === "string" ? props.token.$value : "solid";
       return (
         <div
           class="h-10 w-10 rounded"
           style={{ border: `3px ${style} #6366f1` }}
         />
       );
-    }
-    case "strokeStyle": {
-      return <code class="text-xs">{formatValue(props.token)}</code>;
     }
     case "number": {
       return (
@@ -218,8 +211,6 @@ function formatValue(t: FlatToken): string {
       return fontFamilyToCss(t.$value) ?? JSON.stringify(t.$value);
     case "fontWeight":
       return String(fontWeightToCss(t.$value) ?? t.$value);
-    case "fontSize":
-      return fontSizeToCss(t.$value) ?? String(t.$value);
     case "shadow":
       return shadowToCss(t.$value) ?? JSON.stringify(t.$value);
     default:
