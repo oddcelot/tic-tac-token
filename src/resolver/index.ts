@@ -3,7 +3,7 @@ import { clampGradients } from "./clamp.ts";
 import { applyExtends } from "./extends.ts";
 import { flattenTokens } from "./flatten.ts";
 import { resolveRefs } from "./refs.ts";
-import type { FlatToken, ResolvedTokens } from "./types.ts";
+import type { FlatToken, ResolvedTokens, ResolverError } from "./types.ts";
 
 export { jsonPointerGet } from "./json-pointer.ts";
 export { resolveRefs } from "./refs.ts";
@@ -33,12 +33,13 @@ export { TOKEN_TYPES, isTokenType } from "./types.ts";
 // of the input is mutated.
 export function resolveTokens(root: unknown): ResolvedTokens {
   const { result: merged, errors: extendsErrors } = applyExtends(root);
-  const dereffed = resolveRefs(merged, merged);
+  const refErrors: ResolverError[] = [];
+  const dereffed = resolveRefs(merged, merged, refErrors);
   const { tokens: flat, errors: flattenErrors } = flattenTokens(dereffed);
 
   const byPath = new Map<string, FlatToken>(flat.map((t) => [t.path, t]));
   const references = new Map<string, Set<string>>();
-  const aliasErrors: ResolvedTokens["errors"] = [];
+  const aliasErrors: ResolverError[] = [];
   const aliased = resolveAliases(flat, byPath, references, aliasErrors);
 
   const clamped = clampGradients(aliased);
@@ -47,7 +48,7 @@ export function resolveTokens(root: unknown): ResolvedTokens {
   return {
     tokens: clamped,
     byPath: clampedByPath,
-    errors: [...extendsErrors, ...flattenErrors, ...aliasErrors],
+    errors: [...extendsErrors, ...refErrors, ...flattenErrors, ...aliasErrors],
     references,
   };
 }

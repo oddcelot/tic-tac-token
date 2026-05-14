@@ -110,6 +110,36 @@ describe("resolveTokens (full pipeline)", () => {
     expect(result.byPath.get("layout.gap")?.$value).toEqual({ value: 16, unit: "rem" });
   });
 
+  it("reports a broken token-root $ref", () => {
+    const result = resolveTokens({
+      color: {
+        $type: "color",
+        ref: { $type: "color", $ref: "#/color/missing/$value" },
+      },
+    });
+    expect(result.errors.some((e) => e.kind === "broken-ref")).toBe(true);
+  });
+
+  it("reports a broken nested $ref inside a composite value", () => {
+    const result = resolveTokens({
+      space: {
+        $type: "dimension",
+        gap: {
+          $value: { value: { $ref: "#/space/nonexistent/$value/value" }, unit: "rem" },
+        },
+      },
+    });
+    expect(result.errors.some((e) => e.kind === "broken-ref")).toBe(true);
+  });
+
+  it("detects a $ref cycle", () => {
+    const result = resolveTokens({
+      a: { $type: "color", $ref: "#/b" },
+      b: { $type: "color", $ref: "#/a" },
+    });
+    expect(result.errors.some((e) => e.kind === "ref-cycle")).toBe(true);
+  });
+
   it("resolves a token-root $ref", () => {
     const result = resolveTokens({
       color: {
