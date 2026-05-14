@@ -31,10 +31,15 @@ export function normalizeIssuePath(
   return out;
 }
 
-// Given a token's dot-path (e.g. "color.brand.primary"), find the
-// corresponding AST node. Walks the root by segment.
+// Given a token's dot-path (e.g. "color.brand.primary") or a resolver
+// error path that may include array indices (e.g. "shadow.$value.2"),
+// find the corresponding AST node. Walks the root by segment, treating
+// integer-shaped segments as array indices.
 export function nodeForTokenPath(root: Node | undefined, tokenPath: string): Node | undefined {
   if (!root) return undefined;
-  const segments = tokenPath.split(".");
+  const segments = tokenPath.split(".").map((s) => {
+    const n = Number(s);
+    return Number.isInteger(n) && String(n) === s ? n : s;
+  });
   return findNodeAtLocation(root, segments);
 }

@@ -65,6 +65,24 @@ describe("diagnosticsFromAnalysis", () => {
     expect(aliasDiag?.message).toMatch(/color\.missing/);
   });
 
+  it("emits a diagnostic for a broken $ref pointer", async () => {
+    const text = JSON.stringify(
+      {
+        color: {
+          $type: "color",
+          ref: { $type: "color", $ref: "#/color/nonexistent/$value" },
+        },
+      },
+      null,
+      2,
+    );
+    const analysis = await analyze(text);
+    const diagnostics = diagnosticsFromAnalysis(analysis);
+    const refDiag = diagnostics.find((d) => d.code === "broken-ref");
+    expect(refDiag).toBeDefined();
+    expect(refDiag?.message).toMatch(/#\/color\/nonexistent/);
+  });
+
   it("emits a diagnostic for a JSON syntax error", async () => {
     const analysis = await analyze('{ "color": { "$type": "color" ');
     const diagnostics = diagnosticsFromAnalysis(analysis);
