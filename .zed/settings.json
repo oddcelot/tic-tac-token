@@ -1,4 +1,9 @@
 {
+  "languages": {
+    "JSON": {
+      "language_servers": ["!asimonim", "..."]
+    }
+  },
   "lsp": {
     "json-language-server": {
       "settings": {
