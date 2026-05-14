@@ -60,4 +60,37 @@ describe("hoverAt", () => {
     const hover = hoverAt(analysis, { line: 0, character: 0 });
     expect(hover).toBeUndefined();
   });
+
+  it("shows literal pointer + resolved value for a token-root $ref token", async () => {
+    const text = JSON.stringify(
+      {
+        color: {
+          $type: "color",
+          primary: {
+            $value: {
+              colorSpace: "srgb",
+              components: [1, 0, 0],
+              alpha: 1,
+              hex: "#ff0000",
+            },
+          },
+          aliasRef: {
+            $type: "color",
+            $ref: "#/color/primary/$value",
+          },
+        },
+      },
+      null,
+      2,
+    );
+    const analysis = await analyze(text);
+    const position = lineCharOf(text, '"#/color/primary/$value"');
+    const hover = hoverAt(analysis, position);
+    expect(hover).toBeDefined();
+    const md = (hover?.contents as { value: string }).value;
+    expect(md).toContain("color.aliasRef");
+    expect(md).toContain("#/color/primary/$value");
+    expect(md).toContain("**Resolved**");
+    expect(md).toContain("#ff0000");
+  });
 });

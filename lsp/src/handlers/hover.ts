@@ -1,5 +1,5 @@
 import type { FlatToken } from "dtcg-tokens/resolver";
-import { flattenTokens } from "dtcg-tokens/resolver";
+import { flattenTokens, isTokenType } from "dtcg-tokens/resolver";
 import type { Node } from "jsonc-parser";
 import { type Hover, MarkupKind, type Position } from "vscode-languageserver";
 import type { AnalysisResult } from "../analyzer.ts";
@@ -59,6 +59,23 @@ function findEnclosingToken(
   return visit(root, []);
 }
 
+// Read the raw token object at a dot-path from a parsed JSON tree.
+// Returns undefined if any path segment misses or lands on a non-object.
+function rawTokenAt(
+  root: unknown,
+  path: string,
+): Record<string, unknown> | undefined {
+  if (!root || typeof root !== "object") return undefined;
+  let cur: unknown = root;
+  for (const seg of path.split(".")) {
+    if (!cur || typeof cur !== "object" || Array.isArray(cur)) return undefined;
+    cur = (cur as Record<string, unknown>)[seg];
+  }
+  return cur && typeof cur === "object" && !Array.isArray(cur)
+    ? (cur as Record<string, unknown>)
+    : undefined;
+}
+
 export function hoverAt(
   result: AnalysisResult,
   position: Position,
@@ -72,10 +89,45 @@ export function hoverAt(
   // whole document and pick the matching path — simpler than reaching
   // into the AST.
   const literalFlat = result.value !== undefined ? flattenTokens(result.value).tokens : [];
-  const literal = literalFlat.find((t) => t.path === enclosing.path);
-  if (!literal) return undefined;
+  let literal: FlatToken | undefined = literalFlat.find(
+    (t) => t.path === enclosing.path,
+  );
+  const resolved: FlatToken | undefined = result.resolved.byPath.get(
+    enclosing.path,
+  );
 
-  const resolved: FlatToken | undefined = result.resolved.byPath.get(enclosing.path);
+  // Token-root `$ref` form: source has $ref but no $value, so
+  // `flattenTokens` (which keys on $value) skipped it. Synthesize a
+  // literal carrying the $ref pointer as the displayed value, with
+  // $type taken from the resolved token. This keeps the hover popup
+  // working over `{ $type, $ref }` tokens.
+  if (!literal && resolved) {
+    const raw = rawTokenAt(result.value, enclosing.path);
+    if (raw && typeof raw.$ref === "string") {
+      const inferredType =
+        typeof raw.$type === "string" && isTokenType(raw.$type)
+          ? raw.$type
+          : resolved.$type;
+      literal = {
+        path: enclosing.path,
+        $type: inferredType,
+        $value: raw.$ref,
+        $description:
+          typeof raw.$description === "string" ? raw.$description : undefined,
+        $extensions:
+          raw.$extensions && typeof raw.$extensions === "object"
+            ? (raw.$extensions as Record<string, unknown>)
+            : undefined,
+        $deprecated:
+          typeof raw.$deprecated === "boolean" ||
+          typeof raw.$deprecated === "string"
+            ? (raw.$deprecated as boolean | string)
+            : undefined,
+      };
+    }
+  }
+
+  if (!literal) return undefined;
 
   const markdown = renderTokenHover(literal, resolved);
   return {
