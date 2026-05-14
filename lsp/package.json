@@ -7,6 +7,16 @@
   "bin": {
     "dtcg-tokens-lsp": "./dist/server.js"
   },
+  "exports": {
+    ".": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.js"
+    },
+    "./browser": {
+      "types": "./dist/server-browser.d.ts",
+      "import": "./dist/server-browser.js"
+    }
+  },
   "files": [
     "dist",
     "README.md"
