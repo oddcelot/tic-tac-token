@@ -9,7 +9,7 @@ import Resizable from "@corvu/resizable";
 import * as monaco from "monaco-editor";
 import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import JsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
-import demoRaw from "./demo-tokens.json?raw";
+import demoRaw from "./demo-tokens.tokens.json?raw";
 import schemaRaw from "../../../schema.json?raw";
 import { parseTokens, type FlatToken, type TokenMode } from "./tokens";
 import KitchenSink from "./KitchenSink";
@@ -77,7 +77,7 @@ const initialScheme = (): TokenMode => {
   return stored === "dark" ? "dark" : "light";
 };
 
-const MODEL_URI = monaco.Uri.parse("file:///demo-tokens.json");
+const MODEL_URI = monaco.Uri.parse("file:///demo-tokens.tokens.json");
 
 const App: Component = () => {
   let editorElement!: HTMLDivElement;
