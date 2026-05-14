@@ -1,3 +1,4 @@
+import { flattenTokens } from "dtcg-tokens/resolver";
 import type { Node } from "jsonc-parser";
 import {
   type CompletionItem,
@@ -51,6 +52,42 @@ type AliasContext = {
   prefixStartOffset: number; // absolute offset in the doc where the prefix starts
 };
 
+// Detect JSON-Pointer-string context: cursor is inside a string whose
+// parent property is named `$ref`. Returns the literal prefix between
+// the opening `"` and the cursor (typically begins with `#/`).
+type PointerContext = {
+  prefix: string;
+  prefixStartOffset: number; // absolute offset at the opening `"` + 1
+};
+
+function jsonPointerContext(
+  text: string,
+  ast: Node | undefined,
+  offset: number,
+): PointerContext | undefined {
+  const node = findStringNodeAt(ast, offset);
+  if (!node) return undefined;
+  const parent = node.parent;
+  if (!parent || parent.type !== "property") return undefined;
+  const keyNode = parent.children?.[0];
+  if (!keyNode || keyNode.value !== "$ref") return undefined;
+
+  const contentStart = node.offset + 1;
+  if (offset < contentStart) return undefined;
+  const upToCursor = text.slice(contentStart, offset);
+  return { prefix: upToCursor, prefixStartOffset: contentStart };
+}
+
+// RFC 6901 escape: `~` → `~0`, `/` → `~1`. Applied per-segment.
+function escapePointerSegment(s: string): string {
+  return s.replace(/~/g, "~0").replace(/\//g, "~1");
+}
+
+function jsonPointerForToken(path: string): string {
+  const segments = path.split(".").map(escapePointerSegment);
+  return `#/${segments.join("/")}/$value`;
+}
+
 function aliasContext(text: string, ast: Node | undefined, offset: number): AliasContext | undefined {
   const node = findStringNodeAt(ast, offset);
   if (!node) return undefined;
@@ -83,31 +120,59 @@ export function completionsAt(
 ): CompletionList {
   const empty: CompletionList = { isIncomplete: false, items: [] };
   const offset = positionToOffset(result.text, position);
-  const ctx = aliasContext(result.text, result.ast, offset);
-  if (!ctx) return empty;
 
-  // Build replacement range: from just after the `{` to the cursor.
-  const startPos = offsetToPosition(result.text, ctx.prefixStartOffset);
-  const range = { start: startPos, end: position };
-
-  // Suggest every resolved token. Monaco/IDE-side filtering narrows by
-  // what the user has typed (`ctx.prefix`), so the server is permissive.
-  const items: CompletionItem[] = [];
-  for (const token of result.resolved.tokens) {
-    if (!token.path) continue;
-    if (ctx.prefix && !pathStartsWith(token.path, ctx.prefix)) continue;
-    items.push({
-      label: token.path,
-      kind: CompletionItemKind.Variable,
-      detail: token.$type,
-      documentation: token.$description,
-      textEdit: { range, newText: token.path },
-      filterText: token.path,
-      sortText: token.path,
-    });
+  // Alias context first: cursor inside a `"{...}"` string.
+  const alias = aliasContext(result.text, result.ast, offset);
+  if (alias) {
+    const startPos = offsetToPosition(result.text, alias.prefixStartOffset);
+    const range = { start: startPos, end: position };
+    const items: CompletionItem[] = [];
+    for (const token of result.resolved.tokens) {
+      if (!token.path) continue;
+      if (alias.prefix && !pathStartsWith(token.path, alias.prefix)) continue;
+      items.push({
+        label: token.path,
+        kind: CompletionItemKind.Variable,
+        detail: token.$type,
+        documentation: token.$description,
+        textEdit: { range, newText: token.path },
+        filterText: token.path,
+        sortText: token.path,
+      });
+    }
+    return { isIncomplete: false, items };
   }
 
-  return { isIncomplete: false, items };
+  // $ref pointer context: cursor inside a `"$ref": "#/..."` string.
+  const pointer = jsonPointerContext(result.text, result.ast, offset);
+  if (pointer) {
+    const startPos = offsetToPosition(result.text, pointer.prefixStartOffset);
+    const range = { start: startPos, end: position };
+    const items: CompletionItem[] = [];
+    // Use the pre-resolution literal flatten so we only suggest pointers
+    // that actually exist in the source ($value-bearing tokens). Token-
+    // root $ref tokens have no $value in source, so their path isn't a
+    // valid pointer target — exclude them.
+    const literalTokens =
+      result.value !== undefined ? flattenTokens(result.value).tokens : [];
+    for (const token of literalTokens) {
+      if (!token.path) continue;
+      const ptr = jsonPointerForToken(token.path);
+      if (pointer.prefix && !pathStartsWith(ptr, pointer.prefix)) continue;
+      items.push({
+        label: ptr,
+        kind: CompletionItemKind.Reference,
+        detail: token.$type,
+        documentation: token.$description,
+        textEdit: { range, newText: ptr },
+        filterText: ptr,
+        sortText: ptr,
+      });
+    }
+    return { isIncomplete: false, items };
+  }
+
+  return empty;
 }
 
 // Treat the alias path as dot-separated segments and compare segment-

@@ -56,7 +56,7 @@ export function registerServer(connection: Connection): void {
       textDocumentSync: TextDocumentSyncKind.Incremental,
       hoverProvider: true,
       completionProvider: {
-        triggerCharacters: ["{", "."],
+        triggerCharacters: ["{", ".", "#", "/"],
       },
     },
     serverInfo: { name: "dtcg-tokens-lsp", version: "0.1.0" },

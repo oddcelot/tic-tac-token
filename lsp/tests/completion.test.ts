@@ -104,6 +104,69 @@ describe("completionsAt", () => {
     expect(colorText?.detail).toBe("color");
   });
 
+  it("suggests JSON pointers inside a $ref string", async () => {
+    const text = JSON.stringify(
+      {
+        color: {
+          $type: "color",
+          primary: {
+            $value: {
+              colorSpace: "srgb",
+              components: [1, 0, 0],
+              alpha: 1,
+              hex: "#ff0000",
+            },
+          },
+          aliasRef: { $type: "color", $ref: "" },
+        },
+      },
+      null,
+      2,
+    );
+    const analysis = await analyze(text);
+    // Position cursor inside the empty `$ref` string between the quotes.
+    const refIdx = text.indexOf('"$ref": "') + '"$ref": "'.length;
+    const before = text.slice(0, refIdx);
+    const line = (before.match(/\n/g) ?? []).length;
+    const character = refIdx - (before.lastIndexOf("\n") + 1);
+    const result = completionsAt(analysis, { line, character });
+    const labels = result.items.map((i) => i.label);
+    expect(labels).toContain("#/color/primary/$value");
+    // Token-root $ref tokens have no $value in source → not a valid pointer target
+    expect(labels).not.toContain("#/color/aliasRef/$value");
+  });
+
+  it("filters $ref suggestions by pointer prefix", async () => {
+    const text = JSON.stringify(
+      {
+        color: {
+          neutral: {
+            $type: "color",
+            text: {
+              $value: {
+                colorSpace: "srgb",
+                components: [0, 0, 0],
+                alpha: 1,
+                hex: "#000000",
+              },
+            },
+          },
+          ref: { $type: "color", $ref: "#/color/n" },
+        },
+      },
+      null,
+      2,
+    );
+    const analysis = await analyze(text);
+    const target = text.indexOf("#/color/n") + "#/color/n".length;
+    const before = text.slice(0, target);
+    const line = (before.match(/\n/g) ?? []).length;
+    const character = target - (before.lastIndexOf("\n") + 1);
+    const result = completionsAt(analysis, { line, character });
+    const labels = result.items.map((i) => i.label);
+    expect(labels).toContain("#/color/neutral/text/$value");
+  });
+
   it("provides a textEdit that replaces the in-flight alias body", async () => {
     const text = TEXT;
     const aliasIdx = text.indexOf("{color.neutral.text}");
