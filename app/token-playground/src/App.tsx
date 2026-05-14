@@ -15,6 +15,7 @@ import { parseTokens, type FlatToken, type TokenMode } from "./tokens";
 import KitchenSink from "./KitchenSink";
 import { ThemeToggle, type Theme } from "./ThemeToggle";
 import { Outline } from "./Outline";
+import { createLspClient, installMonacoBridge } from "./lsp/client";
 
 self.MonacoEnvironment = {
   getWorker(_, label) {
@@ -128,7 +129,24 @@ const App: Component = () => {
       setRaw(editor.getValue());
     });
 
+    // Spawn the in-page LSP worker and bridge it to this model. The
+    // server provides arktype-precise diagnostics and resolved-value
+    // hover; Monaco's built-in JSON-schema validation keeps running
+    // independently under a different marker owner.
+    const lsp = createLspClient();
+    let disposeBridge: (() => void) | undefined;
+    lsp
+      .init()
+      .then(() => {
+        disposeBridge = installMonacoBridge(lsp, model);
+      })
+      .catch((err: unknown) => {
+        console.error("LSP init failed:", err);
+      });
+
     onCleanup(() => {
+      disposeBridge?.();
+      lsp.dispose();
       sub.dispose();
       editor.dispose();
       model.dispose();
