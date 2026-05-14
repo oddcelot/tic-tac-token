@@ -5,6 +5,7 @@ import {
   TextDocumentSyncKind,
 } from "vscode-languageserver";
 import { analyze } from "./analyzer.ts";
+import { completionsAt } from "./handlers/completion.ts";
 import { diagnosticsFromAnalysis } from "./handlers/diagnostics.ts";
 import { hoverAt } from "./handlers/hover.ts";
 
@@ -54,6 +55,9 @@ export function registerServer(connection: Connection): void {
     capabilities: {
       textDocumentSync: TextDocumentSyncKind.Incremental,
       hoverProvider: true,
+      completionProvider: {
+        triggerCharacters: ["{", "."],
+      },
     },
     serverInfo: { name: "dtcg-tokens-lsp", version: "0.1.0" },
   }));
@@ -81,15 +85,30 @@ export function registerServer(connection: Connection): void {
 
   connection.onHover(async (params) => {
     if (!isTokenDocument(params.textDocument.uri)) return null;
-    let analysis = analyses.get(params.textDocument.uri);
-    if (!analysis) {
-      const doc = documents.get(params.textDocument.uri);
-      if (!doc) return null;
-      analysis = await analyze(doc.getText());
-      analyses.set(params.textDocument.uri, analysis);
-    }
+    const analysis = await ensureAnalysis(params.textDocument.uri);
+    if (!analysis) return null;
     return hoverAt(analysis, params.position) ?? null;
   });
+
+  connection.onCompletion(async (params) => {
+    if (!isTokenDocument(params.textDocument.uri)) return null;
+    const analysis = await ensureAnalysis(params.textDocument.uri);
+    if (!analysis) return null;
+    return completionsAt(analysis, params.position);
+  });
+
+  async function ensureAnalysis(
+    uri: string,
+  ): Promise<Awaited<ReturnType<typeof analyze>> | undefined> {
+    let analysis = analyses.get(uri);
+    if (!analysis) {
+      const doc = documents.get(uri);
+      if (!doc) return undefined;
+      analysis = await analyze(doc.getText());
+      analyses.set(uri, analysis);
+    }
+    return analysis;
+  }
 
   documents.listen(connection);
 }
