@@ -47,6 +47,8 @@ const fileResult = TokensFile({
 });
 ```
 
+See [`examples/simple`](./examples/simple) for a full runnable example.
+
 ## Standard Schema
 
 Every exported validator carries the `~standard` property and works with any Standard-Schema consumer:

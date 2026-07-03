@@ -1,0 +1,13 @@
+{
+  "name": "tic-tac-token-example-simple",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Minimal external-consumer example for @oddsquad/tic-tac-token — validates and resolves a small DTCG tokens file.",
+  "scripts": {
+    "start": "node index.mjs"
+  },
+  "dependencies": {
+    "@oddsquad/tic-tac-token": "^0.1.0"
+  }
+}
