@@ -1,4 +1,4 @@
-import type { FlatToken } from "dtcg-tokens/resolver";
+import type { FlatToken } from "@oddsquad/tic-tac-token/resolver";
 
 // Pretty-print a token value, preferring a friendly one-line CSS-like
 // form (e.g. `32px`, `#ff0000`, `cubic-bezier(0.4, 0, 0.2, 1)`) over

@@ -1,5 +1,5 @@
-import type { FlatToken } from "dtcg-tokens/resolver";
-import { flattenTokens, isTokenType } from "dtcg-tokens/resolver";
+import type { FlatToken } from "@oddsquad/tic-tac-token/resolver";
+import { flattenTokens, isTokenType } from "@oddsquad/tic-tac-token/resolver";
 import type { Node } from "jsonc-parser";
 import { type Hover, MarkupKind, type Position } from "vscode-languageserver";
 import type { AnalysisResult } from "../analyzer.ts";

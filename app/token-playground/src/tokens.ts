@@ -1,5 +1,5 @@
-import { resolveTokens } from "dtcg-tokens/resolver";
-import type { FlatToken, TokenType } from "dtcg-tokens/resolver";
+import { resolveTokens } from "@oddsquad/tic-tac-token/resolver";
+import type { FlatToken, TokenType } from "@oddsquad/tic-tac-token/resolver";
 
 export type { FlatToken, TokenType };
 

@@ -1,5 +1,5 @@
-import { TokensFile } from "dtcg-tokens";
-import { resolveTokens, type ResolvedTokens } from "dtcg-tokens/resolver";
+import { TokensFile } from "@oddsquad/tic-tac-token";
+import { resolveTokens, type ResolvedTokens } from "@oddsquad/tic-tac-token/resolver";
 import { parseTree, type Node, type ParseError } from "jsonc-parser";
 
 export type AnalysisResult = {

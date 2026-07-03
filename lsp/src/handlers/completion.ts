@@ -1,4 +1,4 @@
-import { flattenTokens } from "dtcg-tokens/resolver";
+import { flattenTokens } from "@oddsquad/tic-tac-token/resolver";
 import type { Node } from "jsonc-parser";
 import {
   type CompletionItem,
