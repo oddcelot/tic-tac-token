@@ -30,12 +30,12 @@ importers:
       '@oddsquad/tic-tac-token':
         specifier: workspace:*
         version: link:../..
+      '@oddsquad/tic-tac-token-lsp':
+        specifier: workspace:*
+        version: link:../../lsp
       '@vscode/codicons':
         specifier: ^0.0.45
         version: 0.0.45
-      dtcg-tokens-lsp:
-        specifier: workspace:*
-        version: link:../../lsp
       monaco-editor:
         specifier: ^0.55.1
         version: 0.55.1

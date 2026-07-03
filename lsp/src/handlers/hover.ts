@@ -111,6 +111,7 @@ export function hoverAt(
       literal = {
         path: enclosing.path,
         $type: inferredType,
+        typeInherited: typeof raw.$type !== "string" || !isTokenType(raw.$type),
         $value: raw.$ref,
         $description:
           typeof raw.$description === "string" ? raw.$description : undefined,

@@ -1,5 +1,5 @@
 {
-  "name": "dtcg-tokens-lsp",
+  "name": "@oddsquad/tic-tac-token-lsp",
   "version": "0.1.0",
   "description": "Language server for DTCG 2025.10 design-tokens files. Diagnostics, hover, and (soon) navigation/completion for .tokens.json and .tokens files.",
   "type": "module",
@@ -19,8 +19,25 @@
   },
   "files": [
     "dist",
+    "LICENSE",
     "README.md"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oddcelot/tic-tac-token.git",
+    "directory": "lsp"
+  },
+  "homepage": "https://github.com/oddcelot/tic-tac-token/tree/main/lsp#readme",
+  "bugs": {
+    "url": "https://github.com/oddcelot/tic-tac-token/issues"
+  },
+  "author": "Stefan Kopco",
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "dtcg",
     "design-tokens",
@@ -33,7 +50,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "build": "tsc --noEmit",
-    "build:dist": "tsc -p tsconfig.build.json"
+    "build:dist": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "pnpm -C .. build:dist && pnpm build:dist && pnpm test"
   },
   "dependencies": {
     "@oddsquad/tic-tac-token": "workspace:*",

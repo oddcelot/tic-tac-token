@@ -1,6 +1,6 @@
-# dtcg-tokens-lsp
+# @oddsquad/tic-tac-token-lsp
 
-Language server for [DTCG 2025.10](https://tr.designtokens.org/format/) design-tokens files. First-class editor support for `.tokens.json` (and `.tokens`) files: arktype-precise diagnostics, hover that surfaces *resolved* values, and (soon) navigation/completion.
+Language server for [DTCG 2025.10](https://tr.designtokens.org/format/) design-tokens files. First-class editor support for `.tokens.json` (and `.tokens`) files: arktype-precise diagnostics, hover that surfaces *resolved* values, resolved-value hover, and context-aware completion for `{alias}` strings and `$ref` JSON Pointers.
 
 Backed by the [`@oddsquad/tic-tac-token`](../README.md) validator + resolver.
 
@@ -13,13 +13,14 @@ Backed by the [`@oddsquad/tic-tac-token`](../README.md) validator + resolver.
   - the **resolved** `$value` (after `{alias}` / `$ref` / `$extends`)
   - a CSS color swatch for `color` tokens
   - `$deprecated` flag where set.
+- **Completion** — alias-path completion inside `{…}` strings and JSON Pointer completion inside `"$ref": "#/…"` strings.
 
-Planned (v1+): go-to-definition, references, document symbols, context-aware completion, document colors.
+Planned (v1+): go-to-definition, references, document symbols, document colors.
 
 ## Install
 
 ```sh
-npm install -g dtcg-tokens-lsp
+npm install -g @oddsquad/tic-tac-token-lsp
 ```
 
 The package ships a `dtcg-tokens-lsp` bin that speaks LSP over stdio with `--stdio`.
@@ -99,14 +100,18 @@ The server is a thin orchestration layer over three pieces:
 2. **`@oddsquad/tic-tac-token`** — the arktype-backed validator. Runs against the parsed JSON value via the [Standard Schema](https://standardschema.dev) interface (`TokensFile['~standard'].validate`).
 3. **`@oddsquad/tic-tac-token/resolver`** — applies `$extends` deep-merge, dereferences `$ref` (token-root + nested), flattens with group-`$type` inheritance, resolves `{alias}` strings, clamps gradient positions. Returns the resolved token list, an inverse reference graph (for find-references in a future version), and an aggregated error list.
 
+### Browser entry
+
+`@oddsquad/tic-tac-token-lsp/browser` exports a Worker-ready server entry that self-invokes — construct a `Connection` bound to the worker's `globalThis` and register all handlers — so importing it for side effects is all a Web Worker entry needs. Used by the repo's Monaco playground via `import "@oddsquad/tic-tac-token-lsp/browser"` in a Vite Web Worker.
+
 ## Development
 
 ```sh
 # from repo root
 pnpm install                 # workspace install
 pnpm -F @oddsquad/tic-tac-token build:dist
-pnpm -F dtcg-tokens-lsp build:dist
-pnpm -F dtcg-tokens-lsp test
+pnpm -F @oddsquad/tic-tac-token-lsp build:dist
+pnpm -F @oddsquad/tic-tac-token-lsp test
 ```
 
 The integration tests spawn the built `dist/server.js` and exchange real LSP JSON-RPC over stdio.

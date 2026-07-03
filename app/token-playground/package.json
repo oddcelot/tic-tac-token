@@ -22,7 +22,7 @@
     "@corvu/resizable": "^0.2.5",
     "@vscode/codicons": "^0.0.45",
     "@oddsquad/tic-tac-token": "workspace:*",
-    "dtcg-tokens-lsp": "workspace:*",
+    "@oddsquad/tic-tac-token-lsp": "workspace:*",
     "monaco-editor": "^0.55.1",
     "solid-js": "^1.9.12",
     "vscode-jsonrpc": "^8.2.1",
