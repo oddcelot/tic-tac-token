@@ -111,6 +111,30 @@ The same coverage is published as a JSON Schema draft-2020-12 document for edito
 }
 ```
 
+```jsonc
+// .zed/settings.json — same json-language-server, nested under lsp
+{
+  "lsp": {
+    "json-language-server": {
+      "settings": {
+        "json": {
+          "schemas": [
+            { "fileMatch": ["*.tokens", "*.tokens.json"], "url": "./node_modules/@oddsquad/tic-tac-token/schema.json" }
+          ]
+        }
+      }
+    }
+  }
+}
+```
+
+Editor settings aside, a tokens file can also point at the schema directly — the path is resolved relative to the file, so this works for any consumer with the package installed:
+
+```jsonc
+// tokens.json
+{ "$schema": "./node_modules/@oddsquad/tic-tac-token/schema.json" }
+```
+
 Or import the URL programmatically:
 
 ```ts
