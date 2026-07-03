@@ -19,7 +19,8 @@
   "files": [
     "dist",
     "schema.json",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "keywords": [
     "dtcg",
@@ -31,6 +32,22 @@
     "json-schema"
   ],
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oddcelot/tic-tac-token.git"
+  },
+  "homepage": "https://github.com/oddcelot/tic-tac-token#readme",
+  "bugs": {
+    "url": "https://github.com/oddcelot/tic-tac-token/issues"
+  },
+  "author": "Stefan Kopco",
+  "engines": {
+    "node": ">=20"
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
