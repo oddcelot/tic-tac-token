@@ -49,7 +49,7 @@
     "access": "public"
   },
   "scripts": {
-    "test": "vitest run",
+    "test": "vitest run tests",
     "test:watch": "vitest",
     "build": "tsc --noEmit",
     "build:dist": "tsc -p tsconfig.build.json",
