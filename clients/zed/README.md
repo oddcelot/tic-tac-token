@@ -30,7 +30,7 @@ The server filters by URI (`.tokens` / `.tokens.json` only), so attaching it to 
 
 ### Developing this extension (this monorepo only)
 
-If the open worktree has a locally built `lsp/dist/server.js`, the extension launches that instead of installing from npm — so hacking on the LSP itself doesn't require publishing first:
+If the open worktree is this monorepo (its root `package.json` names `@oddsquad/tic-tac-token`) **and** has a locally built, non-empty `lsp/dist/server.js`, the extension launches that instead of installing from npm — so hacking on the LSP itself doesn't require publishing first:
 
 ```sh
 pnpm -F @oddsquad/tic-tac-token-lsp build:dist
