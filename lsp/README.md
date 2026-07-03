@@ -2,7 +2,7 @@
 
 Language server for [DTCG 2025.10](https://tr.designtokens.org/format/) design-tokens files. First-class editor support for `.tokens.json` (and `.tokens`) files: arktype-precise diagnostics, hover that surfaces *resolved* values, and (soon) navigation/completion.
 
-Backed by the [`dtcg-tokens`](../README.md) validator + resolver.
+Backed by the [`@oddsquad/tic-tac-token`](../README.md) validator + resolver.
 
 ## v0 features
 
@@ -34,7 +34,7 @@ Until a dedicated extension ships, use any "generic LSP" extension. Example with
 // .vscode/settings.json
 {
   "languageServerClient.servers": {
-    "dtcg-tokens": {
+    "dtcg-tokens-lsp": {
       "command": ["dtcg-tokens-lsp", "--stdio"],
       "filetypes": ["json"],
       "rootPatterns": [".git"]
@@ -96,15 +96,15 @@ The server attaches to JSON documents. File-type matching against `*.tokens.json
 The server is a thin orchestration layer over three pieces:
 
 1. **`jsonc-parser`** — produces an AST with `offset`/`length` per node. The basis for mapping arktype error paths back to source ranges and for the hover handler's cursor-to-token resolution.
-2. **`dtcg-tokens`** — the arktype-backed validator. Runs against the parsed JSON value via the [Standard Schema](https://standardschema.dev) interface (`TokensFile['~standard'].validate`).
-3. **`dtcg-tokens/resolver`** — applies `$extends` deep-merge, dereferences `$ref` (token-root + nested), flattens with group-`$type` inheritance, resolves `{alias}` strings, clamps gradient positions. Returns the resolved token list, an inverse reference graph (for find-references in a future version), and an aggregated error list.
+2. **`@oddsquad/tic-tac-token`** — the arktype-backed validator. Runs against the parsed JSON value via the [Standard Schema](https://standardschema.dev) interface (`TokensFile['~standard'].validate`).
+3. **`@oddsquad/tic-tac-token/resolver`** — applies `$extends` deep-merge, dereferences `$ref` (token-root + nested), flattens with group-`$type` inheritance, resolves `{alias}` strings, clamps gradient positions. Returns the resolved token list, an inverse reference graph (for find-references in a future version), and an aggregated error list.
 
 ## Development
 
 ```sh
 # from repo root
 pnpm install                 # workspace install
-pnpm -F dtcg-tokens build:dist
+pnpm -F @oddsquad/tic-tac-token build:dist
 pnpm -F dtcg-tokens-lsp build:dist
 pnpm -F dtcg-tokens-lsp test
 ```
