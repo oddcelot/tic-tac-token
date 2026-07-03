@@ -1,5 +1,12 @@
 # Plan 004: Make the Zed extension work outside this repo's worktree
 
+> **⚠️ RECONCILIATION BANNER (2026-07-03)** — Plan 002 (v2) renames the LSP's **npm package** from `dtcg-tokens-lsp` to `@oddsquad/tic-tac-token-lsp`. The LSP's **bin command stays `dtcg-tokens-lsp`** (a separate, unchanged decision — see plan 002's banner). This matters for this plan's Rust `PACKAGE` constant and npm-install logic:
+> - The Rust constant this plan introduces (referenced in prior drafts as `const PACKAGE: &str = "dtcg-tokens-lsp";`) must be the npm package to install: `const PACKAGE: &str = "@oddsquad/tic-tac-token-lsp";`.
+> - Whatever Zed helper resolves/invokes the installed binary must invoke the bin command `dtcg-tokens-lsp` (unchanged) — do not assume the bin name matches the npm package name; they differ here.
+> - `npm view @oddsquad/tic-tac-token-lsp version` replaces `npm view dtcg-tokens-lsp version` wherever this plan checks the registry.
+> - `clients/zed/README.md`'s dev-instruction `pnpm -F dtcg-tokens-lsp build:dist` is now stale (plan 002 renamed the package `pnpm -F` filters against) — update it to `pnpm -F @oddsquad/tic-tac-token-lsp build:dist` as part of whatever step in this plan touches that README.
+> - `clients/zed/extension.toml`'s `[language_servers.dtcg-tokens-lsp]` key and `id = "dtcg-tokens"` are Zed-local identifiers, not npm references — leave them as-is unless this plan has an independent reason to change them.
+>
 > **Executor instructions**: Follow this plan step by step. Run every
 > verification command and confirm the expected result before moving to the
 > next step. If anything in the "STOP conditions" section occurs, stop and
