@@ -42,6 +42,7 @@ export function flattenTokens(root: unknown): {
       tokens.push({
         path,
         $type: effectiveType,
+        typeInherited: localType === undefined,
         $value: rec.$value,
         $description:
           typeof rec.$description === "string" ? rec.$description : undefined,

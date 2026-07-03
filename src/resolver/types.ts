@@ -42,6 +42,13 @@ export type FlatToken = {
   /** Dot-joined path from the document root, e.g. `"color.brand.primary"`. */
   path: string;
   $type: TokenType;
+  /**
+   * True when `$type` came from an ancestor group rather than the token
+   * itself. Tokens with an explicit `$type` are shape-validated by the
+   * Token schema; inherited-type tokens are validated by the resolver's
+   * `validateValues` pass instead.
+   */
+  typeInherited: boolean;
   $value: unknown;
   $description?: string;
   $extensions?: Record<string, unknown>;
@@ -55,7 +62,8 @@ export type ResolverErrorKind =
   | "alias-cycle"
   | "extends-cycle"
   | "broken-extends"
-  | "type-mismatch";
+  | "type-mismatch"
+  | "invalid-value";
 
 export type ResolverError = {
   kind: ResolverErrorKind;

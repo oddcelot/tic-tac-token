@@ -71,6 +71,7 @@ function severityFor(kind: string): DiagnosticSeverity {
     case "ref-cycle":
     case "alias-cycle":
     case "extends-cycle":
+    case "invalid-value":
       return DiagnosticSeverity.Error;
     case "type-mismatch":
       return DiagnosticSeverity.Warning;

@@ -52,6 +52,50 @@ describe("resolveTokens (full pipeline)", () => {
     expect(result.errors[0]?.kind).toBe("type-mismatch");
   });
 
+  it("reports an invalid $value on a token with an inherited $type", () => {
+    const result = resolveTokens({
+      color: {
+        $type: "color",
+        brand: {
+          $value: {
+            colorSpace: "srgb",
+            components: ["0.2", 0.4, 1],
+            alpha: 1,
+            hex: "#3366ff",
+          },
+        },
+      },
+    });
+    expect(result.errors).toHaveLength(1);
+    expect(result.errors[0]?.kind).toBe("invalid-value");
+    expect(result.errors[0]?.at).toBe("color.brand.$value.components.0");
+  });
+
+  it("accepts a valid $value and an alias $value on inherited-type tokens", () => {
+    const result = resolveTokens({
+      color: {
+        $type: "color",
+        primary: {
+          $value: { colorSpace: "srgb", components: [0.2, 0.4, 1] },
+        },
+        accent: { $value: "{color.primary}" },
+      },
+    });
+    expect(result.errors).toEqual([]);
+  });
+
+  it("does not re-validate tokens with an explicit $type", () => {
+    // The Token schema owns explicit-type validation; the resolver
+    // pass must not double-report the same defect.
+    const result = resolveTokens({
+      brand: {
+        $type: "color",
+        $value: { colorSpace: "srgb", components: ["oops", 0, 0] },
+      },
+    });
+    expect(result.errors).toEqual([]);
+  });
+
   it("resolves a curly-brace alias to the target value", () => {
     const result = resolveTokens({
       color: {
