@@ -1,5 +1,5 @@
 {
-  "name": "dtcg-tokens",
+  "name": "@oddsquad/tic-tac-token",
   "version": "0.1.0",
   "description": "Runtime validator for the Design Tokens Format Module (DTCG) 2025.10. Standard-Schema-compatible, arktype-backed.",
   "type": "module",
