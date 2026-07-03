@@ -27,12 +27,12 @@ importers:
       '@corvu/resizable':
         specifier: ^0.2.5
         version: 0.2.5(solid-js@1.9.12)
+      '@oddsquad/tic-tac-token':
+        specifier: workspace:*
+        version: link:../..
       '@vscode/codicons':
         specifier: ^0.0.45
         version: 0.0.45
-      dtcg-tokens:
-        specifier: workspace:*
-        version: link:../..
       dtcg-tokens-lsp:
         specifier: workspace:*
         version: link:../../lsp
@@ -70,7 +70,7 @@ importers:
 
   lsp:
     dependencies:
-      dtcg-tokens:
+      '@oddsquad/tic-tac-token':
         specifier: workspace:*
         version: link:..
       jsonc-parser:
