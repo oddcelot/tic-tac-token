@@ -1,3 +1,12 @@
+## Run
+
+```sh
+pnpm install          # repo root
+pnpm -F token-playground dev    # builds @oddsquad/tic-tac-token + @oddsquad/tic-tac-token-lsp dists first, then Vite on :1234
+```
+
+`pnpm -F token-playground build` emits a fully static `dist/` (repo-root `schema.json` is inlined at build time) — deployable to any static host.
+
 ## Usage
 
 Those templates dependencies are maintained via [pnpm](https://pnpm.io) via `pnpm up -Lri`.

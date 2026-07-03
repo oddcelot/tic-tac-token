@@ -54,6 +54,7 @@
     "build": "tsc --noEmit",
     "build:dist": "tsc -p tsconfig.build.json",
     "generate-schema": "node generate-schema.ts",
+    "build:packages": "pnpm build:dist && pnpm -F @oddsquad/tic-tac-token-lsp build:dist",
     "prepublishOnly": "pnpm test && pnpm generate-schema && pnpm build:dist"
   },
   "dependencies": {
