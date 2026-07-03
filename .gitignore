@@ -4,3 +4,4 @@ target
 *.wasm
 .js
 .DS_Store
+.claude
