@@ -49,6 +49,8 @@ export type FlatToken = {
    * `validateValues` pass instead.
    */
   typeInherited: boolean;
+  /** Present when this token was expanded from `$extensions.tic-tac-token.modes`. */
+  mode?: string;
   $value: unknown;
   $description?: string;
   $extensions?: Record<string, unknown>;

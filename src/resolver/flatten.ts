@@ -1,5 +1,7 @@
 import { type FlatToken, isTokenType, type ResolverError } from "./types.ts";
 
+const MODES_KEY = "tic-tac-token.modes";
+
 // Walk the token tree. A node is a token iff it carries `$value` (per
 // DTCG 2025.10 §2). All other objects with non-`$`-prefixed children are
 // groups. Tokens inherit `$type` from the nearest ancestor group when
@@ -39,23 +41,44 @@ export function flattenTokens(root: unknown): {
         });
         return;
       }
-      tokens.push({
-        path,
-        $type: effectiveType,
-        typeInherited: localType === undefined,
-        $value: rec.$value,
+      const shared = {
+        $type: effectiveType as import("./types.ts").TokenType,
         $description:
           typeof rec.$description === "string" ? rec.$description : undefined,
-        $extensions:
-          rec.$extensions && typeof rec.$extensions === "object"
-            ? (rec.$extensions as Record<string, unknown>)
-            : undefined,
         $deprecated:
           typeof rec.$deprecated === "boolean" ||
           typeof rec.$deprecated === "string"
             ? (rec.$deprecated as boolean | string)
             : undefined,
+      } as const;
+
+      tokens.push({
+        path,
+        ...shared,
+        typeInherited: localType === undefined,
+        $value: rec.$value,
+        $extensions:
+          rec.$extensions && typeof rec.$extensions === "object"
+            ? (rec.$extensions as Record<string, unknown>)
+            : undefined,
       });
+
+      // Expand `$extensions.tic-tac-token.modes` into separate tokens.
+      const ext = rec.$extensions;
+      if (ext && typeof ext === "object" && !Array.isArray(ext)) {
+        const modes = (ext as Record<string, unknown>)[MODES_KEY];
+        if (modes && typeof modes === "object" && !Array.isArray(modes)) {
+          for (const [modeName, modeValue] of Object.entries(modes as Record<string, unknown>)) {
+            tokens.push({
+              path: `${path}@${modeName}`,
+              ...shared,
+              typeInherited: true,
+              mode: modeName,
+              $value: modeValue,
+            });
+          }
+        }
+      }
       return;
     }
 

@@ -75,7 +75,14 @@ impl zed::Extension for DtcgTokensExtension {
         if zed::npm_package_installed_version(PACKAGE)?.as_deref() != Some(latest.as_str()) {
             zed::npm_install_package(PACKAGE, &latest)?;
         }
-        let server_path = format!("node_modules/{PACKAGE}/dist/server.js");
+        let cwd = std::env::current_dir()
+            .map_err(|e| format!("failed to get extension working directory: {e}"))?;
+        let server_path = cwd
+            .join("node_modules")
+            .join(PACKAGE)
+            .join("dist/server.js")
+            .to_string_lossy()
+            .to_string();
         Ok(zed::Command {
             command: node,
             args: vec![server_path, "--stdio".into()],

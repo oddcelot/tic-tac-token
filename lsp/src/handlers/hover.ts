@@ -1,6 +1,6 @@
 import type { FlatToken } from "@oddsquad/tic-tac-token/resolver";
 import { flattenTokens, isTokenType } from "@oddsquad/tic-tac-token/resolver";
-import type { Node } from "jsonc-parser";
+import { findNodeAtLocation, type Node } from "jsonc-parser";
 import { type Hover, MarkupKind, type Position } from "vscode-languageserver";
 import type { AnalysisResult } from "../analyzer.ts";
 import { renderTokenHover } from "../utils/hover-markdown.ts";
@@ -76,6 +76,67 @@ function rawTokenAt(
     : undefined;
 }
 
+// Find the deepest node in the AST that contains `offset`.
+function deepestNodeAt(root: Node, offset: number): Node {
+  function visit(n: Node): Node {
+    if (!n.children) return n;
+    for (const child of n.children) {
+      if (offset >= child.offset && offset <= child.offset + child.length) {
+        return visit(child);
+      }
+    }
+    return n;
+  }
+  return visit(root);
+}
+
+// Walk up from a node collecting property-key breadcrumbs.
+// Returns keys from root to the node's parent property.
+function propertyPath(node: Node): string[] {
+  const segments: string[] = [];
+  let cur: Node | undefined = node;
+  while (cur) {
+    if (cur.type === "property") {
+      const key = cur.children?.[0]?.value;
+      if (typeof key === "string") segments.unshift(key);
+    }
+    cur = cur.parent;
+  }
+  return segments;
+}
+
+type ModeVariant = {
+  /** Resolver flat path, e.g. `"color.brand.accent@dark"`. */
+  flatPath: string;
+  /** AST path segments to the mode variant value node. */
+  astSegments: (string | number)[];
+};
+
+// Detect when the cursor is inside a `$extensions.tic-tac-token.modes.*`
+// block. Returns the mode-variant flat path (e.g.
+// `color.brand.accent@dark`) and the AST segments to the mode block node.
+function findModeVariant(
+  ast: Node | undefined,
+  offset: number,
+): ModeVariant | undefined {
+  if (!ast) return undefined;
+  const deep = deepestNodeAt(ast, offset);
+  const path = propertyPath(deep);
+  // Pattern: …, <tokenName>, "$extensions", "tic-tac-token.modes", <modeName>
+  const modesIdx = path.lastIndexOf("tic-tac-token.modes");
+  if (modesIdx >= 2 && path[modesIdx - 1] === "$extensions") {
+    const modeName = path[modesIdx + 1];
+    if (modeName) {
+      const tokenPath = path.slice(0, modesIdx - 1);
+      return {
+        flatPath: `${tokenPath.join(".")}@${modeName}`,
+        astSegments: [...tokenPath, "$extensions", "tic-tac-token.modes", modeName],
+      };
+    }
+  }
+  return undefined;
+}
+
 export function hoverAt(
   result: AnalysisResult,
   position: Position,
@@ -84,16 +145,27 @@ export function hoverAt(
   const enclosing = findEnclosingToken(result.ast, offset);
   if (!enclosing) return undefined;
 
+  // Check if cursor is inside a mode variant block.
+  const modeVariant = findModeVariant(result.ast, offset);
+
+  // Resolver may have expanded `$extensions.tic-tac-token.modes` into
+  // separate tokens. If the cursor is inside a mode variant block, use
+  // the mode-variant path for lookup and pin the range to the block.
+  const lookupPath = modeVariant?.flatPath ?? enclosing.path;
+  const hoverNode = modeVariant?.astSegments
+    ? findNodeAtLocation(result.ast!, modeVariant.astSegments)
+    : undefined;
+
   // Build the literal token (pre-resolution) by flattening just the
   // node at this path from the original parsed value. We re-flatten the
   // whole document and pick the matching path — simpler than reaching
   // into the AST.
   const literalFlat = result.value !== undefined ? flattenTokens(result.value).tokens : [];
   let literal: FlatToken | undefined = literalFlat.find(
-    (t) => t.path === enclosing.path,
+    (t) => t.path === lookupPath,
   );
   const resolved: FlatToken | undefined = result.resolved.byPath.get(
-    enclosing.path,
+    lookupPath,
   );
 
   // Token-root `$ref` form: source has $ref but no $value, so
@@ -133,7 +205,7 @@ export function hoverAt(
   const markdown = renderTokenHover(literal, resolved);
   return {
     contents: { kind: MarkupKind.Markdown, value: markdown },
-    range: nodeRange(result.text, enclosing.node),
+    range: nodeRange(result.text, hoverNode ?? enclosing.node),
   };
 }
 

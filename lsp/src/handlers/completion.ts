@@ -1,4 +1,4 @@
-import { flattenTokens } from "@oddsquad/tic-tac-token/resolver";
+import { flattenTokens, TOKEN_TYPES } from "@oddsquad/tic-tac-token/resolver";
 import type { Node } from "jsonc-parser";
 import {
   type CompletionItem,
@@ -51,6 +51,29 @@ type AliasContext = {
   prefix: string;
   prefixStartOffset: number; // absolute offset in the doc where the prefix starts
 };
+
+// Detect $type value context: cursor is inside a JSON string whose
+// parent property key is `$type`.
+function typeValueContext(
+  text: string,
+  ast: Node | undefined,
+  offset: number,
+): boolean {
+  const node = findStringNodeAt(ast, offset);
+  if (!node) return false;
+  const parent = node.parent;
+  if (!parent || parent.type !== "property") return false;
+  const keyNode = parent.children?.[0];
+  if (!keyNode || keyNode.value !== "$type") return false;
+
+  const contentStart = node.offset + 1;
+  if (offset < contentStart) return false;
+  const upToCursor = text.slice(contentStart, offset);
+  // If we've already typed past a complete value and hit the closing quote, stop
+  if (upToCursor.includes('"')) return false;
+
+  return true;
+}
 
 // Detect JSON-Pointer-string context: cursor is inside a string whose
 // parent property is named `$ref`. Returns the literal prefix between
@@ -169,6 +192,22 @@ export function completionsAt(
         sortText: ptr,
       });
     }
+    return { isIncomplete: false, items };
+  }
+
+  // $type value context: cursor inside `"$type": "..."` string.
+  if (typeValueContext(result.text, result.ast, offset)) {
+    const node = findStringNodeAt(result.ast, offset)!;
+    const contentStart = node.offset + 1;
+    const startPos = offsetToPosition(result.text, contentStart);
+    const range = { start: startPos, end: position };
+    const items: CompletionItem[] = TOKEN_TYPES.map((t) => ({
+      label: t,
+      kind: CompletionItemKind.Value,
+      textEdit: { range, newText: t },
+      filterText: t,
+      sortText: t,
+    }));
     return { isIncomplete: false, items };
   }
 

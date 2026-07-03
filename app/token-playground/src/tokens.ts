@@ -5,56 +5,9 @@ export type { FlatToken, TokenType };
 
 export type TokenMode = "light" | "dark";
 
-// Custom extension namespace for per-scheme token overrides. A token may
-// carry a map of mode -> replacement $value under this key, e.g.:
-//
-//   {
-//     "$type": "color",
-//     "$value": { ...light... },
-//     "$extensions": {
-//       "tic-tac-token.modes": {
-//         "dark": { ...dark... }
-//       }
-//     }
-//   }
-//
-// When a mode is active, applyModeToTree() rewrites each matching
-// token's $value in the parsed JSON tree BEFORE the core resolver runs,
-// so any aliases that point at a mode-switched token pick up the
-// mode-specific value during alias resolution.
-//
-// Non-spec — DTCG 2025.10 has no native color-scheme mechanism; this is
-// a playground-local convention.
-export const MODES_EXTENSION = "tic-tac-token.modes";
-
-function applyModeToTree(node: unknown, mode: TokenMode): unknown {
-  if (Array.isArray(node)) return node.map((item) => applyModeToTree(item, mode));
-  if (!node || typeof node !== "object") return node;
-  const rec = node as Record<string, unknown>;
-
-  // Token detection: a node with `$value` is a token.
-  if ("$value" in rec) {
-    const ext = rec.$extensions;
-    if (ext && typeof ext === "object") {
-      const modes = (ext as Record<string, unknown>)[MODES_EXTENSION];
-      if (modes && typeof modes === "object" && mode in (modes as object)) {
-        return {
-          ...rec,
-          $value: (modes as Record<string, unknown>)[mode],
-        };
-      }
-    }
-    return rec;
-  }
-
-  // Group — recurse into children.
-  const out: Record<string, unknown> = {};
-  for (const [k, v] of Object.entries(rec)) {
-    out[k] = applyModeToTree(v, mode);
-  }
-  return out;
-}
-
+// The resolver now expands `$extensions.tic-tac-token.modes` into separate
+// flat tokens with paths like `color.neutral.background@dark`. This function
+// filters the resolved token list to only those matching the active scheme.
 export function parseTokens(
   raw: string,
   mode: TokenMode = "light",
@@ -65,9 +18,15 @@ export function parseTokens(
   } catch {
     return [];
   }
-  const preprocessed = mode === "light" ? parsed : applyModeToTree(parsed, mode);
-  const { tokens } = resolveTokens(preprocessed);
-  return tokens;
+  const { tokens } = resolveTokens(parsed);
+  if (mode === "light") return tokens.filter((t) => !t.mode);
+  // For dark mode, replace defaults that have a matching mode variant.
+  const modePaths = new Set(
+    tokens.filter((t) => t.mode === mode).map((t) => t.path.replace(/@\w+$/, "")),
+  );
+  return tokens.filter(
+    (t) => t.mode === mode || (!t.mode && !modePaths.has(t.path)),
+  );
 }
 
 export function colorToCss(value: unknown): string | null {

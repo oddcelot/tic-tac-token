@@ -256,4 +256,30 @@ describe("resolveTokens (full pipeline)", () => {
     });
     expect(result.errors.some((e) => e.kind === "broken-extends")).toBe(true);
   });
+
+  it("expands $extensions.tic-tac-token.modes into separate flat tokens", () => {
+    const result = resolveTokens({
+      color: {
+        brand: {
+          accent: {
+            $type: "color",
+            $value: { colorSpace: "srgb", components: [1, 0.4, 0.5], alpha: 1, hex: "#FF6680" },
+            $extensions: {
+              "tic-tac-token.modes": {
+                "dark": { colorSpace: "srgb", components: [1, 0.56, 0.64], alpha: 1, hex: "#FF8FA3" },
+              },
+            },
+          },
+        },
+      },
+    });
+    expect(result.errors).toEqual([]);
+    const paths = result.tokens.map((t) => t.path);
+    expect(paths).toContain("color.brand.accent");
+    expect(paths).toContain("color.brand.accent@dark");
+
+    const dark = result.byPath.get("color.brand.accent@dark")!;
+    expect(dark.mode).toBe("dark");
+    expect((dark.$value as Record<string, unknown>).hex).toBe("#FF8FA3");
+  });
 });

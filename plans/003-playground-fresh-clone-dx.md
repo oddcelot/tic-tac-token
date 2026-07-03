@@ -1,21 +1,22 @@
 # Plan 003: Make the token playground run from a fresh clone (and be deployable)
 
-> **⚠️ RECONCILIATION BANNER (2026-07-03)** — Plan 001 renamed the **root package** from `dtcg-tokens` to `@oddsquad/tic-tac-token`. This plan was written before that rename. Substitute throughout wherever the **root validator package** is meant:
-> - `app/token-playground/package.json` dependency key is now `"@oddsquad/tic-tac-token": "workspace:*"` (not `"dtcg-tokens"`).
-> - `pnpm -F dtcg-tokens build:dist` → `pnpm -F @oddsquad/tic-tac-token build:dist`. Any aggregate `build:packages` script must use the new name.
-> - Every `dtcg-tokens-lsp` reference is a **different** package and is UNCHANGED.
+> **⚠️ RECONCILIATION (2026-07-03, executor dispatch time)** — Plans 001/002 renamed
+> **both** workspace packages after this plan was written:
+> - Root: `dtcg-tokens` → `@oddsquad/tic-tac-token`
+> - LSP: `dtcg-tokens-lsp` → `@oddsquad/tic-tac-token-lsp`
+>
+> The plan below has been reconciled at commit `d56f6be` — all steps, excerpts,
+> and commands already use the current package names. No substitutions needed.
 >
 > **Executor instructions**: Follow this plan step by step. Run every
 > verification command and confirm the expected result before moving to the
 > next step. If anything in the "STOP conditions" section occurs, stop and
-> report — do not improvise. When done, update the status row for this plan
-> in `plans/README.md` — unless a reviewer dispatched you and told you they
-> maintain the index.
+> report — do not improvise. Your reviewer maintains the index; do NOT update
+> `plans/README.md`.
 >
-> **Drift check (run first)**: `git diff --stat 221fdf6..HEAD -- app/token-playground package.json`
-> If any in-scope file changed since this plan was written, compare the
-> "Current state" excerpts against the live code before proceeding; on a
-> mismatch, treat it as a STOP condition.
+> **Drift check (run first)**: `git diff --stat 221fdf6..d56f6be -- app/token-playground package.json`
+> The excerpts below are already reconciled against current HEAD (`d56f6be`). If
+> your worktree's HEAD differs, re-verify the "Current state" section before proceeding.
 
 ## Status
 
@@ -24,18 +25,18 @@
 - **Risk**: LOW
 - **Depends on**: none (independent of 001/002 — uses workspace-local builds, not npm)
 - **Category**: dx
-- **Planned at**: commit `221fdf6`, 2026-07-03
+- **Planned at**: commit `221fdf6`, 2026-07-03 (reconciled at `d56f6be`, 2026-07-03)
 
 ## Why this matters
 
-The playground (`app/token-playground`) is the repo's showcase — a Solid + Vite + Monaco SPA with live DTCG validation and the actual language server running in-page via a Web Worker. It is also the surface the last ~10 commits invested in. But a fresh clone cannot run it: the worker imports `dtcg-tokens-lsp/browser`, which maps to `lsp/dist/server-browser.js`, and nothing ever builds `lsp/dist/` (the lsp package's default `build` script is typecheck-only). The flagship feature silently breaks on `pnpm dev`. One script-wiring change makes the demo reproducible, and the build output is already fully static and deployable.
+The playground (`app/token-playground`) is the repo's showcase — a Solid + Vite + Monaco SPA with live DTCG validation and the actual language server running in-page via a Web Worker. It is also the surface the last ~10 commits invested in. But a fresh clone cannot run it: the worker imports `@oddsquad/tic-tac-token-lsp/browser`, which maps to `lsp/dist/server-browser.js`, and nothing ever builds `lsp/dist/` (the lsp package's default `build` script is typecheck-only). The flagship feature silently breaks on `pnpm dev`. One script-wiring change makes the demo reproducible, and the build output is already fully static and deployable.
 
 ## Current state
 
 - `app/token-playground/src/lsp/worker.ts:5` — the load-bearing import:
 
   ```ts
-  import "dtcg-tokens-lsp/browser";
+  import "@oddsquad/tic-tac-token-lsp/browser";
   ```
 
   `lsp/package.json` maps `./browser` → `./dist/server-browser.js`. `lsp/dist/` does not exist in a fresh checkout, and no script builds it automatically.
@@ -52,16 +53,16 @@ The playground (`app/token-playground`) is the repo's showcase — a Solid + Vit
       "serve": "vite preview"
     },
     "dependencies": {
-      "dtcg-tokens": "workspace:*",
-      "dtcg-tokens-lsp": "workspace:*",
+      "@oddsquad/tic-tac-token": "workspace:*",
+      "@oddsquad/tic-tac-token-lsp": "workspace:*",
       // …monaco-editor, solid-js, vscode-jsonrpc, vscode-languageserver-protocol
     }
   }
   ```
 
   Note: no `"private": true` — with plans 001/002 publishing sibling packages, an accidental `pnpm publish -r` could publish this template-named app.
-- `dtcg-tokens` (the other workspace dep) also resolves to built output — root `package.json` `main`/`exports` point at `./dist/index.js`, and root `dist/` doesn't exist in a fresh checkout either. So **both** workspace packages need `build:dist` before the playground works.
-- Build commands that exist today: `pnpm -F dtcg-tokens build:dist` (root package) and `pnpm -F dtcg-tokens-lsp build:dist`. Root `package.json` has no aggregate script.
+- `@oddsquad/tic-tac-token` (the root workspace dep) also resolves to built output — root `package.json` `main`/`exports` point at `./dist/index.js`, and root `dist/` doesn't exist in a fresh checkout either. So **both** workspace packages need `build:dist` before the playground works.
+- Build commands that exist today: `pnpm -F @oddsquad/tic-tac-token build:dist` and `pnpm -F @oddsquad/tic-tac-token-lsp build:dist`. Root `package.json` has no aggregate script.
 - The Vite dev server runs on port 1234 (`app/token-playground/vite.config.ts`); a custom `rootSchemaPlugin` in that config inlines the repo-root `schema.json` as a build asset, so `vite build` output (`dist/`) is self-contained static hosting material.
 - Workspace layout (`pnpm-workspace.yaml`): packages are `.`, `lsp`, `app/token-playground`.
 - Repo conventions: conventional commits (`feat(playground): …`, `chore: …`).
@@ -71,7 +72,7 @@ The playground (`app/token-playground`) is the repo's showcase — a Solid + Vit
 | Purpose | Command (from repo root) | Expected on success |
 |---|---|---|
 | Install | `pnpm install` | exit 0 |
-| Build both libs | `pnpm -F dtcg-tokens build:dist && pnpm -F dtcg-tokens-lsp build:dist` | exit 0; `dist/index.js` and `lsp/dist/server-browser.js` exist |
+| Build both libs | `pnpm -F @oddsquad/tic-tac-token build:dist && pnpm -F @oddsquad/tic-tac-token-lsp build:dist` | exit 0; `dist/index.js` and `lsp/dist/server-browser.js` exist |
 | Playground dev | `pnpm -F token-playground dev` (name after Step 1) | Vite ready on http://localhost:1234 |
 | Playground build | `pnpm -F token-playground build` | exit 0; `app/token-playground/dist/` created |
 | Preview | `pnpm -F token-playground serve` | serves the built dist |
@@ -82,8 +83,6 @@ The playground (`app/token-playground`) is the repo's showcase — a Solid + Vit
 - `app/token-playground/package.json`
 - `package.json` (repo root — adding ONE aggregate script only; coordinate with plan 001 which also touches this file, but different keys)
 - `app/token-playground/README.md` (update run instructions; create the run-steps section if absent)
-- `plans/README.md` (status row)
-
 **Out of scope** (do NOT touch, even though they look related):
 - `lsp/**` — do not add hooks there; plan 002 owns that manifest.
 - `app/token-playground/src/**`, `vite.config.ts` — no app-code changes; this is script wiring only.
@@ -108,7 +107,7 @@ In `app/token-playground/package.json`: set `"name": "token-playground"`, add `"
 In root `package.json` scripts, add:
 
 ```jsonc
-"build:packages": "pnpm -F dtcg-tokens build:dist && pnpm -F dtcg-tokens-lsp build:dist"
+"build:packages": "pnpm -F @oddsquad/tic-tac-token build:dist && pnpm -F @oddsquad/tic-tac-token-lsp build:dist"
 ```
 
 **Verify**: `pnpm build:packages` → exit 0; `test -f dist/index.js && test -f lsp/dist/server-browser.js` → exit 0
@@ -128,9 +127,9 @@ In `app/token-playground/package.json` scripts, add:
 
 ### Step 4: Smoke the dev server
 
-`pnpm -F token-playground dev` in the background; wait for the ready line; `curl -sf http://localhost:1234 | head -5` → HTML. Then check the worker bundle resolves: the dev server must not log a module-resolution error for `dtcg-tokens-lsp/browser`. Kill the server.
+`pnpm -F token-playground dev` in the background; wait for the ready line; `curl -sf http://localhost:1234 | head -5` → HTML. Then check the worker bundle resolves: the dev server must not log a module-resolution error for `@oddsquad/tic-tac-token-lsp/browser`. Kill the server.
 
-**Verify**: curl returns HTML, and Vite's output contains no `Failed to resolve import "dtcg-tokens-lsp/browser"` error.
+**Verify**: curl returns HTML, and Vite's output contains no `Failed to resolve import "@oddsquad/tic-tac-token-lsp/browser"` error.
 
 ### Step 5: Document the run story
 
@@ -141,7 +140,7 @@ In `app/token-playground/README.md`, add/replace a "Run" section:
 
 ```sh
 pnpm install          # repo root
-pnpm -F token-playground dev    # builds dtcg-tokens + dtcg-tokens-lsp dists first, then Vite on :1234
+pnpm -F token-playground dev    # builds @oddsquad/tic-tac-token + @oddsquad/tic-tac-token-lsp dists first, then Vite on :1234
 ```
 
 `pnpm -F token-playground build` emits a fully static `dist/` (repo-root `schema.json` is inlined at build time) — deployable to any static host.
@@ -157,10 +156,9 @@ No unit tests exist or are added for the playground. The machine gate is the fre
 
 - [ ] From a clean state (`rm -rf dist lsp/dist app/token-playground/dist`), `pnpm -F token-playground build` exits 0
 - [ ] `app/token-playground/dist/index.html` exists after build
-- [ ] Dev server serves HTML on :1234 with no `dtcg-tokens-lsp/browser` resolution error
+- [ ] Dev server serves HTML on :1234 with no `@oddsquad/tic-tac-token-lsp/browser` resolution error
 - [ ] Playground package is named `token-playground` and `private: true`
 - [ ] `git status` shows no modifications outside the in-scope list
-- [ ] `plans/README.md` status row updated
 
 ## STOP conditions
 
