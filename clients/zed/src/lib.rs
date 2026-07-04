@@ -5,26 +5,35 @@ use zed_extension_api::{self as zed, settings::LspSettings, LanguageServerId, Re
 // npm into the extension's own work directory and launches
 // `node node_modules/@oddsquad/tic-tac-token-lsp/dist/server.js --stdio`.
 //
-// Dev escape hatch: if the open worktree IS this monorepo and has a locally
-// built `lsp/dist/server.js`, that build wins over the npm install so
-// iterating on the LSP doesn't require publishing first. The probe is
-// deliberately two gates, both of which must hold:
+// Dev escape hatch: if the open worktree IS this monorepo, the locally
+// built `lsp/dist/server.js` wins over the npm install so iterating on the
+// LSP doesn't require publishing first. The probe fingerprints two TRACKED
+// manifests, both of which must match:
 //
 //   1. The worktree root `package.json` names this monorepo
 //      (`"@oddsquad/tic-tac-token"`, quotes included — the quoted match
-//      also rules out foreign projects that merely *depend on*
-//      `@oddsquad/tic-tac-token-lsp`).
-//   2. `lsp/dist/server.js` reads back with non-empty content.
+//      rules out foreign projects that merely *depend on*
+//      `@oddsquad/tic-tac-token-lsp`, since that dependency string has a
+//      `-lsp` suffix before the closing quote).
+//   2. `lsp/package.json` names the LSP package
+//      (`"@oddsquad/tic-tac-token-lsp"`). A foreign project that depends on
+//      the root package has no `lsp/package.json` at its worktree root, so
+//      this rules it out.
 //
-// Why not a plain existence check? `worktree.read_text_file(path).is_ok()`
-// was observed returning Ok at runtime for a file that does not exist
-// (foreign project without any `lsp/` directory), which sent a nonexistent
-// path to node (MODULE_NOT_FOUND) and blocked the npm fallback. So the
-// gate must validate *content*, not just Ok-ness: gate 1 fingerprints the
-// monorepo by matching what was read, gate 2 requires non-empty bytes.
+// Why fingerprint `lsp/package.json` and NOT the built `lsp/dist/server.js`?
+// `dist/` is gitignored, and Zed's `worktree.read_text_file` reads from the
+// worktree's (gitignore-respecting) snapshot — it CANNOT see gitignored
+// files, so reading `lsp/dist/server.js` always failed and forced the npm
+// fallback even inside the monorepo. We must gate on tracked files only.
 // `std::fs` is not an option either — only the extension's own work
 // directory is preopened inside the WASI sandbox (the biome Zed extension
 // documents the same limitation and also probes via the worktree API).
+//
+// Consequence: inside the monorepo the dev must have run
+// `pnpm -F @oddsquad/tic-tac-token-lsp build:dist` first. If `dist/` is
+// missing, node fails fast with a clear MODULE_NOT_FOUND rather than
+// silently serving a stale npm build — which is the correct signal when
+// you're actively developing the server.
 //
 // The server is namespaced to .tokens / .tokens.json URIs at the LSP
 // layer (see `lsp/src/server.ts: isTokenDocument`), so attaching it to
@@ -38,16 +47,18 @@ struct DtcgTokensExtension;
 
 const DEV_SERVER_RELATIVE_PATH: &str = "lsp/dist/server.js";
 const MONOREPO_FINGERPRINT: &str = "\"@oddsquad/tic-tac-token\"";
+const LSP_MANIFEST_RELATIVE_PATH: &str = "lsp/package.json";
+const LSP_PACKAGE_FINGERPRINT: &str = "\"@oddsquad/tic-tac-token-lsp\"";
 const PACKAGE: &str = "@oddsquad/tic-tac-token-lsp";
 
-fn is_this_monorepo_with_built_server(worktree: &zed::Worktree) -> bool {
-    let is_monorepo = worktree
+fn is_this_monorepo(worktree: &zed::Worktree) -> bool {
+    let root_is_monorepo = worktree
         .read_text_file("package.json")
         .is_ok_and(|content| content.contains(MONOREPO_FINGERPRINT));
-    is_monorepo
+    root_is_monorepo
         && worktree
-            .read_text_file(DEV_SERVER_RELATIVE_PATH)
-            .is_ok_and(|content| !content.is_empty())
+            .read_text_file(LSP_MANIFEST_RELATIVE_PATH)
+            .is_ok_and(|content| content.contains(LSP_PACKAGE_FINGERPRINT))
 }
 
 impl zed::Extension for DtcgTokensExtension {
@@ -62,7 +73,7 @@ impl zed::Extension for DtcgTokensExtension {
     ) -> Result<zed::Command> {
         let node = zed::node_binary_path()?;
 
-        if is_this_monorepo_with_built_server(worktree) {
+        if is_this_monorepo(worktree) {
             let dev_path = format!("{}/{DEV_SERVER_RELATIVE_PATH}", worktree.root_path());
             return Ok(zed::Command {
                 command: node,
