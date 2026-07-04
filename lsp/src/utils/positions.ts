@@ -11,8 +11,7 @@ function lineTable(text: string): number[] {
   return offsets;
 }
 
-export function offsetToPosition(text: string, offset: number): Position {
-  const table = lineTable(text);
+function lookupPosition(table: number[], offset: number): Position {
   let lo = 0;
   let hi = table.length - 1;
   while (lo < hi) {
@@ -21,6 +20,36 @@ export function offsetToPosition(text: string, offset: number): Position {
     else hi = mid - 1;
   }
   return { line: lo, character: offset - table[lo]! };
+}
+
+export function offsetToPosition(text: string, offset: number): Position {
+  return lookupPosition(lineTable(text), offset);
+}
+
+// Converter that reuses one line table across many lookups. Use this
+// when emitting many ranges per document (semantic tokens, document
+// colors) — `offsetToPosition` rebuilds the table on every call.
+export function makeOffsetToPosition(text: string): (offset: number) => Position {
+  const table = lineTable(text);
+  return (offset) => lookupPosition(table, offset);
+}
+
+// Convert (line, character) → byte offset for jsonc-parser's
+// position-based APIs. Linear scan over the text; cheap for typical
+// document sizes.
+export function positionToOffset(text: string, position: Position): number {
+  let line = 0;
+  let character = 0;
+  for (let i = 0; i < text.length; i++) {
+    if (line === position.line && character === position.character) return i;
+    if (text.charCodeAt(i) === 0x0a /* \n */) {
+      line++;
+      character = 0;
+    } else {
+      character++;
+    }
+  }
+  return text.length;
 }
 
 export function nodeRange(text: string, node: Node): Range {

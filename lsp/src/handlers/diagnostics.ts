@@ -16,7 +16,10 @@ function fallbackRange(text: string): { start: { line: number; character: number
   };
 }
 
-export function diagnosticsFromAnalysis(result: AnalysisResult): Diagnostic[] {
+export function diagnosticsFromAnalysis(
+  result: AnalysisResult,
+  resolvesInWorkspace?: (path: string) => boolean,
+): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
 
   // 1. Syntax errors from jsonc-parser
@@ -51,11 +54,22 @@ export function diagnosticsFromAnalysis(result: AnalysisResult): Diagnostic[] {
     const tokenPath = err.at === "(root)" ? "" : err.at;
     const node = tokenPath ? nodeForTokenPath(result.ast, tokenPath) : result.ast;
     const range = node ? nodeRange(result.text, node) : fallbackRange(result.text);
+
+    // A broken alias/ref whose target is defined in another workspace
+    // file isn't really an error — the resolver just can't see across
+    // files. Downgrade to a Hint and say so, rather than flagging it red.
+    const crossFile =
+      (err.kind === "broken-alias" || err.kind === "broken-ref") &&
+      err.target !== undefined &&
+      resolvesInWorkspace?.(err.target) === true;
+
     diagnostics.push({
-      severity: severityFor(err.kind),
+      severity: crossFile ? DiagnosticSeverity.Hint : severityFor(err.kind),
       range,
       source: SOURCE,
-      message: err.message,
+      message: crossFile
+        ? `${err.message} (resolves in another workspace file — cross-file resolution is informational)`
+        : err.message,
       code: err.kind,
     });
   }

@@ -72,6 +72,8 @@ export type ResolverError = {
   /** Token path or pointer that surfaced the error. */
   at: string;
   message: string;
+  /** For reference errors: the dot-path (or JSON pointer for $ref) the reference targeted. */
+  target?: string;
 };
 
 export type ResolvedTokens = {

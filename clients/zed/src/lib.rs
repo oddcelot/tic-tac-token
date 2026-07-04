@@ -1,4 +1,4 @@
-use zed_extension_api::{self as zed, LanguageServerId, Result};
+use zed_extension_api::{self as zed, settings::LspSettings, LanguageServerId, Result};
 
 // Zed extension that registers the `dtcg-tokens-lsp` language server for
 // JSON files. In production it installs `@oddsquad/tic-tac-token-lsp` from
@@ -88,6 +88,24 @@ impl zed::Extension for DtcgTokensExtension {
             args: vec![server_path, "--stdio".into()],
             env: vec![],
         })
+    }
+
+    fn language_server_initialization_options(
+        &mut self,
+        _language_server_id: &LanguageServerId,
+        worktree: &zed::Worktree,
+    ) -> Result<Option<zed::serde_json::Value>> {
+        let settings = LspSettings::for_worktree("dtcg-tokens-lsp", worktree)?;
+        Ok(settings.initialization_options)
+    }
+
+    fn language_server_workspace_configuration(
+        &mut self,
+        _language_server_id: &LanguageServerId,
+        worktree: &zed::Worktree,
+    ) -> Result<Option<zed::serde_json::Value>> {
+        let settings = LspSettings::for_worktree("dtcg-tokens-lsp", worktree)?;
+        Ok(settings.settings)
     }
 }
 

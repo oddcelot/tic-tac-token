@@ -49,6 +49,7 @@ export function resolveAliases(
         kind: "alias-cycle",
         at: originPath,
         message: `Alias cycle detected through "{${target}}".`,
+        target,
       });
       return value;
     }
@@ -63,6 +64,7 @@ export function resolveAliases(
         kind: "broken-alias",
         at: originPath,
         message: `Alias "{${target}}" does not resolve to a known token.`,
+        target,
       });
       return value;
     }

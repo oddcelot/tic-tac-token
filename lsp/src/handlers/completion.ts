@@ -7,25 +7,8 @@ import {
   type Position,
 } from "vscode-languageserver";
 import type { AnalysisResult } from "../analyzer.ts";
-import { offsetToPosition } from "../utils/positions.ts";
-
-// Convert (line, character) → byte offset. Linear scan; fine for
-// typical document sizes. Mirrors the helper used by the hover handler;
-// kept local rather than shared to avoid a circular import.
-function positionToOffset(text: string, position: Position): number {
-  let line = 0;
-  let character = 0;
-  for (let i = 0; i < text.length; i++) {
-    if (line === position.line && character === position.character) return i;
-    if (text.charCodeAt(i) === 0x0a /* \n */) {
-      line++;
-      character = 0;
-    } else {
-      character++;
-    }
-  }
-  return text.length;
-}
+import { offsetToPosition, positionToOffset } from "../utils/positions.ts";
+import type { WorkspaceIndex } from "../workspace/index.ts";
 
 // Find the AST string node containing a given offset, if any.
 function findStringNodeAt(root: Node | undefined, offset: number): Node | undefined {
@@ -140,6 +123,8 @@ function aliasContext(text: string, ast: Node | undefined, offset: number): Alia
 export function completionsAt(
   result: AnalysisResult,
   position: Position,
+  index?: WorkspaceIndex,
+  uri?: string,
 ): CompletionList {
   const empty: CompletionList = { isIncomplete: false, items: [] };
   const offset = positionToOffset(result.text, position);
@@ -150,8 +135,10 @@ export function completionsAt(
     const startPos = offsetToPosition(result.text, alias.prefixStartOffset);
     const range = { start: startPos, end: position };
     const items: CompletionItem[] = [];
+    const seen = new Set<string>();
     for (const token of result.resolved.tokens) {
       if (!token.path) continue;
+      seen.add(token.path);
       if (alias.prefix && !pathStartsWith(token.path, alias.prefix)) continue;
       items.push({
         label: token.path,
@@ -162,6 +149,23 @@ export function completionsAt(
         filterText: token.path,
         sortText: token.path,
       });
+    }
+    // Cross-file tokens defined elsewhere in the workspace.
+    if (index) {
+      for (const { uri: fromUri, token } of index.allTokens()) {
+        if (!token.path || seen.has(token.path) || fromUri === uri) continue;
+        seen.add(token.path);
+        if (alias.prefix && !pathStartsWith(token.path, alias.prefix)) continue;
+        items.push({
+          label: token.path,
+          kind: CompletionItemKind.Variable,
+          detail: `${token.$type} — ${basename(fromUri)}`,
+          documentation: token.$description,
+          textEdit: { range, newText: token.path },
+          filterText: token.path,
+          sortText: `~${token.path}`,
+        });
+      }
     }
     return { isIncomplete: false, items };
   }
@@ -212,6 +216,13 @@ export function completionsAt(
   }
 
   return empty;
+}
+
+// Last path segment of a URI, for a human-readable source label.
+function basename(uri: string): string {
+  const clean = uri.split(/[?#]/)[0] ?? uri;
+  const parts = clean.split("/");
+  return decodeURIComponent(parts[parts.length - 1] || clean);
 }
 
 // Treat the alias path as dot-separated segments and compare segment-

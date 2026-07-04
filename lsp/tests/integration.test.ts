@@ -1,5 +1,8 @@
 import { type ChildProcessWithoutNullStreams, spawn } from "node:child_process";
-import { fileURLToPath } from "node:url";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 const SERVER_PATH = fileURLToPath(new URL("../dist/server.js", import.meta.url));
@@ -116,6 +119,112 @@ describe("LSP server (integration)", () => {
     expect(response.result.capabilities.hoverProvider).toBe(true);
     client.notify("initialized", {});
   });
+
+  it("advertises color and semantic-token providers with a legend", async () => {
+    const response = (await client.send("initialize", {
+      processId: process.pid,
+      rootUri: null,
+      capabilities: {},
+    })) as {
+      result: {
+        capabilities: {
+          colorProvider: unknown;
+          semanticTokensProvider: {
+            legend: { tokenTypes: string[]; tokenModifiers: string[] };
+            full: unknown;
+          };
+        };
+      };
+    };
+    const caps = response.result.capabilities;
+    expect(caps.colorProvider).toBe(true);
+    expect(caps.semanticTokensProvider.full).toBe(true);
+    expect(caps.semanticTokensProvider.legend.tokenTypes).toContain("property");
+    expect(caps.semanticTokensProvider.legend.tokenModifiers).toContain("reference");
+    client.notify("initialized", {});
+  });
+
+  it("responds to semanticTokens/full and documentColor", async () => {
+    await client.send("initialize", { processId: process.pid, rootUri: null, capabilities: {} });
+    client.notify("initialized", {});
+    const uri = "file:///st.tokens.json";
+    const text = JSON.stringify(
+      {
+        color: {
+          $type: "color",
+          primary: { $value: { colorSpace: "srgb", components: [1, 0, 0], hex: "#ff0000" } },
+          accent: { $value: "{color.primary}" },
+        },
+      },
+      null,
+      2,
+    );
+    client.notify("textDocument/didOpen", {
+      textDocument: { uri, languageId: "json", version: 1, text },
+    });
+    await client.waitForNotification("textDocument/publishDiagnostics");
+
+    const st = (await client.send("textDocument/semanticTokens/full", {
+      textDocument: { uri },
+    })) as { result: { data: number[] } };
+    expect(st.result.data.length).toBeGreaterThan(0);
+    expect(st.result.data.length % 5).toBe(0);
+
+    const colors = (await client.send("textDocument/documentColor", {
+      textDocument: { uri },
+    })) as { result: Array<{ color: { red: number } }> };
+    expect(colors.result.length).toBeGreaterThan(0);
+    expect(colors.result.some((c) => c.color.red === 1)).toBe(true);
+  }, 15000);
+
+  it("resolves an alias across workspace files via hover", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "ttt-ws-"));
+    try {
+      const baseText = JSON.stringify(
+        { color: { $type: "color", primary: { $value: { colorSpace: "srgb", components: [1, 0, 0], hex: "#ff0000" } } } },
+        null,
+        2,
+      );
+      const usageText = JSON.stringify(
+        { color: { $type: "color", accent: { $value: "{color.primary}" } } },
+        null,
+        2,
+      );
+      writeFileSync(join(dir, "base.tokens.json"), baseText);
+      const usagePath = join(dir, "usage.tokens.json");
+      writeFileSync(usagePath, usageText);
+
+      await client.send("initialize", {
+        processId: process.pid,
+        rootUri: pathToFileURL(dir).href,
+        capabilities: {},
+      });
+      client.notify("initialized", {});
+      // Give the workspace scan a moment to index base.tokens.json.
+      await new Promise((r) => setTimeout(r, 300));
+
+      const uri = pathToFileURL(usagePath).href;
+      client.notify("textDocument/didOpen", {
+        textDocument: { uri, languageId: "json", version: 1, text: usageText },
+      });
+      await client.waitForNotification("textDocument/publishDiagnostics");
+
+      const idx = usageText.indexOf("{color.primary}");
+      const before = usageText.slice(0, idx);
+      const line = (before.match(/\n/g) ?? []).length;
+      const character = idx - (before.lastIndexOf("\n") + 1);
+      const hover = (await client.send("textDocument/hover", {
+        textDocument: { uri },
+        position: { line, character },
+      })) as { result: null | { contents: { value: string } } };
+      expect(hover.result).not.toBeNull();
+      const md = hover.result!.contents.value;
+      expect(md).toContain("#ff0000");
+      expect(md).toContain("base.tokens.json");
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }, 15000);
 
   it("publishes diagnostics for an invalid color", async () => {
     await client.send("initialize", { processId: process.pid, rootUri: null, capabilities: {} });

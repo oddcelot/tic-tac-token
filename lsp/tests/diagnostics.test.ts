@@ -96,6 +96,24 @@ describe("diagnosticsFromAnalysis", () => {
     const aliasDiag = diagnostics.find((d) => d.code === "broken-alias");
     expect(aliasDiag).toBeDefined();
     expect(aliasDiag?.message).toMatch(/color\.missing/);
+    expect(aliasDiag?.severity).toBe(1); // Error without a workspace resolver
+  });
+
+  it("downgrades a broken alias to a Hint when the target resolves elsewhere in the workspace", async () => {
+    const text = JSON.stringify(
+      { color: { accent: { $type: "color", $value: "{color.missing}" } } },
+      null,
+      2,
+    );
+    const analysis = await analyze(text);
+    const diagnostics = diagnosticsFromAnalysis(
+      analysis,
+      (path) => path === "color.missing",
+    );
+    const aliasDiag = diagnostics.find((d) => d.code === "broken-alias");
+    expect(aliasDiag).toBeDefined();
+    expect(aliasDiag?.severity).toBe(4); // DiagnosticSeverity.Hint
+    expect(aliasDiag?.message).toMatch(/cross-file/);
   });
 
   it("emits a diagnostic for a broken $ref pointer", async () => {

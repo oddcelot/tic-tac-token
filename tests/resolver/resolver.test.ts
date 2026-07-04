@@ -119,6 +119,7 @@ describe("resolveTokens (full pipeline)", () => {
       },
     });
     expect(result.errors.some((e) => e.kind === "broken-alias")).toBe(true);
+    expect(result.errors[0]?.target).toBe("color.missing");
   });
 
   it("detects an alias cycle", () => {

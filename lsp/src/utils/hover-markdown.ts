@@ -150,6 +150,7 @@ function formatSingleShadow(value: unknown): string | undefined {
 export function renderTokenHover(
   literal: FlatToken,
   resolved: FlatToken | undefined,
+  opts: { resolvedFrom?: string; ambiguousIn?: string[] } = {},
 ): string {
   const lines: string[] = [];
   lines.push(`**\`${literal.path || "(root)"}\`** — \`${literal.$type}\``);
@@ -172,6 +173,15 @@ export function renderTokenHover(
 
   if (isAliased && resolved) {
     lines.push("", "**Resolved**", renderValueBlock(resolved.$type, resolved.$value));
+    if (opts.resolvedFrom) {
+      lines.push("", `_Resolved from \`${opts.resolvedFrom}\`_`);
+      if (opts.ambiguousIn && opts.ambiguousIn.length > 1) {
+        lines.push(
+          "",
+          `⚠ Also defined in: ${opts.ambiguousIn.map((f) => `\`${f}\``).join(", ")}`,
+        );
+      }
+    }
   }
 
   if (literal.$deprecated) {

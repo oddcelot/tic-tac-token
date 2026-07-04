@@ -13,9 +13,43 @@ Backed by the [`@oddsquad/tic-tac-token`](../README.md) validator + resolver.
   - the **resolved** `$value` (after `{alias}` / `$ref` / `$extends`)
   - a CSS color swatch for `color` tokens
   - `$deprecated` flag where set.
-- **Completion** — alias-path completion inside `{…}` strings and JSON Pointer completion inside `"$ref": "#/…"` strings.
+- **Completion** — alias-path completion inside `{…}` strings and JSON Pointer completion inside `"$ref": "#/…"` strings. Suggestions include tokens defined in *other* workspace files.
+- **Semantic tokens** — classifies groups, token declarations, `{alias}` / `$ref` references, `$type` values, and mode names so editors can theme them independently of the JSON grammar. Uses standard LSP token types (`namespace`, `property`, `variable`, `enumMember`) plus `declaration` / `deprecated` / `reference` / `unresolved` modifiers.
+- **Document colors** — inline swatches (`textDocument/documentColor`) for `color` tokens and for `{alias}` / `$ref` strings that resolve to a color, converting all 12 DTCG color spaces to sRGB for display.
+- **Workspace awareness** — scans the workspace for `*.tokens` / `*.tokens.json` files so `{alias}` references resolve **across files**: cross-file hover shows the resolved value and its source file, and a broken alias whose target lives in another file is downgraded from an error to a hint.
 
-Planned (v1+): go-to-definition, references, document symbols, document colors.
+Planned (v1+): go-to-definition, references, document symbols, semantic-token deltas, nested colors inside composite tokens (shadow/border/gradient).
+
+## Capabilities
+
+| Capability | Method | Notes |
+| --- | --- | --- |
+| Diagnostics | `textDocument/publishDiagnostics` | Pushed on open/change. |
+| Hover | `textDocument/hover` | Cross-file alias resolution when a workspace is open. |
+| Completion | `textDocument/completion` | `{alias}`, `$ref` pointers, `$type` values. |
+| Semantic tokens | `textDocument/semanticTokens/full` | `full` only — no `range`/`delta` yet. |
+| Document colors | `textDocument/documentColor`, `textDocument/colorPresentation` | Presentation is a hex label only (no text edit — a bare hex would clobber the token). |
+
+## Configuration
+
+Pass `initializationOptions` when the client starts the server (see each editor's LSP config below):
+
+```jsonc
+{
+  "tokenFiles": {
+    "exclude": ["fixtures", "snapshots"], // extra directory names to skip when scanning
+    "maxFiles": 1000                        // cap on files indexed (default 500)
+  }
+}
+```
+
+The scanner already skips `node_modules`, `.git`, `dist`, `build`, and `out`, and ignores files larger than 1 MiB.
+
+### Cross-file resolution semantics
+
+Each file is still resolved **on its own** by the core resolver — a `{alias}` is only truly resolved when its target lives in the same file. The workspace index is a *display* layer on top: when a local lookup misses, the server consults the index to show a hover value (labelled `Resolved from <file>`) and to soften the diagnostic to a hint. `$ref` JSON Pointers stay single-document by definition and are not resolved cross-file.
+
+The index is built from a filesystem scan **only under the Node transport**. The browser/Worker build (used by the playground) has no filesystem access, so its index holds only the documents currently open in the editor.
 
 ## Install
 
@@ -44,6 +78,21 @@ Until a dedicated extension ships, use any "generic LSP" extension. Example with
 }
 ```
 
+Document color swatches work out of the box. To style the semantic tokens, use `editor.semanticTokenColorCustomizations`:
+
+```jsonc
+{
+  "editor.semanticTokenColorCustomizations": {
+    "enabled": true,
+    "rules": {
+      "variable.reference": { "foreground": "#4fc1ff" },   // {alias} / $ref that resolves
+      "*.unresolved": { "foreground": "#c93f3f", "underline": true }, // dangling reference
+      "property.deprecated": { "strikethrough": true }
+    }
+  }
+}
+```
+
 ### Zed
 
 ```jsonc
@@ -56,11 +105,14 @@ Until a dedicated extension ships, use any "generic LSP" extension. Example with
   },
   "lsp": {
     "dtcg-tokens-lsp": {
-      "binary": { "path": "dtcg-tokens-lsp", "arguments": ["--stdio"] }
+      "binary": { "path": "dtcg-tokens-lsp", "arguments": ["--stdio"] },
+      "initialization_options": { "tokenFiles": { "exclude": ["fixtures"] } }
     }
   }
 }
 ```
+
+Semantic tokens are **off by default in Zed** — see the [Zed extension README](../clients/zed/README.md#highlighting--swatches) for the `semantic_tokens` / `semantic_token_rules` / `lsp_document_colors` settings.
 
 ### Neovim (nvim-lspconfig)
 

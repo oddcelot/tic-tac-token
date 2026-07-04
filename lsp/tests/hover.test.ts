@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { analyze } from "../src/analyzer.ts";
 import { hoverAt } from "../src/handlers/hover.ts";
+import { lineCharOf } from "./helpers.ts";
 
 const TEXT = JSON.stringify(
   {
@@ -20,16 +21,6 @@ const TEXT = JSON.stringify(
   null,
   2,
 );
-
-function lineCharOf(text: string, needle: string): { line: number; character: number } {
-  const idx = text.indexOf(needle);
-  if (idx < 0) throw new Error(`needle not found: ${needle}`);
-  const before = text.slice(0, idx);
-  const line = (before.match(/\n/g) ?? []).length;
-  const lastNewline = before.lastIndexOf("\n");
-  const character = idx - (lastNewline + 1);
-  return { line, character };
-}
 
 describe("hoverAt", () => {
   it("shows the resolved value for a plain color token", async () => {
