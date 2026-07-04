@@ -69,13 +69,61 @@ The legend is: token types `namespace` (groups), `property` (token declarations)
 
 Semantic-token support landed in Zed ~v0.224 (Feb 2026); update Zed if the `semantic_tokens` setting has no effect. Zed doesn't request semantic-token *ranges*, so the server only advertises `full`.
 
-### Developing this extension (this monorepo only)
+### Which server gets launched
 
-If the open worktree is this monorepo (its root `package.json` names `@oddsquad/tic-tac-token`) **and** has a locally built, non-empty `lsp/dist/server.js`, the extension launches that instead of installing from npm — so hacking on the LSP itself doesn't require publishing first:
+The extension resolves the server in three tiers (highest priority first):
+
+1. **Explicit `binary` override** — if you set `lsp.dtcg-tokens-lsp.binary` in Zed settings, it's used verbatim. This is the dev/publish switch and works from **any** project.
+2. **Monorepo auto-detection** — if the open worktree is this monorepo (root `package.json` names `@oddsquad/tic-tac-token` **and** `lsp/package.json` names `@oddsquad/tic-tac-token-lsp`), the locally built `lsp/dist/server.js` is launched.
+3. **Published npm package** — otherwise `@oddsquad/tic-tac-token-lsp` is installed from npm and launched.
+
+> The auto-detection (tier 2) fingerprints **tracked** manifests, not the built `lsp/dist/server.js` — `dist/` is gitignored and Zed's worktree API can't read ignored files, so gating on it would (and did) always fail. Build the server first: `pnpm -F @oddsquad/tic-tac-token-lsp build:dist`.
+
+### Pointing at a local build from any project (the switch)
+
+To run a locally built server from a project that **isn't** this monorepo (e.g. a scratch folder, or to test an unpublished change), set the `binary` override — remove it to fall back to the published package:
+
+```jsonc
+// Zed settings.json
+{
+  "lsp": {
+    "dtcg-tokens-lsp": {
+      // Just the arguments → run with Zed's managed Node:
+      "binary": {
+        "arguments": [
+          "/absolute/path/to/tic-tac-token/lsp/dist/server.js",
+          "--stdio"
+        ]
+      }
+    }
+  }
+}
+```
+
+Or give a full `path` (any runtime) plus `arguments`:
+
+```jsonc
+{
+  "lsp": {
+    "dtcg-tokens-lsp": {
+      "binary": {
+        "path": "/absolute/path/to/node",
+        "arguments": ["/absolute/path/to/lsp/dist/server.js", "--stdio"]
+      }
+    }
+  }
+}
+```
+
+### Developing this extension (this monorepo)
+
+Inside this monorepo, tier 2 launches your local build automatically — just build it first:
 
 ```sh
 pnpm -F @oddsquad/tic-tac-token-lsp build:dist
 ```
+
+Changes to `lib.rs` (this extension's Rust) require a rebuild: uninstall + **Install Dev Extension** again from the Extensions panel.
 
 ## Verify
 
