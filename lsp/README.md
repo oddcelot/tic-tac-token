@@ -17,6 +17,7 @@ Backed by the [`@oddsquad/tic-tac-token`](../README.md) validator + resolver.
 - **Semantic tokens** — classifies groups, token declarations, `{alias}` / `$ref` references, `$type` values, and mode names so editors can theme them independently of the JSON grammar. Uses standard LSP token types (`namespace`, `property`, `variable`, `enumMember`) plus `declaration` / `deprecated` / `reference` / `unresolved` modifiers.
 - **Document colors** — inline swatches (`textDocument/documentColor`) for `color` tokens and for `{alias}` / `$ref` strings that resolve to a color, converting all 12 DTCG color spaces to sRGB for display.
 - **Workspace awareness** — scans the workspace for `*.tokens` / `*.tokens.json` files so `{alias}` references resolve **across files**: cross-file hover shows the resolved value and its source file, and a broken alias whose target lives in another file is downgraded from an error to a hint.
+- **CSS `var(--…)` usages** — in `.css` / `.scss` / `.less` files, a `var(--color-brand-primary)` reference gets an inline color swatch (for color tokens) and a hover showing the resolved token value, type, and source file. Tokens map to custom properties by the Style-Dictionary convention: dot-path → kebab-case, e.g. `color.brand.primary` → `--color-brand-primary`.
 
 Planned (v1+): go-to-definition, references, document symbols, semantic-token deltas, nested colors inside composite tokens (shadow/border/gradient).
 
@@ -27,8 +28,9 @@ Planned (v1+): go-to-definition, references, document symbols, semantic-token de
 | Diagnostics | `textDocument/publishDiagnostics` | Pushed on open/change. |
 | Hover | `textDocument/hover` | Cross-file alias resolution when a workspace is open. |
 | Completion | `textDocument/completion` | `{alias}`, `$ref` pointers, `$type` values. |
-| Semantic tokens | `textDocument/semanticTokens/full` | `full` only — no `range`/`delta` yet. |
-| Document colors | `textDocument/documentColor`, `textDocument/colorPresentation` | Presentation is a hex label only (no text edit — a bare hex would clobber the token). |
+| Semantic tokens | `textDocument/semanticTokens/full` | `full` only — no `range`/`delta` yet. Token documents only. |
+| Document colors | `textDocument/documentColor`, `textDocument/colorPresentation` | Token documents (token/alias values) **and** CSS `var(--…)` usages. Presentation is a hex label only (no text edit — a bare hex would clobber the token/var). |
+| Hover | `textDocument/hover` | Also on CSS `var(--…)` usages (resolved token value + source file). |
 
 ## Configuration
 
@@ -50,6 +52,10 @@ The scanner already skips `node_modules`, `.git`, `dist`, `build`, and `out`, an
 Each file is still resolved **on its own** by the core resolver — a `{alias}` is only truly resolved when its target lives in the same file. The workspace index is a *display* layer on top: when a local lookup misses, the server consults the index to show a hover value (labelled `Resolved from <file>`) and to soften the diagnostic to a hint. `$ref` JSON Pointers stay single-document by definition and are not resolved cross-file.
 
 The index is built from a filesystem scan **only under the Node transport**. The browser/Worker build (used by the playground) has no filesystem access, so its index holds only the documents currently open in the editor.
+
+### CSS `var(--…)` resolution
+
+`.css` / `.scss` / `.less` documents are never analyzed as DTCG — they only get `documentColor` swatches and hover, resolved against the workspace token index. A `var(--name)` is mapped back to a token by forward-computing every indexed token's custom-property name (convention A: `color.brand.primary` → `--color-brand-primary`) and matching — kebab-casing isn't losslessly reversible, so the var name is never parsed into a path. Mode variants (`path@mode`) have no `var()` form. Under the Node transport the disk scan seeds the index, so `var()` resolves even when the token file isn't open; in the browser the referenced token file must be open.
 
 ## Install
 
