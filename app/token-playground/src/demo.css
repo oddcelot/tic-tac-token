@@ -1,0 +1,23 @@
+/* Design tokens consumed as CSS custom properties.
+ * Hover any var(--…) to see its resolved token value and source file;
+ * color tokens also render an inline swatch. Convention: a token's
+ * dot-path maps to --kebab-case (color.brand.primary → --color-brand-primary). */
+
+.button {
+  background: var(--color-brand-primary);
+  color: var(--color-neutral-background);
+  border: 1px solid var(--color-brand-accent);
+  padding: var(--space-md) var(--space-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.button:hover {
+  background: var(--color-brand-accent);
+}
+
+.card {
+  background: var(--color-neutral-background);
+  color: var(--color-neutral-text);
+  border: 1px solid var(--color-neutral-border);
+  border-radius: var(--space-xs);
+}
