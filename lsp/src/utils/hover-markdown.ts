@@ -173,14 +173,17 @@ export function renderTokenHover(
 
   if (isAliased && resolved) {
     lines.push("", "**Resolved**", renderValueBlock(resolved.$type, resolved.$value));
-    if (opts.resolvedFrom) {
-      lines.push("", `_Resolved from \`${opts.resolvedFrom}\`_`);
-      if (opts.ambiguousIn && opts.ambiguousIn.length > 1) {
-        lines.push(
-          "",
-          `⚠ Also defined in: ${opts.ambiguousIn.map((f) => `\`${f}\``).join(", ")}`,
-        );
-      }
+  }
+  // Source-file note. Set for cross-file aliases and for CSS-var usages
+  // (which resolve to a token in another document), so it must render
+  // regardless of whether the value was aliased.
+  if (opts.resolvedFrom) {
+    lines.push("", `_Resolved from \`${opts.resolvedFrom}\`_`);
+    if (opts.ambiguousIn && opts.ambiguousIn.length > 1) {
+      lines.push(
+        "",
+        `⚠ Also defined in: ${opts.ambiguousIn.map((f) => `\`${f}\``).join(", ")}`,
+      );
     }
   }
 

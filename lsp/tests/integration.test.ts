@@ -177,6 +177,46 @@ describe("LSP server (integration)", () => {
     expect(colors.result.some((c) => c.color.red === 1)).toBe(true);
   }, 15000);
 
+  it("resolves css var(--…) usages against open token docs (color + hover)", async () => {
+    await client.send("initialize", { processId: process.pid, rootUri: null, capabilities: {} });
+    client.notify("initialized", {});
+    const tokensUri = "file:///theme.tokens.json";
+    const tokensText = JSON.stringify(
+      { color: { $type: "color", brand: { primary: { $value: { colorSpace: "srgb", components: [1, 0, 0], hex: "#ff0000" } } } } },
+      null,
+      2,
+    );
+    client.notify("textDocument/didOpen", {
+      textDocument: { uri: tokensUri, languageId: "json", version: 1, text: tokensText },
+    });
+    // Wait for analysis (also seeds the workspace index).
+    await client.waitForNotification("textDocument/publishDiagnostics");
+
+    const cssUri = "file:///app.css";
+    const cssText = `.btn {\n  color: var(--color-brand-primary);\n}\n`;
+    client.notify("textDocument/didOpen", {
+      textDocument: { uri: cssUri, languageId: "css", version: 1, text: cssText },
+    });
+
+    const colors = (await client.send("textDocument/documentColor", {
+      textDocument: { uri: cssUri },
+    })) as { result: Array<{ color: { red: number } }> };
+    expect(colors.result).toHaveLength(1);
+    expect(colors.result[0]!.color.red).toBe(1);
+
+    const varIdx = cssText.indexOf("--color-brand-primary");
+    const before = cssText.slice(0, varIdx);
+    const line = (before.match(/\n/g) ?? []).length;
+    const character = varIdx - (before.lastIndexOf("\n") + 1);
+    const hover = (await client.send("textDocument/hover", {
+      textDocument: { uri: cssUri },
+      position: { line, character },
+    })) as { result: null | { contents: { value: string } } };
+    expect(hover.result).not.toBeNull();
+    expect(hover.result!.contents.value).toContain("color.brand.primary");
+    expect(hover.result!.contents.value).toContain("#ff0000");
+  }, 15000);
+
   it("resolves an alias across workspace files via hover", async () => {
     const dir = mkdtempSync(join(tmpdir(), "ttt-ws-"));
     try {

@@ -9,6 +9,7 @@ import {
 } from "vscode-languageserver";
 import { analyze } from "./analyzer.ts";
 import { completionsAt } from "./handlers/completion.ts";
+import { cssVarColors, cssVarHover } from "./handlers/css-usage.ts";
 import { diagnosticsFromAnalysis } from "./handlers/diagnostics.ts";
 import { documentColors, colorPresentations } from "./handlers/document-color.ts";
 import { hoverAt } from "./handlers/hover.ts";
@@ -64,6 +65,13 @@ export function registerServer(
   // untouched.
   function isTokenDocument(uri: string): boolean {
     return /\.tokens(\.json)?($|\?|#)/.test(uri);
+  }
+
+  // CSS-like documents that may *consume* tokens via `var(--…)`. These are
+  // never analyzed (they aren't DTCG JSON) — they only get documentColor
+  // and hover, resolved against the workspace token index.
+  function isCssDocument(uri: string): boolean {
+    return /\.(css|scss|less)($|\?|#)/.test(uri);
   }
 
   async function refresh(uri: string, text: string): Promise<void> {
@@ -199,6 +207,11 @@ export function registerServer(
 
   connection.onHover(async (params) => {
     const uri = params.textDocument.uri;
+    if (isCssDocument(uri)) {
+      const doc = documents.get(uri);
+      if (!doc) return null;
+      return cssVarHover(doc.getText(), params.position, index) ?? null;
+    }
     if (!isTokenDocument(uri)) return null;
     const analysis = await ensureAnalysis(uri);
     if (!analysis) return null;
@@ -223,6 +236,10 @@ export function registerServer(
 
   connection.onDocumentColor(async (params) => {
     const uri = params.textDocument.uri;
+    if (isCssDocument(uri)) {
+      const doc = documents.get(uri);
+      return doc ? cssVarColors(doc.getText(), index) : [];
+    }
     if (!isTokenDocument(uri)) return [];
     const analysis = await ensureAnalysis(uri);
     if (!analysis) return [];
