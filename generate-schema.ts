@@ -57,7 +57,17 @@ const documentSchema = {
     $type: { enum: tokenTypeNames },
     $description: { type: "string" },
     $extensions: { type: "object" },
-    $extends: { type: "string", pattern: curlyBraceRef },
+    $extends: {
+      oneOf: [
+        { type: "string", pattern: curlyBraceRef },
+        {
+          type: "object",
+          properties: { $ref: { type: "string", pattern: "^#/" } },
+          required: ["$ref"],
+          additionalProperties: false,
+        },
+      ],
+    },
     $deprecated: { oneOf: [{ type: "boolean" }, { type: "string" }] },
     $root: { $ref: "#/$defs/token" },
   },

@@ -258,6 +258,55 @@ describe("resolveTokens (full pipeline)", () => {
     expect(result.errors.some((e) => e.kind === "broken-extends")).toBe(true);
   });
 
+  it("applies $extends via a JSON Pointer $ref form", () => {
+    const result = resolveTokens({
+      brand: {
+        $type: "color",
+        primary: color(1, 0, 0, "#ff0000"),
+        accent: color(0, 1, 0, "#00ff00"),
+      },
+      themed: {
+        $type: "color",
+        $extends: { $ref: "#/brand" },
+        accent: color(0, 0, 1, "#0000ff"),
+      },
+    });
+    expect(result.errors).toEqual([]);
+    expect(result.byPath.get("themed.primary")?.$value).toMatchObject({
+      hex: "#ff0000",
+    });
+    expect(result.byPath.get("themed.accent")?.$value).toMatchObject({
+      hex: "#0000ff",
+    });
+  });
+
+  it("detects an $extends cycle spanning both reference forms", () => {
+    const result = resolveTokens({
+      a: {
+        $type: "color",
+        $extends: { $ref: "#/b" },
+        x: color(1, 0, 0, "#ff0000"),
+      },
+      b: { $type: "color", $extends: "{a}", y: color(0, 1, 0, "#00ff00") },
+    });
+    expect(result.errors.some((e) => e.kind === "extends-cycle")).toBe(true);
+  });
+
+  it("reports a broken $extends target given a dangling $ref", () => {
+    const result = resolveTokens({
+      themed: { $type: "color", $extends: { $ref: "#/nonexistent" } },
+    });
+    expect(result.errors.some((e) => e.kind === "broken-extends")).toBe(true);
+  });
+
+  it("reports a broken $extends when a $ref resolves to a token", () => {
+    const result = resolveTokens({
+      brand: { $type: "color", primary: color(1, 0, 0, "#ff0000") },
+      themed: { $type: "color", $extends: { $ref: "#/brand/primary" } },
+    });
+    expect(result.errors.some((e) => e.kind === "broken-extends")).toBe(true);
+  });
+
   it("expands $extensions.tic-tac-token.modes into separate flat tokens", () => {
     const result = resolveTokens({
       color: {

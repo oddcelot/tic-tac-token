@@ -12,6 +12,7 @@ import {
   CommonMetadata,
   Extensions,
   JsonPointerRef,
+  JsonPointerRefObject,
   ValueAlias,
 } from "./tokens/shared.ts";
 import { Shadow } from "./tokens/shadow.ts";
@@ -77,7 +78,9 @@ const $ = scope({
     "$type?": TokenTypeName,
     "$description?": "string",
     "$extensions?": Extensions,
-    "$extends?": ValueAlias,
+    // DTCG 2025.10 §6.4.5: $extends accepts the same reference forms as an
+    // alias — the curly-brace path or a JSON Pointer $ref object.
+    "$extends?": ValueAlias.or(JsonPointerRefObject),
     "$deprecated?": "boolean | string",
     "$root?": "Token",
     "[/^[^${}.][^{}.]*$/]": "GroupOrToken",

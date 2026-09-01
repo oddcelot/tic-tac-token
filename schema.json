@@ -32,8 +32,25 @@
       "type": "object"
     },
     "$extends": {
-      "type": "string",
-      "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$ref": {
+              "type": "string",
+              "pattern": "^#/"
+            }
+          },
+          "required": [
+            "$ref"
+          ],
+          "additionalProperties": false
+        }
+      ]
     },
     "$deprecated": {
       "oneOf": [
