@@ -62,11 +62,11 @@
     "prepublishOnly": "pnpm test && pnpm generate-schema && pnpm build:dist"
   },
   "dependencies": {
-    "arktype": "^2.2.0"
+    "arktype": "^2.2.3"
   },
   "devDependencies": {
     "@types/node": "^26.4.0",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.11"
   }
 }
