@@ -48,43 +48,50 @@ export class TokenCard extends HTMLElement {
   #render(): void {
     if (!this.shadowRoot) this.attachShadow({ mode: "open" });
     const vars = this.#cssVars();
-    const css = Object.entries(vars)
+    const declared = Object.entries(vars)
       .map(([k, v]) => `${k}: ${v};`)
       .join(" ");
 
-    const primary = vars["--color-primary"] ?? "#1a1d21";
-    const accent = vars["--color-accent"] ?? primary;
-    const padding = vars["--spacing-card"] ?? "16px";
-    const radius = vars["--spacing-radius"] ?? "12px";
-    const family = vars["--font-family-sans"] ?? "sans-serif";
-    const weight = vars["--font-weight-bold"] ?? "700";
-
     this.shadowRoot!.innerHTML = `
       <style>
-        :host { display: block; }
+        :host {
+          display: block;
+          ${declared}
+        }
         .card {
           box-sizing: border-box;
           background: var(--sb-token-surface, #ffffff);
-          border: 2px solid ${accent};
-          border-radius: ${radius};
-          padding: ${padding};
-          font-family: ${family};
+          border: 2px solid var(--color-accent, #1a1d21);
+          border-radius: var(--spacing-radius, 12px);
+          padding: var(--spacing-card, 16px);
+          font-family: var(--font-family-sans, sans-serif);
           color: var(--sb-token-ink, #1a1d21);
           max-width: 320px;
         }
         .card__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .card__title { margin: 0; font-size: 18px; font-weight: ${weight}; line-height: 1.2; }
+        .card__title { margin: 0; font-size: 18px; font-weight: var(--font-weight-bold, 700); line-height: 1.2; }
         .card__badge {
-          background: ${primary}; color: var(--sb-token-primary-ink, #ffffff);
-          font-size: 11px; font-weight: ${weight}; padding: 2px 8px; border-radius: 999px;
+          background: var(--color-primary, #1a1d21);
+          color: var(--sb-token-primary-ink, #ffffff);
+          font-size: 11px;
+          font-weight: var(--font-weight-bold, 700);
+          padding: 2px 8px;
+          border-radius: 999px;
         }
         .card__body { margin: 0; font-size: 14px; line-height: 1.5; opacity: 0.85; }
-        .card__foot { margin-top: 12px; padding-top: 10px; border-top: 1px solid ${accent}33; color: ${primary}; font-size: 12px; font-weight: ${weight}; }
+        .card__foot {
+          margin-top: 12px;
+          padding-top: 10px;
+          border-top: 1px solid color-mix(in srgb, var(--color-accent, #1a1d21) 20%, transparent);
+          color: var(--color-primary, #1a1d21);
+          font-size: 12px;
+          font-weight: var(--font-weight-bold, 700);
+        }
       </style>
       <div class="card">
         <div class="card__header">
           <h3 class="card__title">Design tokens</h3>
-          <span class="card__badge">${css ? "themed" : "—"}</span>
+          <span class="card__badge">${vars["--color-primary"] ? "themed" : "—"}</span>
         </div>
         <p class="card__body">This card's color, type and spacing come straight from the active theme's token document as CSS custom properties.</p>
         <div class="card__foot">● ${this.#mode} mode</div>
