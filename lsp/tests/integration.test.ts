@@ -144,6 +144,66 @@ describe("LSP server (integration)", () => {
     client.notify("initialized", {});
   });
 
+  it("advertises definition and references providers", async () => {
+    const response = (await client.send("initialize", {
+      processId: process.pid,
+      rootUri: null,
+      capabilities: {},
+    })) as { result: { capabilities: { definitionProvider: unknown; referencesProvider: unknown } } };
+    expect(response.result.capabilities.definitionProvider).toBe(true);
+    expect(response.result.capabilities.referencesProvider).toBe(true);
+    client.notify("initialized", {});
+  });
+
+  it("serves go-to-definition and find-references over stdio", async () => {
+    await client.send("initialize", { processId: process.pid, rootUri: null, capabilities: {} });
+    client.notify("initialized", {});
+    const uri = "file:///def.tokens.json";
+    const text = JSON.stringify(
+      {
+        color: {
+          $type: "color",
+          primary: { $value: { colorSpace: "srgb", components: [1, 0, 0], hex: "#ff0000" } },
+          accent: { $value: "{color.primary}" },
+        },
+      },
+      null,
+      2,
+    );
+    client.notify("textDocument/didOpen", {
+      textDocument: { uri, languageId: "json", version: 1, text },
+    });
+    await client.waitForNotification("textDocument/publishDiagnostics");
+
+    const lineCharOf = (needle: string) => {
+      const idx = text.indexOf(needle);
+      const before = text.slice(0, idx);
+      return {
+        line: (before.match(/\n/g) ?? []).length,
+        character: idx - (before.lastIndexOf("\n") + 1),
+      };
+    };
+
+    // Go-to-definition from the alias jumps to the `"primary"` key.
+    const aliasPos = lineCharOf('"{color.primary}"');
+    const def = (await client.send("textDocument/definition", {
+      textDocument: { uri },
+      position: aliasPos,
+    })) as { result: null | { uri: string; range: { start: { line: number } } } };
+    expect(def.result).not.toBeNull();
+    expect(def.result!.uri).toBe(uri);
+    expect(def.result!.range.start.line).toBe(lineCharOf('"primary"').line);
+
+    // Find-references from the definition returns the alias usage.
+    const refs = (await client.send("textDocument/references", {
+      textDocument: { uri },
+      position: lineCharOf('"primary"'),
+      context: { includeDeclaration: true },
+    })) as { result: Array<{ range: { start: { line: number } } }> };
+    const aliasLine = lineCharOf('"{color.primary}"').line;
+    expect(refs.result.some((l) => l.range.start.line === aliasLine)).toBe(true);
+  }, 15000);
+
   it("responds to semanticTokens/full and documentColor", async () => {
     await client.send("initialize", { processId: process.pid, rootUri: null, capabilities: {} });
     client.notify("initialized", {});

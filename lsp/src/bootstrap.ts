@@ -13,6 +13,7 @@ import { cssVarColors, cssVarHover } from "./handlers/css-usage.ts";
 import { diagnosticsFromAnalysis } from "./handlers/diagnostics.ts";
 import { documentColors, colorPresentations } from "./handlers/document-color.ts";
 import { hoverAt } from "./handlers/hover.ts";
+import { definitionAt, referencesAt } from "./handlers/navigation.ts";
 import {
   semanticTokensFull,
   semanticTokensLegend,
@@ -106,6 +107,8 @@ export function registerServer(
       capabilities: {
         textDocumentSync: TextDocumentSyncKind.Incremental,
         hoverProvider: true,
+        definitionProvider: true,
+        referencesProvider: true,
         completionProvider: {
           triggerCharacters: ["{", ".", "#", "/", '"'],
         },
@@ -224,6 +227,22 @@ export function registerServer(
     const analysis = await ensureAnalysis(uri);
     if (!analysis) return null;
     return completionsAt(analysis, params.position, index, uri);
+  });
+
+  connection.onDefinition(async (params) => {
+    const uri = params.textDocument.uri;
+    if (!isTokenDocument(uri)) return null;
+    const analysis = await ensureAnalysis(uri);
+    if (!analysis) return null;
+    return definitionAt(analysis, params.position, index, uri) ?? null;
+  });
+
+  connection.onReferences(async (params) => {
+    const uri = params.textDocument.uri;
+    if (!isTokenDocument(uri)) return [];
+    const analysis = await ensureAnalysis(uri);
+    if (!analysis) return [];
+    return referencesAt(analysis, params.position, index, uri);
   });
 
   connection.languages.semanticTokens.on(async (params) => {

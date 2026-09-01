@@ -11,7 +11,7 @@ import { offsetToPosition, positionToOffset } from "../utils/positions.ts";
 import type { WorkspaceIndex } from "../workspace/index.ts";
 
 // Find the AST string node containing a given offset, if any.
-function findStringNodeAt(root: Node | undefined, offset: number): Node | undefined {
+export function findStringNodeAt(root: Node | undefined, offset: number): Node | undefined {
   if (!root) return undefined;
   function visit(node: Node): Node | undefined {
     if (offset < node.offset || offset > node.offset + node.length) return undefined;

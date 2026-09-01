@@ -10,14 +10,19 @@ import type { WorkspaceIndex } from "../workspace/index.ts";
 // Walk up the ancestor chain in the AST to find the nearest enclosing
 // "token" node — an object that has a `$value` or `$ref` property.
 // Returns the token node and its dot-path from the document root.
-function findEnclosingToken(
+export function findEnclosingToken(
   root: Node | undefined,
   offset: number,
 ): { node: Node; path: string } | undefined {
   if (!root) return undefined;
 
-  function visit(node: Node, prefix: string[]): { node: Node; path: string } | undefined {
-    if (offset < node.offset || offset > node.offset + node.length) return undefined;
+  function visit(
+    node: Node,
+    prefix: string[],
+    start = node.offset,
+    end = node.offset + node.length,
+  ): { node: Node; path: string } | undefined {
+    if (offset < start || offset > end) return undefined;
 
     if (node.type === "object" && node.children) {
       const isToken = node.children.some(
@@ -25,12 +30,19 @@ function findEnclosingToken(
           pair.children?.[0]?.value === "$value" ||
           pair.children?.[0]?.value === "$ref",
       );
-      // Recurse into properties first to find the deepest match.
+      // Recurse into plain-key properties first to find the deepest match.
+      // The whole property (key + value) counts as enclosing, so a cursor
+      // on a token's *name* still resolves to that token.
       for (const pair of node.children) {
         const key = pair.children?.[0]?.value;
         const child = pair.children?.[1];
         if (typeof key === "string" && !key.startsWith("$") && child) {
-          const deeper = visit(child, [...prefix, key]);
+          const deeper = visit(
+            child,
+            [...prefix, key],
+            pair.offset,
+            pair.offset + pair.length,
+          );
           if (deeper) return deeper;
         }
       }

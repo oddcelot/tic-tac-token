@@ -18,8 +18,10 @@ Backed by the [`@oddsquad/tic-tac-token`](../README.md) validator + resolver.
 - **Document colors** — inline swatches (`textDocument/documentColor`) for `color` tokens and for `{alias}` / `$ref` strings that resolve to a color, converting all 12 DTCG color spaces to sRGB for display.
 - **Workspace awareness** — scans the workspace for `*.tokens` / `*.tokens.json` files so `{alias}` references resolve **across files**: cross-file hover shows the resolved value and its source file, and a broken alias whose target lives in another file is downgraded from an error to a hint.
 - **CSS `var(--…)` usages** — in `.css` / `.scss` / `.less` files, a `var(--color-brand-primary)` reference gets an inline color swatch (for color tokens) and a hover showing the resolved token value, type, and source file. Tokens map to custom properties by the Style-Dictionary convention: dot-path → kebab-case, e.g. `color.brand.primary` → `--color-brand-primary`.
+- **Go to definition** — from an `{alias}` string or a `$ref` pointer, jumps to the target token's name. Aliases resolve cross-file via the workspace index; `$ref` JSON Pointers are single-document.
+- **Find references** — from a token's definition (or any alias pointing at it), lists all `{alias}` usages and `$ref` pointers that reference it, across the whole workspace, with the definition included first.
 
-Planned (v1+): go-to-definition, references, document symbols, semantic-token deltas, nested colors inside composite tokens (shadow/border/gradient).
+Planned (v1+): document symbols, semantic-token deltas, nested colors inside composite tokens (shadow/border/gradient).
 
 ## Capabilities
 
@@ -27,6 +29,8 @@ Planned (v1+): go-to-definition, references, document symbols, semantic-token de
 | --- | --- | --- |
 | Diagnostics | `textDocument/publishDiagnostics` | Pushed on open/change. |
 | Hover | `textDocument/hover` | Cross-file alias resolution when a workspace is open. |
+| Go to definition | `textDocument/definition` | `{alias}` and `$ref` targets; aliases resolve cross-file. |
+| Find references | `textDocument/references` | `{alias}` usages + `$ref` pointers across the workspace; includes the definition. |
 | Completion | `textDocument/completion` | `{alias}`, `$ref` pointers, `$type` values. |
 | Semantic tokens | `textDocument/semanticTokens/full` | `full` only — no `range`/`delta` yet. Token documents only. |
 | Document colors | `textDocument/documentColor`, `textDocument/colorPresentation` | Token documents (token/alias values) **and** CSS `var(--…)` usages. Presentation is a hex label only (no text edit — a bare hex would clobber the token/var). |

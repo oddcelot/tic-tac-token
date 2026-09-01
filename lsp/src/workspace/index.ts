@@ -35,6 +35,18 @@ export class WorkspaceIndex {
     return this.analyses.has(uri);
   }
 
+  /** The stored analysis for a document URI, if indexed. */
+  analysisOf(uri: string): AnalysisResult | undefined {
+    return this.analyses.get(uri);
+  }
+
+  /** Every indexed document and its analysis, for cross-file scans. */
+  entries(): Array<{ uri: string; analysis: AnalysisResult }> {
+    const out: Array<{ uri: string; analysis: AnalysisResult }> = [];
+    for (const [uri, analysis] of this.analyses) out.push({ uri, analysis });
+    return out;
+  }
+
   /** All resolved tokens across all indexed files. */
   allTokens(): IndexedToken[] {
     const result: IndexedToken[] = [];
