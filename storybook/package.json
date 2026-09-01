@@ -1,0 +1,75 @@
+{
+  "name": "@oddsquad/tic-tac-token-storybook",
+  "version": "0.1.0",
+  "description": "Reusable Storybook addon that showcases DTCG 2025.10 design-token types as vanilla web components.",
+  "type": "module",
+  "main": "./dist/preset.js",
+  "types": "./dist/preset.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/preset.d.ts",
+      "import": "./dist/preset.js"
+    },
+    "./preview": {
+      "types": "./dist/preview/index.d.ts",
+      "import": "./dist/preview/index.js"
+    },
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.js"
+    },
+    "./stories": {
+      "types": "./dist/preview/defineTokenStories.d.ts",
+      "import": "./dist/preview/defineTokenStories.js"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "keywords": [
+    "storybook",
+    "addon",
+    "web-components",
+    "custom-elements",
+    "dtcg",
+    "design-tokens",
+    "design-tokens-format"
+  ],
+  "license": "ISC",
+  "author": "Stefan Kopco",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oddcelot/tic-tac-token.git",
+    "directory": "storybook"
+  },
+  "homepage": "https://github.com/oddcelot/tic-tac-token/tree/main/storybook#readme",
+  "bugs": {
+    "url": "https://github.com/oddcelot/tic-tac-token/issues"
+  },
+  "engines": {
+    "node": ">=26"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "build:dist": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "pnpm -C .. build:dist && pnpm build:dist"
+  },
+  "dependencies": {
+    "@oddsquad/tic-tac-token": "workspace:*"
+  },
+  "peerDependencies": {
+    "@storybook/web-components-vite": ">=10 <11",
+    "storybook": ">=10 <11"
+  },
+  "devDependencies": {
+    "@storybook/web-components-vite": "^10.5.10",
+    "@types/node": "^26.4.0",
+    "storybook": "^10.5.10",
+    "typescript": "^7.0.2"
+  }
+}
