@@ -42,7 +42,7 @@
   },
   "author": "Stefan Kopco",
   "engines": {
-    "node": ">=20"
+    "node": ">=26"
   },
   "sideEffects": false,
   "publishConfig": {
@@ -61,8 +61,8 @@
     "arktype": "^2.2.0"
   },
   "devDependencies": {
-    "@types/node": "^25.6.0",
-    "typescript": "^6.0.3",
+    "@types/node": "^26.4.0",
+    "typescript": "^7.0.2",
     "vitest": "^4.1.4"
   }
 }
