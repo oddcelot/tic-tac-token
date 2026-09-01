@@ -60,7 +60,7 @@
   },
   "scripts": {
     "build": "tsc --noEmit",
-    "build:dist": "tsc -p tsconfig.build.json && mkdir -p dist/preview/stories && cp dist-raw/stories/*.stories.js dist/preview/stories/ && cp dist-raw/tokens.json dist/preview/",
+    "build:dist": "rm -rf dist && tsc -p tsconfig.build.json && mkdir -p dist/preview/stories && cp dist-raw/stories/*.stories.js dist/preview/stories/ && cp dist-raw/tokens.json dist/preview/",
     "prepublishOnly": "pnpm -C .. build:dist && pnpm build:dist"
   },
   "dependencies": {
