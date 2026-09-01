@@ -2,6 +2,7 @@
 // from the global parameter (addon-provided) and hands it to the demo's own
 // TokenCard component, which does all token → CSS work through core's
 // `tokensToCssVars()` — no addon involvement inside the component itself.
+// The light/dark color scheme comes from the `colorScheme` toolbar global.
 import { tokenDocumentFromParameters } from "@oddsquad/tic-tac-token-storybook/tokens";
 import { tokenCardTag } from "./token-card";
 
@@ -22,22 +23,11 @@ export default {
       },
     },
   },
-  args: { mode: "light" },
-  argTypes: {
-    mode: {
-      control: { type: "inline-radio" },
-      options: ["light", "dark"],
-      description: "Pick the token scheme to render (light or dark mode variants).",
-      table: { defaultValue: { summary: "light" } },
-    },
-  },
   render: (args, context) => {
     const doc = tokenDocumentFromParameters(context);
+    const scheme = context.globals?.colorScheme === "dark" ? "dark" : "light";
     const el = document.createElement(tokenCardTag);
-    Object.assign(el, {
-      mode: (args.mode ?? "light") === "dark" ? "dark" : "light",
-      document: doc ?? "",
-    });
+    Object.assign(el, { mode: scheme, document: doc ?? "" });
     if (!doc) {
       el.innerHTML = "<p style='color:#b00'>No token document — set the ticTacToken parameter.</p>";
     }
@@ -45,5 +35,4 @@ export default {
   },
 };
 
-export const Light = {};
-export const Dark = { args: { mode: "dark" } };
+export const Default = {};

@@ -60,8 +60,9 @@ default sample.
 
 Supply multiple token documents keyed by **theme** and a `theme` toolbar global to
 switch between them. Each theme's document keeps its own `$extensions.tic-tac-token.modes`
-light/dark **color-scheme** variants, and the existing `mode` argument picks the scheme
-within the active theme:
+light/dark **color-scheme** variants, driven by the `colorScheme` toolbar global — which
+the addon registers in its baseline preview (so you don't have to declare it yourself) and
+sets to `light` by default:
 
 ```ts
 // .storybook/preview.ts
@@ -86,8 +87,11 @@ export default {
 ```
 
 The addon reads `context.globals.theme` and renders that theme's document (the first
-one is used when the current theme is unknown). Combined with a story's `mode` arg you
-get the full matrix: theme **×** color scheme.
+one is used when the current theme is unknown) at the scheme picked by the `colorScheme`
+global — yielding the full **theme × color-scheme** matrix from the two toolbar dropdowns.
+Callers can override `initialGlobals.colorScheme` or the toolbar's items in their own
+preview. A per-story `mode` argument is still honored as a fallback for consumers who
+prefer not to use the global.
 
 ### A real component from CSS custom properties
 

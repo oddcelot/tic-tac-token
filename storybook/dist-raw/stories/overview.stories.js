@@ -26,8 +26,9 @@ export default {
   render: (args, context) => {
     const doc = tokenDocumentFromParameters(context) ?? raw;
     const el = document.createElement(tokenGalleryTag);
+    const scheme = context.globals?.colorScheme ?? args.mode ?? "light";
     Object.assign(el, {
-      tokens: parseTokens(doc, (args.mode ?? "light") === "dark" ? "dark" : "light"),
+      tokens: parseTokens(doc, scheme === "dark" ? "dark" : "light"),
     });
     return el;
   },

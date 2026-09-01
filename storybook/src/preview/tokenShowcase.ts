@@ -10,9 +10,10 @@ const TAG_BY_TYPE: Partial<Record<TokenType, string>> = {
   dimension: "token-dimension",
 };
 
-/** Minimal story render context shape we read parameters from. */
+/** Minimal story render context shape we read parameters/globals from. */
 export type TokenRenderContext = {
   parameters?: Record<string, unknown>;
+  globals?: Record<string, string | undefined>;
 };
 
 export type TokenDocumentSource =
@@ -79,7 +80,12 @@ export function tokenShowcase(config: TokenShowcaseConfig): TokenShowcase {
     args: Record<string, unknown>,
     context: TokenRenderContext,
   ): HTMLElement => {
-    const mode: TokenMode = args["mode"] === "dark" ? "dark" : "light";
+    // The `colorScheme` toolbar global wins when present (inherits the addon's
+    // baseline `light` default); the per-story `mode` argument is only used as a
+    // fallback for consumers that never register the global.
+    const globalScheme = context.globals?.["colorScheme"];
+    const mode: TokenMode =
+      (globalScheme ?? args["mode"]) === "dark" ? "dark" : "light";
     const doc =
       typeof raw === "function"
         ? raw(args, context)
