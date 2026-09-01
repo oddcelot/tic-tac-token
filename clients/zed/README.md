@@ -129,7 +129,7 @@ Changes to `lib.rs` (this extension's Rust) require a rebuild: uninstall + **Ins
 
 After install:
 
-- Open `example.json` or `app/token-playground/src/demo-tokens.json` in Zed.
+- Open `example.tokens.json` or `app/token-playground/src/demo-tokens.json` in Zed.
 - Hover any token. Markdown popup should show the path, `$type`, literal value, resolved value, and a color swatch for `color` tokens.
 - Introduce a typo (e.g. change a `colorSpace` to `"bogus"`) and see the diagnostic appear inline.
 - `color` tokens and `{alias}` strings pointing at them show an inline color swatch.

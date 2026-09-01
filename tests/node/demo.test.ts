@@ -33,11 +33,11 @@ describe("examples/storybook-demo", () => {
   it("loads with no missing or unreadable references", () => {
     expect(loaded.errors).toEqual([]);
     expect(Object.keys(loaded.externalDocuments).sort()).toEqual([
-      "tokens/base.json",
-      "tokens/palette/astro.json",
-      "tokens/palette/cosmos.json",
-      "tokens/scheme/dark.json",
-      "tokens/scheme/light.json",
+      "tokens/base.tokens.json",
+      "tokens/palette/astro.tokens.json",
+      "tokens/palette/cosmos.tokens.json",
+      "tokens/scheme/dark.tokens.json",
+      "tokens/scheme/light.tokens.json",
     ]);
   });
 

@@ -1,5 +1,5 @@
 {
-  "$schema": "/schema.json",
+  "$schema": "../../node_modules/@oddsquad/tic-tac-token/schema.json",
   "palette": {
     "$type": "color",
     "primary": {
@@ -7,24 +7,24 @@
         "$value": {
           "colorSpace": "srgb",
           "components": [
-            0.05,
-            0.6,
-            0.55
+            0.32,
+            0.36,
+            0.9
           ],
           "alpha": 1,
-          "hex": "#0D998C"
+          "hex": "#525CE6"
         }
       },
       "dark": {
         "$value": {
           "colorSpace": "srgb",
           "components": [
-            0.2,
-            0.78,
-            0.72
+            0.55,
+            0.58,
+            1
           ],
           "alpha": 1,
-          "hex": "#33C7B8"
+          "hex": "#8C94FF"
         }
       }
     },
@@ -33,12 +33,12 @@
         "$value": {
           "colorSpace": "srgb",
           "components": [
-            0.95,
-            0.45,
-            0.15
+            0.9,
+            0.24,
+            0.42
           ],
           "alpha": 1,
-          "hex": "#F27326"
+          "hex": "#E63D6B"
         }
       },
       "dark": {
@@ -46,11 +46,11 @@
           "colorSpace": "srgb",
           "components": [
             1,
-            0.66,
-            0.35
+            0.45,
+            0.62
           ],
           "alpha": 1,
-          "hex": "#FFA859"
+          "hex": "#FF739E"
         }
       }
     },
@@ -59,12 +59,12 @@
         "$value": {
           "colorSpace": "srgb",
           "components": [
-            0.97,
             0.98,
-            0.98
+            0.97,
+            1
           ],
           "alpha": 1,
-          "hex": "#F7FAF9"
+          "hex": "#FAF8FF"
         }
       },
       "dark": {
@@ -72,11 +72,11 @@
           "colorSpace": "srgb",
           "components": [
             0.06,
-            0.13,
-            0.12
+            0.08,
+            0.16
           ],
           "alpha": 1,
-          "hex": "#0F211F"
+          "hex": "#0F1428"
         }
       }
     },
@@ -97,12 +97,12 @@
         "$value": {
           "colorSpace": "srgb",
           "components": [
-            0.09,
-            0.16,
-            0.15
+            0.1,
+            0.13,
+            0.22
           ],
           "alpha": 1,
-          "hex": "#172A28"
+          "hex": "#1A2036"
         }
       }
     },
@@ -123,12 +123,12 @@
         "$value": {
           "colorSpace": "srgb",
           "components": [
-            0.9,
-            0.93,
-            0.92
+            0.91,
+            0.92,
+            0.96
           ],
           "alpha": 1,
-          "hex": "#E6EDEB"
+          "hex": "#E8EAF5"
         }
       }
     }

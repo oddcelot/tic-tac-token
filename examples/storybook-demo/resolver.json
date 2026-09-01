@@ -4,7 +4,7 @@
   "description": "Brand palette and colour scheme as two independent modifiers.",
 
   "sets": {
-    "base": { "sources": [{ "$ref": "tokens/base.json#" }] }
+    "base": { "sources": [{ "$ref": "tokens/base.tokens.json#" }] }
   },
 
   "modifiers": {
@@ -12,8 +12,8 @@
       "description": "Brand palette. Contributes raw colour ramps under `palette.*` and nothing semantic.",
       "default": "astro",
       "contexts": {
-        "astro": [{ "$ref": "tokens/palette/astro.json#" }],
-        "cosmos": [{ "$ref": "tokens/palette/cosmos.json#" }]
+        "astro": [{ "$ref": "tokens/palette/astro.tokens.json#" }],
+        "cosmos": [{ "$ref": "tokens/palette/cosmos.tokens.json#" }]
       }
     },
 
@@ -31,8 +31,8 @@
         "tic-tac-token.storybook": { "title": "Color scheme" }
       },
       "contexts": {
-        "light": [{ "$ref": "tokens/scheme/light.json#" }],
-        "dark": [{ "$ref": "tokens/scheme/dark.json#" }]
+        "light": [{ "$ref": "tokens/scheme/light.tokens.json#" }],
+        "dark": [{ "$ref": "tokens/scheme/dark.tokens.json#" }]
       }
     }
   },

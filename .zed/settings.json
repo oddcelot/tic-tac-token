@@ -19,7 +19,6 @@
           "schemas": [
             {
               "fileMatch": [
-                "example.json",
                 "*.tokens",
                 "*.tokens.json",
                 "app/token-playground/src/demo-tokens.json",
