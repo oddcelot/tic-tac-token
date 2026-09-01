@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { analyze } from "../src/analyzer.ts";
 import { hoverAt } from "../src/handlers/hover.ts";
+import { lineCharOf } from "./helpers.ts";
 
 const TEXT = JSON.stringify(
   {
@@ -20,16 +21,6 @@ const TEXT = JSON.stringify(
   null,
   2,
 );
-
-function lineCharOf(text: string, needle: string): { line: number; character: number } {
-  const idx = text.indexOf(needle);
-  if (idx < 0) throw new Error(`needle not found: ${needle}`);
-  const before = text.slice(0, idx);
-  const line = (before.match(/\n/g) ?? []).length;
-  const lastNewline = before.lastIndexOf("\n");
-  const character = idx - (lastNewline + 1);
-  return { line, character };
-}
 
 describe("hoverAt", () => {
   it("shows the resolved value for a plain color token", async () => {
@@ -200,5 +191,70 @@ describe("hoverAt", () => {
     expect(md).toContain("#/color/primary/$value");
     expect(md).toContain("**Resolved**");
     expect(md).toContain("#ff0000");
+  });
+});
+
+// Regression guard for the `$extensions.tic-tac-token.modes` scoped hover
+// added in 22667a1: hovering inside a mode block must resolve to the
+// `<path>@<mode>` variant token (its own value), not fall back to the
+// parent token, and the highlight range must be pinned to the mode block.
+describe("hoverAt over mode variants", () => {
+  const MODE_TEXT = JSON.stringify(
+    {
+      color: {
+        $type: "color",
+        accent: {
+          $value: {
+            colorSpace: "srgb",
+            components: [1, 0.4, 0.5],
+            hex: "#ff6680",
+          },
+          $extensions: {
+            "tic-tac-token.modes": {
+              dark: {
+                colorSpace: "srgb",
+                components: [1, 0.56, 0.64],
+                hex: "#ff8fa3",
+              },
+            },
+          },
+        },
+      },
+    },
+    null,
+    2,
+  );
+
+  it("resolves the mode-variant token when hovering inside the mode block", async () => {
+    const analysis = await analyze(MODE_TEXT);
+    // "#ff8fa3" only appears inside the dark mode block.
+    const hover = hoverAt(analysis, lineCharOf(MODE_TEXT, '"#ff8fa3"'));
+    expect(hover).toBeDefined();
+    const md = (hover?.contents as { value: string }).value;
+    expect(md).toContain("color.accent@dark");
+    expect(md).toContain("#ff8fa3");
+    // Must NOT show the base value.
+    expect(md).not.toContain("#ff6680");
+  });
+
+  it("pins the hover range to the mode block, not the whole token", async () => {
+    const analysis = await analyze(MODE_TEXT);
+    const hover = hoverAt(analysis, lineCharOf(MODE_TEXT, '"#ff8fa3"'));
+    const range = hover!.range!;
+    // The dark block opens after `"dark":` and is a handful of lines —
+    // it must not span the entire accent token (which starts much earlier).
+    const accentLine = lineCharOf(MODE_TEXT, '"accent"').line;
+    const darkLine = lineCharOf(MODE_TEXT, '"dark"').line;
+    expect(range.start.line).toBe(darkLine);
+    expect(range.start.line).toBeGreaterThan(accentLine);
+  });
+
+  it("still resolves the base token when hovering its own $value", async () => {
+    const analysis = await analyze(MODE_TEXT);
+    const hover = hoverAt(analysis, lineCharOf(MODE_TEXT, '"#ff6680"'));
+    const md = (hover?.contents as { value: string }).value;
+    expect(md).toContain("color.accent");
+    expect(md).not.toContain("@dark");
+    expect(md).toContain("#ff6680");
   });
 });

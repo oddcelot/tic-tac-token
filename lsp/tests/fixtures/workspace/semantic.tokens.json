@@ -1,0 +1,6 @@
+{
+  "color": {
+    "$type": "color",
+    "accent": { "$value": "{color.primary}" }
+  }
+}

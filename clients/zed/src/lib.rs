@@ -1,30 +1,47 @@
-use zed_extension_api::{self as zed, LanguageServerId, Result};
+use zed_extension_api::{self as zed, settings::LspSettings, LanguageServerId, Result};
 
 // Zed extension that registers the `dtcg-tokens-lsp` language server for
-// JSON files. In production it installs `@oddsquad/tic-tac-token-lsp` from
-// npm into the extension's own work directory and launches
-// `node node_modules/@oddsquad/tic-tac-token-lsp/dist/server.js --stdio`.
+// JSON files. The server is resolved in three tiers, highest priority first:
 //
-// Dev escape hatch: if the open worktree IS this monorepo and has a locally
-// built `lsp/dist/server.js`, that build wins over the npm install so
-// iterating on the LSP doesn't require publishing first. The probe is
-// deliberately two gates, both of which must hold:
+//   1. Explicit `lsp.dtcg-tokens-lsp.binary` override in Zed settings — the
+//      dev/publish switch. Works from ANY project; point it at a local build
+//      and remove it to go back to the published package. See
+//      `language_server_command`.
+//   2. Monorepo auto-detection — inside this repo the locally built
+//      `lsp/dist/server.js` wins (see below).
+//   3. Otherwise install `@oddsquad/tic-tac-token-lsp` from npm into the
+//      extension's work dir and launch
+//      `node node_modules/@oddsquad/tic-tac-token-lsp/dist/server.js --stdio`.
+//
+// Dev escape hatch (tier 2): if the open worktree IS this monorepo, the locally
+// built `lsp/dist/server.js` wins over the npm install so iterating on the
+// LSP doesn't require publishing first. The probe fingerprints two TRACKED
+// manifests, both of which must match:
 //
 //   1. The worktree root `package.json` names this monorepo
 //      (`"@oddsquad/tic-tac-token"`, quotes included — the quoted match
-//      also rules out foreign projects that merely *depend on*
-//      `@oddsquad/tic-tac-token-lsp`).
-//   2. `lsp/dist/server.js` reads back with non-empty content.
+//      rules out foreign projects that merely *depend on*
+//      `@oddsquad/tic-tac-token-lsp`, since that dependency string has a
+//      `-lsp` suffix before the closing quote).
+//   2. `lsp/package.json` names the LSP package
+//      (`"@oddsquad/tic-tac-token-lsp"`). A foreign project that depends on
+//      the root package has no `lsp/package.json` at its worktree root, so
+//      this rules it out.
 //
-// Why not a plain existence check? `worktree.read_text_file(path).is_ok()`
-// was observed returning Ok at runtime for a file that does not exist
-// (foreign project without any `lsp/` directory), which sent a nonexistent
-// path to node (MODULE_NOT_FOUND) and blocked the npm fallback. So the
-// gate must validate *content*, not just Ok-ness: gate 1 fingerprints the
-// monorepo by matching what was read, gate 2 requires non-empty bytes.
+// Why fingerprint `lsp/package.json` and NOT the built `lsp/dist/server.js`?
+// `dist/` is gitignored, and Zed's `worktree.read_text_file` reads from the
+// worktree's (gitignore-respecting) snapshot — it CANNOT see gitignored
+// files, so reading `lsp/dist/server.js` always failed and forced the npm
+// fallback even inside the monorepo. We must gate on tracked files only.
 // `std::fs` is not an option either — only the extension's own work
 // directory is preopened inside the WASI sandbox (the biome Zed extension
 // documents the same limitation and also probes via the worktree API).
+//
+// Consequence: inside the monorepo the dev must have run
+// `pnpm -F @oddsquad/tic-tac-token-lsp build:dist` first. If `dist/` is
+// missing, node fails fast with a clear MODULE_NOT_FOUND rather than
+// silently serving a stale npm build — which is the correct signal when
+// you're actively developing the server.
 //
 // The server is namespaced to .tokens / .tokens.json URIs at the LSP
 // layer (see `lsp/src/server.ts: isTokenDocument`), so attaching it to
@@ -38,16 +55,18 @@ struct DtcgTokensExtension;
 
 const DEV_SERVER_RELATIVE_PATH: &str = "lsp/dist/server.js";
 const MONOREPO_FINGERPRINT: &str = "\"@oddsquad/tic-tac-token\"";
+const LSP_MANIFEST_RELATIVE_PATH: &str = "lsp/package.json";
+const LSP_PACKAGE_FINGERPRINT: &str = "\"@oddsquad/tic-tac-token-lsp\"";
 const PACKAGE: &str = "@oddsquad/tic-tac-token-lsp";
 
-fn is_this_monorepo_with_built_server(worktree: &zed::Worktree) -> bool {
-    let is_monorepo = worktree
+fn is_this_monorepo(worktree: &zed::Worktree) -> bool {
+    let root_is_monorepo = worktree
         .read_text_file("package.json")
         .is_ok_and(|content| content.contains(MONOREPO_FINGERPRINT));
-    is_monorepo
+    root_is_monorepo
         && worktree
-            .read_text_file(DEV_SERVER_RELATIVE_PATH)
-            .is_ok_and(|content| !content.is_empty())
+            .read_text_file(LSP_MANIFEST_RELATIVE_PATH)
+            .is_ok_and(|content| content.contains(LSP_PACKAGE_FINGERPRINT))
 }
 
 impl zed::Extension for DtcgTokensExtension {
@@ -62,7 +81,32 @@ impl zed::Extension for DtcgTokensExtension {
     ) -> Result<zed::Command> {
         let node = zed::node_binary_path()?;
 
-        if is_this_monorepo_with_built_server(worktree) {
+        // Explicit binary override — the dev/publish switch. Set
+        // `lsp.dtcg-tokens-lsp.binary` in Zed settings to run a specific
+        // server from ANY project (not just this monorepo); remove it to
+        // fall back to monorepo auto-detection + the published npm package.
+        // Two forms:
+        //   - `path` given  → run it verbatim (any runtime/binary).
+        //   - only `arguments` given → run them with Zed's managed Node,
+        //     the ergonomic "point at my local dist/server.js" form:
+        //       "binary": { "arguments": ["/abs/path/lsp/dist/server.js", "--stdio"] }
+        if let Some(binary) = LspSettings::for_worktree("dtcg-tokens-lsp", worktree)
+            .ok()
+            .and_then(|settings| settings.binary)
+        {
+            if binary.path.is_some() || binary.arguments.is_some() {
+                return Ok(zed::Command {
+                    command: binary.path.unwrap_or_else(|| node.clone()),
+                    args: binary.arguments.unwrap_or_else(|| vec!["--stdio".into()]),
+                    env: binary
+                        .env
+                        .map(|env| env.into_iter().collect())
+                        .unwrap_or_default(),
+                });
+            }
+        }
+
+        if is_this_monorepo(worktree) {
             let dev_path = format!("{}/{DEV_SERVER_RELATIVE_PATH}", worktree.root_path());
             return Ok(zed::Command {
                 command: node,
@@ -88,6 +132,24 @@ impl zed::Extension for DtcgTokensExtension {
             args: vec![server_path, "--stdio".into()],
             env: vec![],
         })
+    }
+
+    fn language_server_initialization_options(
+        &mut self,
+        _language_server_id: &LanguageServerId,
+        worktree: &zed::Worktree,
+    ) -> Result<Option<zed::serde_json::Value>> {
+        let settings = LspSettings::for_worktree("dtcg-tokens-lsp", worktree)?;
+        Ok(settings.initialization_options)
+    }
+
+    fn language_server_workspace_configuration(
+        &mut self,
+        _language_server_id: &LanguageServerId,
+        worktree: &zed::Worktree,
+    ) -> Result<Option<zed::serde_json::Value>> {
+        let settings = LspSettings::for_worktree("dtcg-tokens-lsp", worktree)?;
+        Ok(settings.settings)
     }
 }
 

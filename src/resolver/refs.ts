@@ -54,6 +54,7 @@ export function resolveRefs(
           kind: "broken-ref",
           at,
           message: `$ref ${rec.$ref} does not resolve to a value in this document.`,
+          target: rec.$ref,
         });
         return node;
       }

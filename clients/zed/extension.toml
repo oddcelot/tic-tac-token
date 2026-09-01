@@ -8,4 +8,6 @@ repository = ""
 
 [language_servers.dtcg-tokens-lsp]
 name = "DTCG Tokens LSP"
-languages = ["JSON"]
+# JSON for `.tokens.json` diagnostics/hover/completion/semantic-tokens/colors;
+# CSS/SCSS so `var(--token-name)` usages get resolved-value hover + swatches.
+languages = ["JSON", "CSS", "SCSS"]

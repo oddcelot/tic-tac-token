@@ -1,10 +1,18 @@
 {
   "languages": {
     "JSON": {
-      "language_servers": ["!asimonim", "..."]
-    }
+      "language_servers": ["!asimonim", "..."],
+    },
   },
   "lsp": {
+    "dtcg-tokens-lsp": {
+      "binary": {
+        "arguments": [
+          "/Users/oddcelot/Code/projects/tic-tac-token/lsp/dist/server.js",
+          "--stdio",
+        ],
+      },
+    },
     "json-language-server": {
       "settings": {
         "json": {
@@ -14,20 +22,20 @@
                 "example.json",
                 "*.tokens",
                 "*.tokens.json",
-                "app/token-playground/src/demo-tokens.json"
+                "app/token-playground/src/demo-tokens.json",
               ],
-              "url": "./schema.json"
-            }
-          ]
-        }
-      }
+              "url": "./schema.json",
+            },
+          ],
+        },
+      },
     },
     "vtsls": {
       "initialization_options": {
         "preferences": {
-          "autoImportSpecifierExcludeRegexes": ["^(node:)?os$"]
-        }
-      }
-    }
-  }
+          "autoImportSpecifierExcludeRegexes": ["^(node:)?os$"],
+        },
+      },
+    },
+  },
 }

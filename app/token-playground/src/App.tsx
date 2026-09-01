@@ -9,7 +9,9 @@ import Resizable from "@corvu/resizable";
 import * as monaco from "monaco-editor";
 import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import JsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
+import CssWorker from "monaco-editor/esm/vs/language/css/css.worker?worker";
 import demoRaw from "./demo-tokens.tokens.json?raw";
+import demoCssRaw from "./demo.css?raw";
 import schemaRaw from "../../../schema.json?raw";
 import { parseTokens, type FlatToken, type TokenMode } from "./tokens";
 import KitchenSink from "./KitchenSink";
@@ -20,6 +22,7 @@ import { createLspClient, installMonacoBridge } from "./lsp/client";
 self.MonacoEnvironment = {
   getWorker(_, label) {
     if (label === "json") return new JsonWorker();
+    if (label === "css") return new CssWorker();
     return new EditorWorker();
   },
 };
@@ -79,6 +82,9 @@ const initialScheme = (): TokenMode => {
 };
 
 const MODEL_URI = monaco.Uri.parse("file:///demo-tokens.tokens.json");
+const CSS_MODEL_URI = monaco.Uri.parse("file:///demo.css");
+
+type DemoDoc = "tokens" | "css";
 
 const App: Component = () => {
   let editorElement!: HTMLDivElement;
@@ -87,6 +93,7 @@ const App: Component = () => {
   const [scheme, setScheme] = createSignal<TokenMode>(initialScheme());
   const [editorRef, setEditorRef] =
     createSignal<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const [activeDoc, setActiveDoc] = createSignal<DemoDoc>("tokens");
   const tokens = (): FlatToken[] => parseTokens(raw(), scheme());
 
   // Apply theme to <html>, Monaco, and localStorage whenever it changes.
@@ -116,6 +123,15 @@ const App: Component = () => {
     const model =
       monaco.editor.getModel(MODEL_URI) ??
       monaco.editor.createModel(demoRaw, "json", MODEL_URI);
+    // Second demo document: a plain stylesheet that consumes tokens via
+    // `var(--token-name)`. Created up front (not lazily on first toggle)
+    // so it can be `didOpen`'d to the LSP immediately — the browser token
+    // index needs both documents open to resolve css custom properties
+    // back to tokens regardless of which one is currently visible.
+    const cssModel =
+      monaco.editor.getModel(CSS_MODEL_URI) ??
+      monaco.editor.createModel(demoCssRaw, "css", CSS_MODEL_URI);
+
     const editor = monaco.editor.create(editorElement, {
       model,
       automaticLayout: true,
@@ -126,32 +142,54 @@ const App: Component = () => {
     setEditorRef(editor);
 
     const sub = editor.onDidChangeModelContent(() => {
-      setRaw(editor.getValue());
+      // Only the tokens document drives the Outline/KitchenSink preview;
+      // editing the css demo shouldn't feed css text into parseTokens.
+      if (editor.getModel()?.uri.toString() === MODEL_URI.toString()) {
+        setRaw(editor.getValue());
+      }
     });
 
-    // Spawn the in-page LSP worker and bridge it to this model. The
+    // Spawn the in-page LSP worker and bridge it to both models. The
     // server provides arktype-precise diagnostics and resolved-value
-    // hover; Monaco's built-in JSON-schema validation keeps running
-    // independently under a different marker owner.
+    // hover for the tokens document, plus hover + document-color for the
+    // css document's `var(--token-name)` usages. Monaco's built-in
+    // JSON-schema validation keeps running independently under a
+    // different marker owner.
     const lsp = createLspClient();
-    let disposeBridge: (() => void) | undefined;
+    let disposeTokensBridge: (() => void) | undefined;
+    let disposeCssBridge: (() => void) | undefined;
     lsp
       .init()
       .then(() => {
-        disposeBridge = installMonacoBridge(lsp, model);
+        disposeTokensBridge = installMonacoBridge(lsp, model, "json");
+        disposeCssBridge = installMonacoBridge(lsp, cssModel, "css");
       })
       .catch((err: unknown) => {
         console.error("LSP init failed:", err);
       });
 
     onCleanup(() => {
-      disposeBridge?.();
+      disposeTokensBridge?.();
+      disposeCssBridge?.();
       lsp.dispose();
       sub.dispose();
       editor.dispose();
       model.dispose();
+      cssModel.dispose();
       setEditorRef(null);
     });
+  });
+
+  // Swap the editor's model when the demo-doc toggle changes. Both models
+  // are created up front in onMount and stay open with the LSP for the
+  // whole session, so switching is just `setModel` — no re-open/close.
+  createEffect(() => {
+    const editor = editorRef();
+    if (!editor) return;
+    const targetUri = activeDoc() === "tokens" ? MODEL_URI : CSS_MODEL_URI;
+    if (editor.getModel()?.uri.toString() === targetUri.toString()) return;
+    const targetModel = monaco.editor.getModel(targetUri);
+    if (targetModel) editor.setModel(targetModel);
   });
 
   return (
@@ -164,9 +202,27 @@ const App: Component = () => {
         <Resizable.Panel
           initialSize={0.4}
           minSize={0.2}
-          class="overflow-hidden rounded-lg bg-corvu-100 dark:bg-gray-900"
+          class="flex flex-col overflow-hidden rounded-lg bg-corvu-100 dark:bg-gray-900"
         >
-          <div ref={editorElement} class="size-full" />
+          <div class="flex shrink-0 gap-1 border-b border-corvu-200 p-1 text-xs dark:border-gray-800">
+            <button
+              type="button"
+              onClick={() => setActiveDoc("tokens")}
+              aria-pressed={activeDoc() === "tokens"}
+              class="rounded px-2 py-1 font-mono transition-colors aria-pressed:bg-corvu-300 aria-pressed:text-gray-900 dark:aria-pressed:bg-gray-700 dark:aria-pressed:text-gray-100"
+            >
+              demo-tokens.tokens.json
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveDoc("css")}
+              aria-pressed={activeDoc() === "css"}
+              class="rounded px-2 py-1 font-mono transition-colors aria-pressed:bg-corvu-300 aria-pressed:text-gray-900 dark:aria-pressed:bg-gray-700 dark:aria-pressed:text-gray-100"
+            >
+              demo.css
+            </button>
+          </div>
+          <div ref={editorElement} class="min-h-0 flex-1" />
         </Resizable.Panel>
         <Resizable.Handle
           aria-label="Resize Handle"

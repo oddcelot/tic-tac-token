@@ -6,6 +6,9 @@ import {
   type MessageConnection,
 } from "vscode-jsonrpc/browser";
 import type {
+  Color,
+  ColorInformation,
+  ColorPresentation,
   CompletionItem,
   CompletionList,
   Diagnostic,
@@ -34,6 +37,12 @@ export type LspClient = {
     line: number,
     character: number,
   ): Promise<CompletionList | CompletionItem[] | null>;
+  documentColor(uri: string): Promise<ColorInformation[]>;
+  colorPresentation(
+    uri: string,
+    color: Color,
+    range: LspRange,
+  ): Promise<ColorPresentation[]>;
   onDiagnostics(handler: (params: PublishDiagnosticsParams) => void): () => void;
   dispose(): void;
 };
@@ -100,6 +109,20 @@ export function createLspClient(): LspClient {
       })) as CompletionList | CompletionItem[] | null;
       return result;
     },
+    async documentColor(uri) {
+      const result = (await connection.sendRequest("textDocument/documentColor", {
+        textDocument: { uri },
+      })) as ColorInformation[] | null;
+      return result ?? [];
+    },
+    async colorPresentation(uri, color, range) {
+      const result = (await connection.sendRequest("textDocument/colorPresentation", {
+        textDocument: { uri },
+        color,
+        range,
+      })) as ColorPresentation[] | null;
+      return result ?? [];
+    },
     onDiagnostics(handler) {
       diagnosticsHandlers.add(handler);
       return () => diagnosticsHandlers.delete(handler);
@@ -147,6 +170,25 @@ function toMonacoRange(range: LspRange): monaco.IRange {
     startColumn: range.start.character + 1,
     endLineNumber: range.end.line + 1,
     endColumn: range.end.character + 1,
+  };
+}
+
+function toLspRange(range: monaco.IRange): LspRange {
+  return {
+    start: { line: range.startLineNumber - 1, character: range.startColumn - 1 },
+    end: { line: range.endLineNumber - 1, character: range.endColumn - 1 },
+  };
+}
+
+// LSP's `Color` and Monaco's `IColor` are structurally identical (red/green/
+// blue/alpha as 0..1 floats) — no numeric conversion needed, just a type
+// rename at the boundary.
+function toMonacoColor(color: Color): monaco.languages.IColor {
+  return {
+    red: color.red,
+    green: color.green,
+    blue: color.blue,
+    alpha: color.alpha,
   };
 }
 
@@ -205,16 +247,24 @@ function toMonacoCompletion(
 const MARKER_OWNER = "dtcg-tokens-lsp";
 
 // Wires the LSP client to a Monaco editor + model. Returns a dispose
-// function that removes the bridge (markers, hover provider, listeners)
-// without tearing down the LSP client itself.
+// function that removes the bridge (markers, hover/color providers,
+// listeners) without tearing down the LSP client itself.
+//
+// `languageId` selects both the Monaco language the providers attach to
+// and the `languageId` reported in `textDocument/didOpen`. Alias
+// completion is JSON-only (the LSP only emits it inside a curly-brace
+// alias context in token documents); hover and document-color are wired
+// for both "json" and "css" so `var(--token-name)` in stylesheets also
+// resolves.
 export function installMonacoBridge(
   lsp: LspClient,
   model: monaco.editor.ITextModel,
+  languageId: "json" | "css" = "json",
 ): () => void {
   const uri = model.uri.toString();
   let version = 1;
 
-  lsp.didOpen(uri, "json", model.getValue());
+  lsp.didOpen(uri, languageId, model.getValue());
 
   const modelSub = model.onDidChangeContent(() => {
     version += 1;
@@ -227,10 +277,10 @@ export function installMonacoBridge(
     monaco.editor.setModelMarkers(model, MARKER_OWNER, markers);
   });
 
-  // Register a hover provider scoped to JSON; the LSP itself only
-  // produces hover for URIs matching .tokens / .tokens.json, so
-  // attaching to JSON broadly is safe.
-  const hoverProvider = monaco.languages.registerHoverProvider("json", {
+  // Hover provider, URI-guarded to this model. Registered separately per
+  // language (json vs css) since each call to installMonacoBridge owns a
+  // single model.
+  const hoverProvider = monaco.languages.registerHoverProvider(languageId, {
     provideHover: async (hoverModel, position) => {
       if (hoverModel.uri.toString() !== uri) return null;
       const hover = await lsp.hover(
@@ -253,43 +303,72 @@ export function installMonacoBridge(
     },
   });
 
-  // Alias completion. The LSP only returns results inside a curly-brace
-  // alias context, so attaching to all JSON is harmless.
-  const completionProvider = monaco.languages.registerCompletionItemProvider(
-    "json",
-    {
-      triggerCharacters: ["{", "."],
-      provideCompletionItems: async (completionModel, position) => {
-        if (completionModel.uri.toString() !== uri) {
-          return { suggestions: [] };
-        }
-        const result = await lsp.completion(
-          uri,
-          position.lineNumber - 1,
-          position.column - 1,
-        );
-        if (!result) return { suggestions: [] };
-        const items = Array.isArray(result) ? result : result.items;
-        // Default range used when an item omits its own textEdit: just
-        // the cursor position, no replacement (insert at cursor).
-        const fallbackRange: monaco.IRange = {
-          startLineNumber: position.lineNumber,
-          startColumn: position.column,
-          endLineNumber: position.lineNumber,
-          endColumn: position.column,
-        };
-        return {
-          suggestions: items.map((item) => toMonacoCompletion(item, fallbackRange)),
-        };
-      },
+  // Document-color provider, URI-guarded to this model. Powers inline
+  // swatches for `var(--token-name)` (css) and raw color values (json).
+  const colorProvider = monaco.languages.registerColorProvider(languageId, {
+    provideDocumentColors: async (colorModel) => {
+      if (colorModel.uri.toString() !== uri) return [];
+      const colors = await lsp.documentColor(uri);
+      return colors.map((c) => ({
+        color: toMonacoColor(c.color),
+        range: toMonacoRange(c.range),
+      }));
     },
-  );
+    provideColorPresentations: async (colorModel, colorInfo) => {
+      if (colorModel.uri.toString() !== uri) return [];
+      const presentations = await lsp.colorPresentation(
+        uri,
+        {
+          red: colorInfo.color.red,
+          green: colorInfo.color.green,
+          blue: colorInfo.color.blue,
+          alpha: colorInfo.color.alpha,
+        },
+        toLspRange(colorInfo.range),
+      );
+      return presentations.map((p) => ({ label: p.label }));
+    },
+  });
+
+  // Alias completion. JSON-only — see doc comment above.
+  const completionProvider =
+    languageId === "json"
+      ? monaco.languages.registerCompletionItemProvider("json", {
+          triggerCharacters: ["{", "."],
+          provideCompletionItems: async (completionModel, position) => {
+            if (completionModel.uri.toString() !== uri) {
+              return { suggestions: [] };
+            }
+            const result = await lsp.completion(
+              uri,
+              position.lineNumber - 1,
+              position.column - 1,
+            );
+            if (!result) return { suggestions: [] };
+            const items = Array.isArray(result) ? result : result.items;
+            // Default range used when an item omits its own textEdit: just
+            // the cursor position, no replacement (insert at cursor).
+            const fallbackRange: monaco.IRange = {
+              startLineNumber: position.lineNumber,
+              startColumn: position.column,
+              endLineNumber: position.lineNumber,
+              endColumn: position.column,
+            };
+            return {
+              suggestions: items.map((item) =>
+                toMonacoCompletion(item, fallbackRange),
+              ),
+            };
+          },
+        })
+      : undefined;
 
   return () => {
     modelSub.dispose();
     unsubscribeDiagnostics();
     hoverProvider.dispose();
-    completionProvider.dispose();
+    colorProvider.dispose();
+    completionProvider?.dispose();
     monaco.editor.setModelMarkers(model, MARKER_OWNER, []);
     lsp.didClose(uri);
   };

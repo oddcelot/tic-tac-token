@@ -1,40 +1,28 @@
 import type { FlatToken } from "@oddsquad/tic-tac-token/resolver";
-import { flattenTokens, isTokenType } from "@oddsquad/tic-tac-token/resolver";
+import { aliasTarget, flattenTokens, isTokenType } from "@oddsquad/tic-tac-token/resolver";
 import { findNodeAtLocation, type Node } from "jsonc-parser";
 import { type Hover, MarkupKind, type Position } from "vscode-languageserver";
 import type { AnalysisResult } from "../analyzer.ts";
 import { renderTokenHover } from "../utils/hover-markdown.ts";
-import { nodeRange } from "../utils/positions.ts";
-
-// Convert (line, character) → byte offset for jsonc-parser's
-// position-based APIs. Linear scan over the text; cheap for typical
-// document sizes.
-function positionToOffset(text: string, position: Position): number {
-  let line = 0;
-  let character = 0;
-  for (let i = 0; i < text.length; i++) {
-    if (line === position.line && character === position.character) return i;
-    if (text.charCodeAt(i) === 0x0a /* \n */) {
-      line++;
-      character = 0;
-    } else {
-      character++;
-    }
-  }
-  return text.length;
-}
+import { nodeRange, positionToOffset } from "../utils/positions.ts";
+import type { WorkspaceIndex } from "../workspace/index.ts";
 
 // Walk up the ancestor chain in the AST to find the nearest enclosing
 // "token" node — an object that has a `$value` or `$ref` property.
 // Returns the token node and its dot-path from the document root.
-function findEnclosingToken(
+export function findEnclosingToken(
   root: Node | undefined,
   offset: number,
 ): { node: Node; path: string } | undefined {
   if (!root) return undefined;
 
-  function visit(node: Node, prefix: string[]): { node: Node; path: string } | undefined {
-    if (offset < node.offset || offset > node.offset + node.length) return undefined;
+  function visit(
+    node: Node,
+    prefix: string[],
+    start = node.offset,
+    end = node.offset + node.length,
+  ): { node: Node; path: string } | undefined {
+    if (offset < start || offset > end) return undefined;
 
     if (node.type === "object" && node.children) {
       const isToken = node.children.some(
@@ -42,12 +30,19 @@ function findEnclosingToken(
           pair.children?.[0]?.value === "$value" ||
           pair.children?.[0]?.value === "$ref",
       );
-      // Recurse into properties first to find the deepest match.
+      // Recurse into plain-key properties first to find the deepest match.
+      // The whole property (key + value) counts as enclosing, so a cursor
+      // on a token's *name* still resolves to that token.
       for (const pair of node.children) {
         const key = pair.children?.[0]?.value;
         const child = pair.children?.[1];
         if (typeof key === "string" && !key.startsWith("$") && child) {
-          const deeper = visit(child, [...prefix, key]);
+          const deeper = visit(
+            child,
+            [...prefix, key],
+            pair.offset,
+            pair.offset + pair.length,
+          );
           if (deeper) return deeper;
         }
       }
@@ -140,6 +135,8 @@ function findModeVariant(
 export function hoverAt(
   result: AnalysisResult,
   position: Position,
+  index?: WorkspaceIndex,
+  uri?: string,
 ): Hover | undefined {
   const offset = positionToOffset(result.text, position);
   const enclosing = findEnclosingToken(result.ast, offset);
@@ -202,10 +199,41 @@ export function hoverAt(
 
   if (!literal) return undefined;
 
-  const markdown = renderTokenHover(literal, resolved);
+  // Cross-file resolution: if this token's value is an alias whose target
+  // isn't in the current document but is defined elsewhere in the
+  // workspace, resolve it from there and note the source file.
+  let displayResolved = resolved;
+  let resolvedFrom: string | undefined;
+  let ambiguousIn: string[] | undefined;
+  if (index && uri && typeof literal.$value === "string") {
+    const targetPath = aliasTarget(literal.$value);
+    const resolvedLocally =
+      resolved !== undefined &&
+      JSON.stringify(resolved.$value) !== JSON.stringify(literal.$value);
+    if (targetPath && !resolvedLocally && !result.resolved.byPath.has(targetPath)) {
+      const matches = index.lookup(targetPath, uri);
+      if (matches.length > 0) {
+        displayResolved = matches[0]!.token;
+        resolvedFrom = basename(matches[0]!.uri);
+        if (matches.length > 1) ambiguousIn = matches.map((m) => basename(m.uri));
+      }
+    }
+  }
+
+  const markdown = renderTokenHover(literal, displayResolved, {
+    resolvedFrom,
+    ambiguousIn,
+  });
   return {
     contents: { kind: MarkupKind.Markdown, value: markdown },
     range: nodeRange(result.text, hoverNode ?? enclosing.node),
   };
+}
+
+// Last path segment of a URI, for a human-readable source label.
+function basename(uri: string): string {
+  const clean = uri.split(/[?#]/)[0] ?? uri;
+  const parts = clean.split("/");
+  return decodeURIComponent(parts[parts.length - 1] || clean);
 }
 
