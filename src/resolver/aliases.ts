@@ -28,8 +28,22 @@ export function resolveAliases(
   errors: ResolverError[],
 ): FlatToken[] {
   const cache = new Map<string, unknown>();
+  // Chains are re-walked from every token that enters them, so the same
+  // hop can be visited more than once; report each origin/target pair once.
+  const reportedMismatches = new Set<string>();
 
-  function resolveValue(value: unknown, originPath: string, stack: Set<string>): unknown {
+  // `isWholeValue` marks the calls where the alias being resolved is the
+  // token's entire `$value` (the outermost call, and each hop into a
+  // target's own `$value`). Only there is a straight `$type` comparison
+  // meaningful — an alias embedded in a composite sub-value (a gradient
+  // stop's colour, a shadow layer) legitimately targets a different type
+  // than the composite that contains it.
+  function resolveValue(
+    value: unknown,
+    originPath: string,
+    stack: Set<string>,
+    isWholeValue = false,
+  ): unknown {
     if (Array.isArray(value)) {
       return value.map((item) => resolveValue(item, originPath, stack));
     }
@@ -69,18 +83,40 @@ export function resolveAliases(
       return value;
     }
 
+    // DTCG 2025.10 format §7.4.5/§7.5.3 + resolver §6.3: an alias must
+    // point at a token of the referencing token's type. Checked before the
+    // cache lookup so every call site gets its own diagnostic — the cache
+    // memoises resolved values, not errors.
+    if (isWholeValue) {
+      const originType = byPath.get(originPath)?.$type;
+      const mismatchKey = `${originPath}\u0000${target}`;
+      if (
+        originType &&
+        originType !== targetToken.$type &&
+        !reportedMismatches.has(mismatchKey)
+      ) {
+        reportedMismatches.add(mismatchKey);
+        errors.push({
+          kind: "type-mismatch",
+          at: originPath,
+          message: `Alias "{${target}}" targets a "${targetToken.$type}" token, but "${originPath}" is typed "${originType}".`,
+          target,
+        });
+      }
+    }
+
     const cached = cache.get(target);
     if (cached !== undefined) return cached;
 
     const nextStack = new Set(stack);
     nextStack.add(target);
-    const resolved = resolveValue(targetToken.$value, target, nextStack);
+    const resolved = resolveValue(targetToken.$value, target, nextStack, true);
     cache.set(target, resolved);
     return resolved;
   }
 
   return tokens.map((t) => ({
     ...t,
-    $value: resolveValue(t.$value, t.path, new Set([t.path])),
+    $value: resolveValue(t.$value, t.path, new Set([t.path]), true),
   }));
 }
