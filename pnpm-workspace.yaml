@@ -1,4 +1,8 @@
 packages:
   - "."
   - "lsp"
+  - "storybook"
   - "app/token-playground"
+  - "examples/storybook-demo"
+allowBuilds:
+  esbuild: true
