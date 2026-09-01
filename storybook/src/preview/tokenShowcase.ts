@@ -92,8 +92,8 @@ export function tokenShowcase(config: TokenShowcaseConfig): TokenShowcase {
         : raw ?? tokenDocumentFromParameters(context) ?? "";
     const tokens = tokensOfType(parseTokens(doc, mode), type);
     const el = document.createElement(tag);
-    Object.assign(el, { tokens });
-    for (const key of ["mode", "sample"] as const) {
+    Object.assign(el, { tokens, mode });
+    for (const key of ["sample"] as const) {
       if (key in args) Object.assign(el, { [key]: args[key] });
     }
     return el;
