@@ -1,11 +1,11 @@
 import type { StorybookConfig } from "@storybook/web-components-vite";
 
-// Stitches the reusable token-showcase addon into this demo. The `addons`
-// entry runs the addon's preset, which registers the showcase custom
-// elements and applies the baseline preview parameters.
+// Zero-configuration demo: the storybook addon contributes everything on
+// its own. Listing it in `addons` injects the showcase custom elements and
+// auto-generates the whole "Tokens/*" story set from its bundled default
+// token document — no `.stories.*` files or token files live in this demo.
 const config: StorybookConfig = {
   framework: "@storybook/web-components-vite",
-  stories: ["../src/**/*.stories.ts"],
   addons: ["@oddsquad/tic-tac-token-storybook", "@storybook/addon-docs"],
 };
 
