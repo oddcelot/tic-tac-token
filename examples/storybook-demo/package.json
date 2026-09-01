@@ -1,0 +1,22 @@
+{
+  "name": "tic-tac-token-storybook-demo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Demo Storybook consuming @oddsquad/tic-tac-token-storybook.",
+  "type": "module",
+  "scripts": {
+    "predev": "pnpm -C ../.. build:dist && pnpm -F @oddsquad/tic-tac-token-storybook build:dist",
+    "dev": "storybook dev -p 6006",
+    "prebuild": "pnpm -C ../.. build:dist && pnpm -F @oddsquad/tic-tac-token-storybook build:dist",
+    "build": "storybook build",
+    "serve": "storybook dev --no-open -p 6006"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@oddsquad/tic-tac-token-storybook": "workspace:*",
+    "@storybook/web-components-vite": "^10.5.10",
+    "storybook": "^10.5.10",
+    "typescript": "^7.0.2",
+    "vite": "^8.0.8"
+  }
+}

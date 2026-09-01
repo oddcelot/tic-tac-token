@@ -18,6 +18,10 @@
       "types": "./dist/components/index.d.ts",
       "import": "./dist/components/index.js"
     },
+    "./tokens": {
+      "types": "./dist/preview/tokens.d.ts",
+      "import": "./dist/preview/tokens.js"
+    },
     "./stories": {
       "types": "./dist/preview/defineTokenStories.d.ts",
       "import": "./dist/preview/defineTokenStories.js"

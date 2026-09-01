@@ -54,10 +54,10 @@ importers:
         version: 66.6.8
       '@unocss/vite':
         specifier: ^66.6.8
-        version: 66.6.8(vite@8.0.8(@types/node@26.4.0)(jiti@2.7.0))
+        version: 66.6.8(vite@8.0.8(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0))
       solid-devtools:
         specifier: ^0.34.5
-        version: 0.34.5(solid-js@1.9.12)(vite@8.0.8(@types/node@26.4.0)(jiti@2.7.0))
+        version: 0.34.5(solid-js@1.9.12)(vite@8.0.8(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0))
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
@@ -66,7 +66,25 @@ importers:
         version: 8.0.8(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0)
       vite-plugin-solid:
         specifier: ^2.11.12
-        version: 2.11.12(solid-js@1.9.12)(vite@8.0.8(@types/node@26.4.0)(jiti@2.7.0))
+        version: 2.11.12(solid-js@1.9.12)(vite@8.0.8(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0))
+
+  examples/storybook-demo:
+    devDependencies:
+      '@oddsquad/tic-tac-token-storybook':
+        specifier: workspace:*
+        version: link:../../storybook
+      '@storybook/web-components-vite':
+        specifier: ^10.5.10
+        version: 10.5.10(esbuild@0.28.2)(lit@3.3.3)(storybook@10.5.10(react@19.2.8))(vite@8.0.8(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0))
+      storybook:
+        specifier: ^10.5.10
+        version: 10.5.10(react@19.2.8)
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+      vite:
+        specifier: ^8.0.8
+        version: 8.0.8(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0)
 
   lsp:
     dependencies:
@@ -2163,6 +2181,13 @@ snapshots:
       '@tybys/wasm-util': 0.10.3
     optional: true
 
+  '@napi-rs/wasm-runtime@1.2.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)':
+    dependencies:
+      '@emnapi/core': 1.9.2
+      '@emnapi/runtime': 1.9.2
+      '@tybys/wasm-util': 0.10.3
+    optional: true
+
   '@nothing-but/utils@0.17.0': {}
 
   '@oxc-parser/binding-android-arm-eabi@0.127.0':
@@ -2217,7 +2242,7 @@ snapshots:
     dependencies:
       '@emnapi/core': 1.9.2
       '@emnapi/runtime': 1.9.2
-      '@napi-rs/wasm-runtime': 1.1.4(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
+      '@napi-rs/wasm-runtime': 1.2.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
     optional: true
 
   '@oxc-parser/binding-win32-arm64-msvc@0.127.0':
@@ -2653,7 +2678,7 @@ snapshots:
       '@unocss/core': 66.6.8
       magic-string: 0.30.21
 
-  '@unocss/vite@66.6.8(vite@8.0.8(@types/node@26.4.0)(jiti@2.7.0))':
+  '@unocss/vite@66.6.8(vite@8.0.8(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0))':
     dependencies:
       '@jridgewell/remapping': 2.3.5
       '@unocss/config': 66.6.8
@@ -3174,7 +3199,7 @@ snapshots:
       mrmime: 2.0.1
       totalist: 3.0.1
 
-  solid-devtools@0.34.5(solid-js@1.9.12)(vite@8.0.8(@types/node@26.4.0)(jiti@2.7.0)):
+  solid-devtools@0.34.5(solid-js@1.9.12)(vite@8.0.8(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0)):
     dependencies:
       '@babel/core': 7.29.0
       '@babel/plugin-syntax-typescript': 7.28.6(@babel/core@7.29.0)
@@ -3321,7 +3346,7 @@ snapshots:
     dependencies:
       react: 19.2.8
 
-  vite-plugin-solid@2.11.12(solid-js@1.9.12)(vite@8.0.8(@types/node@26.4.0)(jiti@2.7.0)):
+  vite-plugin-solid@2.11.12(solid-js@1.9.12)(vite@8.0.8(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0)):
     dependencies:
       '@babel/core': 7.29.0
       '@types/babel__core': 7.20.5
@@ -3330,7 +3355,7 @@ snapshots:
       solid-js: 1.9.12
       solid-refresh: 0.6.3(solid-js@1.9.12)
       vite: 8.0.8(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0)
-      vitefu: 1.1.3(vite@8.0.8(@types/node@26.4.0)(jiti@2.7.0))
+      vitefu: 1.1.3(vite@8.0.8(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0))
     transitivePeerDependencies:
       - supports-color
 
@@ -3347,7 +3372,7 @@ snapshots:
       fsevents: 2.3.3
       jiti: 2.7.0
 
-  vitefu@1.1.3(vite@8.0.8(@types/node@26.4.0)(jiti@2.7.0)):
+  vitefu@1.1.3(vite@8.0.8(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0)):
     optionalDependencies:
       vite: 8.0.8(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0)
 
