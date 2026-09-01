@@ -34,3 +34,40 @@ export type { CssDeclaration, CssValueOptions } from "./css/values.ts";
 
 export { tokensToCssVars } from "./css/sheet.ts";
 export type { CssVarBundle, CssVarOptions } from "./css/sheet.ts";
+
+export {
+  CSS_EXTENSION,
+  defaultSelector,
+  isColorSchemeAxis,
+  renderConditions,
+  selectorStrategies,
+  selectorStrategyFromExtensions,
+} from "./css/selectors.ts";
+export type {
+  ContextSelector,
+  ContextSelectors,
+  RenderedCondition,
+  SelectorAxis,
+  SelectorDiagnostic,
+  SelectorStrategy,
+} from "./css/selectors.ts";
+
+export { applies, factorMatrix, predict } from "./css/factor.ts";
+export type {
+  AxisCoordinate,
+  FactorAxis,
+  FactoredBlock,
+  FactorPoint,
+  FactorResult,
+  ValueMatrix,
+} from "./css/factor.ts";
+
+export { resolverDocumentToCssTheme, tokensToCssTheme } from "./css/theme.ts";
+export type {
+  CssEmitDiagnostic,
+  CssEmitDiagnosticKind,
+  CssThemeOptions,
+  CssThemeSheet,
+  ThemeBlock,
+  ThemeDeclaration,
+} from "./css/theme.ts";
