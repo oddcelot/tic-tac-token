@@ -29,6 +29,48 @@
         }
       }
     },
+    "background": {
+      "$type": "color",
+      "$value": { "colorSpace": "srgb", "components": [0.97, 0.98, 0.98], "alpha": 1, "hex": "#F7FAF9" },
+      "$extensions": {
+        "tic-tac-token.modes": {
+          "dark": {
+            "colorSpace": "srgb",
+            "components": [0.06, 0.13, 0.12],
+            "alpha": 1,
+            "hex": "#0F211F"
+          }
+        }
+      }
+    },
+    "surface": {
+      "$type": "color",
+      "$value": { "colorSpace": "srgb", "components": [1, 1, 1], "alpha": 1, "hex": "#FFFFFF" },
+      "$extensions": {
+        "tic-tac-token.modes": {
+          "dark": {
+            "colorSpace": "srgb",
+            "components": [0.09, 0.16, 0.15],
+            "alpha": 1,
+            "hex": "#172A28"
+          }
+        }
+      }
+    },
+    "ink": {
+      "$type": "color",
+      "$value": { "colorSpace": "srgb", "components": [0.1, 0.11, 0.13], "alpha": 1, "hex": "#1A1D21" },
+      "$extensions": {
+        "tic-tac-token.modes": {
+          "dark": {
+            "colorSpace": "srgb",
+            "components": [0.9, 0.93, 0.92],
+            "alpha": 1,
+            "hex": "#E6EDEB"
+          }
+        }
+      }
+    },
     "astro": {
       "teal": {
         "$type": "color",

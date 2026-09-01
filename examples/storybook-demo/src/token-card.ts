@@ -13,6 +13,9 @@ export const tokenCardTag = "token-card";
 const ROLES = [
   "color.primary",
   "color.accent",
+  "color.background",
+  "color.surface",
+  "color.ink",
   "spacing.card",
   "spacing.radius",
   "font.family.sans",
@@ -60,19 +63,19 @@ export class TokenCard extends HTMLElement {
         }
         .card {
           box-sizing: border-box;
-          background: var(--sb-token-surface, #ffffff);
+          background: var(--color-surface, #ffffff);
           border: 2px solid var(--color-accent, #1a1d21);
           border-radius: var(--spacing-radius, 12px);
           padding: var(--spacing-card, 16px);
           font-family: var(--font-family-sans, sans-serif);
-          color: var(--sb-token-ink, #1a1d21);
+          color: var(--color-ink, #1a1d21);
           max-width: 320px;
         }
         .card__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
         .card__title { margin: 0; font-size: 18px; font-weight: var(--font-weight-bold, 700); line-height: 1.2; }
         .card__badge {
           background: var(--color-primary, #1a1d21);
-          color: var(--sb-token-primary-ink, #ffffff);
+          color: var(--color-surface, #ffffff);
           font-size: 11px;
           font-weight: var(--font-weight-bold, 700);
           padding: 2px 8px;

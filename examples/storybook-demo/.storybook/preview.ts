@@ -10,10 +10,35 @@ import cosmos from "../tokens/themes/cosmos.json?raw";
 import "@fontsource/inter";
 import "@fontsource/jetbrains-mono";
 
-import type { Preview } from "@storybook/web-components-vite";
+import type { Preview, Decorator } from "@storybook/web-components-vite";
+import { resolveTokens } from "@oddsquad/tic-tac-token/resolver";
+
+const DOCS: Record<string, string> = { astro, cosmos };
+
+// Paint the whole story with the active theme's `color.background` token,
+// resolved at the current color scheme — so a dark theme's base surface (not a
+// fixed white) fills the preview behind every story.
+const themeBackground: Decorator = (story, context) => {
+  const scheme = context.globals?.colorScheme ?? "light";
+  const raw = DOCS[context.globals?.theme as string] ?? astro;
+  try {
+    const { tokens } = resolveTokens(JSON.parse(raw));
+    const bg = tokens.find(
+      (t) => t.path === (scheme === "dark" ? "color.background@dark" : "color.background"),
+    );
+    const hex = bg?.$value && typeof bg.$value === "object"
+      ? (bg.$value as { hex?: string }).hex
+      : undefined;
+    document.body.style.background = hex ? (hex.startsWith("#") ? hex : `#${hex}`) : "";
+  } catch {
+    document.body.style.background = "";
+  }
+  return story();
+};
 
 const preview: Preview = {
   tags: ["autodocs"],
+  decorators: [themeBackground],
   initialGlobals: { theme: "astro", colorScheme: "light" },
   globalTypes: {
     theme: {
