@@ -62,6 +62,7 @@
     "prepublishOnly": "pnpm test && pnpm generate-schema && pnpm build:dist"
   },
   "dependencies": {
+    "arkregex": "^0.0.8",
     "arktype": "^2.2.3"
   },
   "devDependencies": {

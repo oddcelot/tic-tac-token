@@ -1,4 +1,5 @@
 import { type } from "arktype";
+import { regex } from "arkregex";
 import { JsonPointerRefObject, ValueAlias } from "./shared.ts";
 
 // Component type helpers, mirroring the named component types in
@@ -48,7 +49,7 @@ const oklchComponents = type([zeroOneComponent, chromaComponent, hueComponent]);
 // Both alpha and hex may also be a nested `$ref` object.
 const colorCommon = {
   "alpha?": type("0 <= number <= 1").or(JsonPointerRefObject),
-  "hex?": type("/^#[\\dA-Fa-f]{6}$/").or(JsonPointerRefObject),
+  "hex?": type(regex("^#[\\dA-Fa-f]{6}$")).or(JsonPointerRefObject),
 } as const;
 
 const rgbColor = type({

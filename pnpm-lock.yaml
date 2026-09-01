@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      arkregex:
+        specifier: ^0.0.8
+        version: 0.0.8
       arktype:
         specifier: ^2.2.3
         version: 2.2.3
