@@ -1,8 +1,8 @@
-import { type } from "arktype";
 import { deepMergeGroup } from "../resolver/extends.ts";
 import { resolveTokens } from "../resolver/index.ts";
 import { jsonPointerGet } from "../resolver/json-pointer.ts";
-import { ResolverDocument } from "./schema.ts";
+import { buildResolutionOrder } from "./order.ts";
+import type { OrderEntry, ResolutionOrder } from "./order.ts";
 import type {
   ResolvedResolverDocument,
   ResolveResolverOptions,
@@ -11,6 +11,12 @@ import type {
 } from "./types.ts";
 
 export { ResolverDocument, SetDef, ModifierDef } from "./schema.ts";
+export { buildResolutionOrder, resolverModifiers } from "./order.ts";
+export type {
+  OrderEntry,
+  ResolutionOrder,
+  ResolverModifierInfo,
+} from "./order.ts";
 export type {
   ResolverModuleError,
   ResolverModuleErrorKind,
@@ -21,9 +27,6 @@ export type {
 
 type Rec = Record<string, unknown>;
 
-// resolutionOrder entries may only reference a named set or modifier.
-const ORDER_REF_RE = /^#\/(sets|modifiers)\/([^/]+)$/;
-
 // Sources are independent documents, so a `$extends` inside one is content
 // to preserve, not an inheritance link to consume.
 const MERGE_OPTIONS = { keepExtends: true } as const;
@@ -31,18 +34,6 @@ const MERGE_OPTIONS = { keepExtends: true } as const;
 function isPlainObject(value: unknown): value is Rec {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
-
-// An entry of resolutionOrder, after refs are followed and inline
-// definitions are unwrapped.
-type OrderEntry = {
-  name: string;
-  kind: "set" | "modifier";
-  def: Rec;
-  /** True when the entry was declared inline rather than referenced. */
-  inline: boolean;
-  /** Document location used as the `at` of any error this entry raises. */
-  at: string;
-};
 
 /**
  * Resolve a DTCG 2025.10 Resolver Module document into a tokens document.
@@ -60,107 +51,33 @@ export function resolveResolverDocument(
   inputs: ResolverInputs = {},
   options: ResolveResolverOptions = {},
 ): ResolvedResolverDocument {
-  const documentErrors: ResolverModuleError[] = [];
+  return resolveFromOrder(buildResolutionOrder(document), inputs, options);
+}
+
+/**
+ * Resolve against an already-validated resolution order.
+ *
+ * Exported for callers that resolve the same document at many input
+ * combinations — the ordering pass is input-independent, so hoisting it out of
+ * the loop avoids re-running arktype once per permutation.
+ */
+export function resolveFromOrder(
+  order: ResolutionOrder,
+  inputs: ResolverInputs = {},
+  options: ResolveResolverOptions = {},
+): ResolvedResolverDocument {
+  // A fresh array per call: the merge phase appends per-input diagnostics
+  // (`missing-required-input`, `invalid-input-value`), and a shared order is
+  // reused across permutations, so pushing onto `order.errors` would leak one
+  // combination's errors into the next.
+  const documentErrors: ResolverModuleError[] = [...order.errors];
   const external = options.externalDocuments ?? {};
+  const doc = order.doc;
 
-  const parsed = ResolverDocument(document);
-  if (parsed instanceof type.errors) {
-    for (const issue of [...parsed]) {
-      documentErrors.push({
-        kind: "invalid-document",
-        at: issue.path.map(String).join(".") || "(root)",
-        message: issue.message,
-      });
-    }
-    return emptyResult(documentErrors);
-  }
+  if (!doc) return emptyResult(documentErrors);
 
-  const doc = parsed as unknown as Rec;
-  const namedSets = isPlainObject(doc.sets) ? doc.sets : {};
   const namedModifiers = isPlainObject(doc.modifiers) ? doc.modifiers : {};
-  const order = Array.isArray(doc.resolutionOrder) ? doc.resolutionOrder : [];
-
-  // ── Ordering (§6.2): resolve every resolutionOrder entry to a named
-  // set or modifier definition, reporting reference and naming errors.
-  const entries: OrderEntry[] = [];
-  const seenNames = new Set<string>();
-
-  order.forEach((raw, index) => {
-    const at = `resolutionOrder[${index}]`;
-    if (!isPlainObject(raw)) return;
-
-    let name: string | undefined;
-    let kind: "set" | "modifier" | undefined;
-    let def: Rec | undefined;
-    let inline = false;
-
-    if (typeof raw.$ref === "string") {
-      const match = raw.$ref.match(ORDER_REF_RE);
-      if (!match) {
-        documentErrors.push({
-          kind: "invalid-pointer",
-          at,
-          message: `resolutionOrder may only reference #/sets/<name> or #/modifiers/<name>; got ${raw.$ref}.`,
-          target: raw.$ref,
-        });
-        return;
-      }
-      const [, section, key] = match as unknown as [string, string, string];
-      const pool = section === "sets" ? namedSets : namedModifiers;
-      const target = pool[key];
-      if (!isPlainObject(target)) {
-        documentErrors.push({
-          kind: "invalid-pointer",
-          at,
-          message: `${raw.$ref} does not resolve to a declared ${section === "sets" ? "set" : "modifier"}.`,
-          target: raw.$ref,
-        });
-        return;
-      }
-      kind = section === "sets" ? "set" : "modifier";
-      // Keys alongside $ref shallow-override the target (§4.2).
-      const { $ref: _ref, name: refName, ...overrides } = raw;
-      def = { ...target, ...overrides };
-      name = typeof refName === "string" ? refName : key;
-    } else {
-      if (typeof raw.name !== "string" || typeof raw.type !== "string") {
-        documentErrors.push({
-          kind: "missing-name-or-type",
-          at,
-          message:
-            "An inline resolutionOrder entry MUST declare both `name` and `type`.",
-        });
-        return;
-      }
-      name = raw.name;
-      kind = raw.type as "set" | "modifier";
-      inline = true;
-      const { name: _n, type: _t, ...rest } = raw;
-      def = rest;
-    }
-
-    if (seenNames.has(name)) {
-      documentErrors.push({
-        kind: "duplicate-name",
-        at,
-        message: `Duplicate resolutionOrder name "${name}".`,
-      });
-      return;
-    }
-    seenNames.add(name);
-    entries.push({ name, kind, def, inline, at });
-  });
-
-  // ── Modifier structure (§4.1.5.1). Named modifiers are checked whether
-  // or not resolutionOrder uses them; inline ones are checked in place.
-  for (const [key, def] of Object.entries(namedModifiers)) {
-    if (isPlainObject(def)) checkModifier(def, `modifiers.${key}`, documentErrors);
-  }
-  for (const entry of entries) {
-    if (entry.kind === "modifier" && entry.inline) {
-      checkModifier(entry.def, entry.at, documentErrors);
-    }
-  }
+  const entries = order.entries;
 
   // ── Input validation (§6.1). Skipped entirely when no modifiers exist.
   const modifiersByLowerName = new Map<string, OrderEntry>();
@@ -208,34 +125,6 @@ export function resolveResolverDocument(
   return { tokens, mergedTree, documentErrors, tokenErrors: tokens.errors };
 
   // ────────────────────────────────────────────────────────────────────
-
-  function checkModifier(def: Rec, at: string, sink: ResolverModuleError[]): void {
-    const contexts = isPlainObject(def.contexts) ? def.contexts : undefined;
-    const keys = contexts ? Object.keys(contexts) : [];
-    if (keys.length === 0) {
-      sink.push({
-        kind: "modifier-no-contexts",
-        at,
-        message: "A modifier MUST declare at least one context.",
-      });
-      return;
-    }
-    if (keys.length === 1) {
-      sink.push({
-        kind: "modifier-single-context",
-        at,
-        message:
-          "A modifier SHOULD declare two or more contexts; one is equivalent to a set.",
-      });
-    }
-    if (typeof def.default === "string" && !keys.includes(def.default)) {
-      sink.push({
-        kind: "invalid-default",
-        at,
-        message: `Modifier default "${def.default}" is not one of its contexts.`,
-      });
-    }
-  }
 
   // Pick the context named by the input (or the default) and merge it.
   function modifierTree(entry: OrderEntry, byLowerName: Map<string, unknown>): Rec {
