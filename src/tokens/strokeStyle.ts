@@ -7,7 +7,7 @@ export const StrokeStyleEnum = type(
 );
 
 export const StrokeStyleObject = type({
-  dashArray: DimensionValue.array().atLeastLength(1),
+  dashArray: DimensionValue.array(),
   lineCap: type("'round' | 'butt' | 'square'").or(JsonPointerRefObject),
 }).onUndeclaredKey("reject");
 

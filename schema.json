@@ -1290,7 +1290,6 @@
                           "properties": {
                             "dashArray": {
                               "type": "array",
-                              "minItems": 1,
                               "items": {
                                 "anyOf": [
                                   {
@@ -7535,7 +7534,6 @@
                   "properties": {
                     "dashArray": {
                       "type": "array",
-                      "minItems": 1,
                       "items": {
                         "anyOf": [
                           {
