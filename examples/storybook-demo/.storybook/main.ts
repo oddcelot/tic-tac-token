@@ -6,7 +6,7 @@ import type { StorybookConfig } from "@storybook/web-components-vite";
 const config: StorybookConfig = {
   framework: "@storybook/web-components-vite",
   stories: ["../src/**/*.stories.ts"],
-  addons: ["@oddsquad/tic-tac-token-storybook"],
+  addons: ["@oddsquad/tic-tac-token-storybook", "@storybook/addon-docs"],
 };
 
 export default config;

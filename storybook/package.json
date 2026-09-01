@@ -23,8 +23,8 @@
       "import": "./dist/preview/tokens.js"
     },
     "./stories": {
-      "types": "./dist/preview/defineTokenStories.d.ts",
-      "import": "./dist/preview/defineTokenStories.js"
+      "types": "./dist/preview/tokenShowcase.d.ts",
+      "import": "./dist/preview/tokenShowcase.js"
     }
   },
   "files": [

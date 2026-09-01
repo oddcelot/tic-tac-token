@@ -1,13 +1,20 @@
-import { defineTokenStories } from "@oddsquad/tic-tac-token-storybook/stories";
+import { tokenShowcase } from "@oddsquad/tic-tac-token-storybook/stories";
+import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import raw from "../tokens/tokens.json?raw";
 
-const s = defineTokenStories({
-  title: "Tokens/Font Size",
-  raw,
+const show = tokenShowcase({
   type: "dimension",
-  description:
-    "A type scale built from dimension tokens, shown at their actual size.",
+  raw,
+  description: "A type scale built from dimension tokens, shown at their actual size.",
 });
 
-export default s.meta;
-export const Default = s.Default;
+export default {
+  title: "Tokens/Font Size",
+  tags: ["autodocs"],
+  component: show.component,
+  render: show.render,
+  argTypes: show.argTypes,
+  parameters: show.parameters,
+} satisfies Meta;
+
+export const Default: StoryObj = {};

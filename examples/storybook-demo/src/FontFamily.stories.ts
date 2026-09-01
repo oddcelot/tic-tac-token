@@ -1,13 +1,21 @@
-import { defineTokenStories } from "@oddsquad/tic-tac-token-storybook/stories";
+import { tokenShowcase } from "@oddsquad/tic-tac-token-storybook/stories";
+import type { Meta, StoryObj } from "@storybook/web-components-vite";
 import raw from "../tokens/tokens.json?raw";
 
-const s = defineTokenStories({
-  title: "Tokens/Font Family",
-  raw,
+const show = tokenShowcase({
   type: "fontFamily",
+  raw,
   description:
     "Each font-family token rendered with its full CSS font stack. Edit the sample text to see how a specimen paragraph reads.",
 });
 
-export default s.meta;
-export const Default = s.Default;
+export default {
+  title: "Tokens/Font Family",
+  tags: ["autodocs"],
+  component: show.component,
+  render: show.render,
+  argTypes: show.argTypes,
+  parameters: show.parameters,
+} satisfies Meta;
+
+export const Default: StoryObj = {};
