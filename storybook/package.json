@@ -64,7 +64,7 @@
     "prepublishOnly": "pnpm -C .. build:dist && pnpm build:dist"
   },
   "dependencies": {
-    "@oddsquad/tic-tac-token": "workspace:*"
+    "@oddsquad/tic-tac-token": "workspace:^0.1.0"
   },
   "peerDependencies": {
     "@storybook/web-components-vite": ">=10 <11",

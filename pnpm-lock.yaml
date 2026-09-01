@@ -126,7 +126,7 @@ importers:
   storybook:
     dependencies:
       '@oddsquad/tic-tac-token':
-        specifier: workspace:*
+        specifier: workspace:^0.1.0
         version: link:..
     devDependencies:
       '@storybook/web-components-vite':
