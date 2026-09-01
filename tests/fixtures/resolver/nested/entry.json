@@ -1,0 +1,4 @@
+{
+  "version": "2025.10",
+  "resolutionOrder": [{ "name": "base", "type": "set", "sources": [{ "$ref": "inner/mid.json#" }] }]
+}

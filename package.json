@@ -18,6 +18,11 @@
       "types": "./dist/resolver-module/index.d.ts",
       "import": "./dist/resolver-module/index.js"
     },
+    "./node": {
+      "types": "./dist/node/load.d.ts",
+      "node": "./dist/node/load.js",
+      "default": "./dist/node/load.js"
+    },
     "./css": {
       "types": "./dist/css.d.ts",
       "import": "./dist/css.js"

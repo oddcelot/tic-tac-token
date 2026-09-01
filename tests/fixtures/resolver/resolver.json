@@ -1,0 +1,14 @@
+{
+  "version": "2025.10",
+  "sets": { "base": { "sources": [{ "$ref": "tokens/base.json#" }] } },
+  "modifiers": {
+    "theme": {
+      "default": "light",
+      "contexts": {
+        "light": [{ "$ref": "tokens/themes/light.json#" }],
+        "dark": [{ "$ref": "tokens/themes/dark.json#" }]
+      }
+    }
+  },
+  "resolutionOrder": [{ "$ref": "#/sets/base" }, { "$ref": "#/modifiers/theme" }]
+}
