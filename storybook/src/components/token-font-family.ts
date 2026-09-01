@@ -43,7 +43,7 @@ export class TokenFontFamily extends HTMLElement {
           <div class="row">
             <div class="row-label">${esc(t.path)}</div>
             <div class="row-body">
-              <div style="font-family:${css};font-size:18px;line-height:1.4">${esc(this.#sample)}</div>
+              <div style="font-family:${esc(css)};font-size:18px;line-height:1.4">${esc(this.#sample)}</div>
               <div class="label">${esc(css)}</div>
             </div>
           </div>
