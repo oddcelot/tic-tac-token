@@ -2,7 +2,7 @@ import {
   BrowserMessageReader,
   BrowserMessageWriter,
   createConnection,
-} from "vscode-languageserver/browser.js";
+} from "vscode-languageserver/browser";
 import { registerServer } from "./bootstrap.ts";
 
 // Browser Worker entry. The Worker's global `self` doubles as both the
