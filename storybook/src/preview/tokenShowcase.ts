@@ -1,5 +1,5 @@
 import type { Meta } from "@storybook/web-components-vite";
-import { parseTokens, tokensOfType } from "./tokens.ts";
+import { parseTokens, tokenDocumentFromParameters, tokensOfType } from "./tokens.ts";
 import type { TokenMode, TokenType } from "./tokens.ts";
 import "../components/index.ts";
 
@@ -10,11 +10,25 @@ const TAG_BY_TYPE: Partial<Record<TokenType, string>> = {
   dimension: "token-dimension",
 };
 
+/** Minimal story render context shape we read parameters from. */
+export type TokenRenderContext = {
+  parameters?: Record<string, unknown>;
+};
+
+export type TokenDocumentSource =
+  | string
+  | ((args: Record<string, unknown>, context: TokenRenderContext) => string);
+
 export type TokenShowcaseConfig = {
   /** Token type to showcase (color, fontFamily, fontWeight, dimension). */
   type: TokenType;
-  /** Raw DTCG tokens document text (see `?raw` imports). */
-  raw: string;
+  /**
+   * Raw DTCG tokens document text (see `?raw` imports), or a resolver that
+   * reads it from the story render context. When omitted, the addon falls
+   * back to a project-provided global parameter (see `PARAM_KEY`) or its
+   * bundled default token document.
+   */
+  raw?: TokenDocumentSource;
   /** Short description shown in autodocs. */
   description?: string;
   parameters?: Meta["parameters"];
@@ -24,7 +38,7 @@ export type TokenShowcase = {
   /** Custom-element tag to declare as the story's component. */
   component: string;
   /** Render function that mounts the showcase element with resolved tokens. */
-  render: (args: Record<string, unknown>) => HTMLElement;
+  render: (args: Record<string, unknown>, context: TokenRenderContext) => HTMLElement;
   args?: Meta["args"];
   argTypes?: Meta["argTypes"];
   parameters?: Meta["parameters"];
@@ -61,9 +75,16 @@ export function tokenShowcase(config: TokenShowcaseConfig): TokenShowcase {
     );
   }
 
-  const render = (args: Record<string, unknown>): HTMLElement => {
+  const render = (
+    args: Record<string, unknown>,
+    context: TokenRenderContext,
+  ): HTMLElement => {
     const mode: TokenMode = args["mode"] === "dark" ? "dark" : "light";
-    const tokens = tokensOfType(parseTokens(raw, mode), type);
+    const doc =
+      typeof raw === "function"
+        ? raw(args, context)
+        : raw ?? tokenDocumentFromParameters(context) ?? "";
+    const tokens = tokensOfType(parseTokens(doc, mode), type);
     const el = document.createElement(tag);
     Object.assign(el, { tokens });
     for (const key of ["mode", "sample"] as const) {

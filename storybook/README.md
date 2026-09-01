@@ -22,8 +22,8 @@ Two ways to consume the addon.
 ### Zero-config (recommended)
 
 The addon ships pre-built token showcase stories, so you don't write any `.stories.*`
-files (or token files) of your own. Add the addon and point a single `stories`
-specifier at the addon's bundled stories:
+files of your own — you only point one `stories` specifier at the addon's bundled
+stories and drop your token document into the addon via a global parameter:
 
 ```ts
 // .storybook/main.ts
@@ -39,11 +39,22 @@ export default {
 };
 ```
 
+```ts
+// .storybook/preview.ts — the project owns its token document
+import raw from "../tokens/tokens.json?raw";
+
+export default {
+  parameters: { ticTacToken: { raw } },
+};
+```
+
 `tokenStoriesDirectory()` (exported from the package root) resolves the directory
-inside the addon that contains its compiled showcase stories. The built-in default
-token document drives the whole "Tokens/*" set — Color, Font Family, Font Size,
-Font Weight and an Overview. Storybook v10 does not merge a `stories` glob contributed
-from an addon preset, so this single specifier is the one required line.
+inside the addon that contains its compiled showcase stories. The `tokens/tokens.json`
+file is **yours** — the addon's Color, Font Family, Font Size, Font Weight and Overview
+stories read it from the `ticTacToken` parameter. Storybook v10 does not merge a `stories`
+glob contributed from an addon preset, so the single specifier is the one required line
+in `main.ts`. If you don't supply a token document, the addon falls back to its bundled
+default sample.
 
 ### Bring-your-own tokens
 
@@ -95,17 +106,17 @@ Supported `type` values in this release: `color`, `fontFamily`, `fontWeight`, `d
 | `.`                 | Addon preset (used via `addons`) + `tokenStoriesDirectory()` |
 | `./preview`         | Baseline preview parameters + element registration          |
 | `./components`      | The showcase custom elements (`token-color`, `tokens-gallery`, …) |
-| `./tokens`          | Token parsing / CSS-formatting utilities                    |
+| `./tokens`          | Token parsing / CSS-formatting utilities + `PARAM_KEY` / `tokenDocumentFromParameters()` |
 | `./stories`         | `tokenShowcase()` helper                                    |
 
 ## Roadmap / known options
 
-- **Option B — zero-config consumption (implemented).** Consumers only add the addon (plus one `stories` specifier) and get the full "Tokens/*" story set from pre-built showcase stories bundled in the addon's dist. See [Zero-config setup](#zero-config-recommended) above.
+- **Option B — zero-config consumption (implemented).** Consumers add the addon (plus one `stories` specifier) and get the full "Tokens/*" story set from pre-built showcase stories, reading the project's own `tokens.json` from the `ticTacToken` parameter (falling back to the addon's bundled default). See [Zero-config setup](#zero-config-recommended) above.
 - Story types still to cover: `duration`, `number`, `strokeStyle`, `border`, `transition`, `cubicBezier`, `shadow`, `gradient`, `typography`.
 
 ## Try it
 
-A working demo lives at [`examples/storybook-demo`](../examples/storybook-demo) and consumes this addon exactly as an external project would:
+A working demo lives at [`examples/storybook-demo`](../examples/storybook-demo) and consumes this addon exactly as an external project would — it owns `tokens/tokens.json` and feeds it to the addon through the `ticTacToken` parameter:
 
 ```sh
 pnpm --filter tic-tac-token-storybook-demo dev

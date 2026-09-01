@@ -1,9 +1,10 @@
 import { tokenShowcase } from "../tokenShowcase.js";
+import { tokenDocumentFromParameters } from "../tokens.js";
 import raw from "../tokens.json?raw";
 
 const show = tokenShowcase({
   type: "color",
-  raw,
+  raw: (args, context) => tokenDocumentFromParameters(context) ?? raw,
   description:
     "Color tokens resolved through tic-tac-token. Toggle the mode argument to swap to the dark mode variants declared in `$extensions.tic-tac-token.modes`.",
 });

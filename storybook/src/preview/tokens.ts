@@ -8,6 +8,37 @@ export type { FlatToken, TokenType };
 
 export type TokenMode = "light" | "dark";
 
+/**
+ * Global parameter key under which a project supplies its own raw DTCG token
+ * document for the auto-injected showcase stories. Set it in `.storybook/preview.*`:
+ *
+ * ```ts
+ * import raw from "../tokens/tokens.json?raw";
+ * export default { parameters: { [PARAM_KEY]: { raw } } };
+ * ```
+ *
+ * The pre-built showcase stories read from here (falling back to the addon's
+ * bundled default token document when the project doesn't set it).
+ */
+export const PARAM_KEY = "ticTacToken";
+
+/** Story render context fields the token document source reads. */
+export type TokenRenderContext = {
+  parameters?: Record<string, unknown>;
+};
+
+/** The project's raw DTCG token document from the global parameter, if any. */
+export function tokenDocumentFromParameters(
+  context: TokenRenderContext,
+): string | undefined {
+  const v = context?.parameters?.[PARAM_KEY];
+  return typeof v === "string"
+    ? v
+    : v && typeof (v as { raw?: unknown }).raw === "string"
+      ? (v as { raw: string }).raw
+      : undefined;
+}
+
 /** Parse a DTCG tokens document and filter to the active mode. */
 export function parseTokens(raw: string, mode: TokenMode = "light"): FlatToken[] {
   let parsed: unknown;

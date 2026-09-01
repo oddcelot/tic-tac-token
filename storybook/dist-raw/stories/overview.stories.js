@@ -1,4 +1,4 @@
-import { parseTokens } from "../tokens.js";
+import { parseTokens, tokenDocumentFromParameters } from "../tokens.js";
 import { tokenGalleryTag } from "../../components/index.js";
 import raw from "../tokens.json?raw";
 
@@ -23,10 +23,11 @@ export default {
       table: { defaultValue: { summary: "light" } },
     },
   },
-  render: (args) => {
+  render: (args, context) => {
+    const doc = tokenDocumentFromParameters(context) ?? raw;
     const el = document.createElement(tokenGalleryTag);
     Object.assign(el, {
-      tokens: parseTokens(raw, (args.mode ?? "light") === "dark" ? "dark" : "light"),
+      tokens: parseTokens(doc, (args.mode ?? "light") === "dark" ? "dark" : "light"),
     });
     return el;
   },
