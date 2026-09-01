@@ -1,12 +1,11 @@
 import { tokenShowcase } from "../tokenShowcase.js";
-import { tokenDocumentFromParameters } from "../tokens.js";
 import raw from "../tokens.json?raw";
 
 const show = tokenShowcase({
   type: "color",
-  raw: (args, context) => tokenDocumentFromParameters(context) ?? raw,
+  fallbackRaw: raw,
   description:
-    "Color tokens resolved through tic-tac-token. Toggle the mode argument to swap to the dark mode variants declared in `$extensions.tic-tac-token.modes`.",
+    "Color tokens resolved through tic-tac-token. Use the toolbar to switch between the contexts the project's resolver document declares.",
 });
 
 export default {
@@ -14,10 +13,8 @@ export default {
   tags: ["autodocs"],
   component: show.component,
   render: show.render,
-  args: show.args,
   argTypes: show.argTypes,
   parameters: show.parameters,
 };
 
-export const Default = { args: { mode: "light" } };
-export const Dark = { args: { mode: "dark" } };
+export const Default = {};

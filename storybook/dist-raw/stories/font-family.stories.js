@@ -1,10 +1,9 @@
 import { tokenShowcase } from "../tokenShowcase.js";
-import { tokenDocumentFromParameters } from "../tokens.js";
 import raw from "../tokens.json?raw";
 
 const show = tokenShowcase({
   type: "fontFamily",
-  raw: (args, context) => tokenDocumentFromParameters(context) ?? raw,
+  fallbackRaw: raw,
   description:
     "Each font-family token rendered with its full CSS font stack. Edit the sample text to see how a specimen paragraph reads.",
 });

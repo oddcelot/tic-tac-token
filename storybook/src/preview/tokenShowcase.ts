@@ -1,5 +1,6 @@
 import type { Meta } from "@storybook/web-components-vite";
-import { parseTokens, tokenDocumentFromParameters, tokensOfType } from "./tokens.ts";
+import { parseTokens, tokensOfType } from "./tokens.ts";
+import { resolveForContext } from "./resolve.ts";
 import type { TokenMode, TokenType } from "./tokens.ts";
 import "../components/index.ts";
 
@@ -24,12 +25,22 @@ export type TokenShowcaseConfig = {
   /** Token type to showcase (color, fontFamily, fontWeight, dimension). */
   type: TokenType;
   /**
-   * Raw DTCG tokens document text (see `?raw` imports), or a resolver that
-   * reads it from the story render context. When omitted, the addon falls
-   * back to a project-provided global parameter (see `PARAM_KEY`) or its
-   * bundled default token document.
+   * Raw DTCG tokens document text (see `?raw` imports), or a function that
+   * reads it from the story render context.
+   *
+   * An explicit document *overrides* the project's tokens, so this is for a
+   * hand-authored story that showcases one specific document. Leave it unset
+   * to follow whatever the project supplied through `PARAM_KEY`.
+   *
+   * @deprecated Prefer a resolver document in `parameters[PARAM_KEY]`.
    */
   raw?: TokenDocumentSource;
+  /**
+   * Raw DTCG document to fall back on when the project supplied no tokens at
+   * all. Unlike `raw`, this never shadows a project's own document — it is how
+   * the addon's bundled stories stay useful in a project with no setup yet.
+   */
+  fallbackRaw?: string;
   /** Short description shown in autodocs. */
   description?: string;
   parameters?: Meta["parameters"];
@@ -68,7 +79,7 @@ export type TokenShowcase = {
  * ```
  */
 export function tokenShowcase(config: TokenShowcaseConfig): TokenShowcase {
-  const { type, raw, description, parameters } = config;
+  const { type, raw, fallbackRaw, description, parameters } = config;
   const tag = TAG_BY_TYPE[type];
   if (!tag) {
     throw new Error(
@@ -80,17 +91,29 @@ export function tokenShowcase(config: TokenShowcaseConfig): TokenShowcase {
     args: Record<string, unknown>,
     context: TokenRenderContext,
   ): HTMLElement => {
-    // The `colorScheme` toolbar global wins when present (inherits the addon's
-    // baseline `light` default); the per-story `mode` argument is only used as a
-    // fallback for consumers that never register the global.
+    // A story that hands in its own raw document keeps the legacy path; that
+    // is the only case where the `mode` argument still means anything.
+    const explicit = typeof raw === "function" ? raw(args, context) : raw;
     const globalScheme = context.globals?.["colorScheme"];
     const mode: TokenMode =
       (globalScheme ?? args["mode"]) === "dark" ? "dark" : "light";
-    const doc =
-      typeof raw === "function"
-        ? raw(args, context)
-        : raw ?? tokenDocumentFromParameters(context) ?? "";
-    const tokens = tokensOfType(parseTokens(doc, mode), type);
+
+    // Otherwise resolve through the Resolver Module, at whatever contexts the
+    // toolbar currently selects. `resolveForContext` handles the `{ resolver }`
+    // shape and the legacy `{ raw }` / `{ documents }` ones alike, so there is
+    // nothing to branch on here. The bundled fallback applies only when the
+    // project supplied nothing — it must never shadow a real document.
+    const resolved = explicit !== undefined ? [] : resolveForContext(context).tokens;
+    const source =
+      explicit !== undefined
+        ? parseTokens(explicit, mode)
+        : resolved.length > 0
+          ? resolved
+          : fallbackRaw !== undefined
+            ? parseTokens(fallbackRaw, mode)
+            : [];
+
+    const tokens = tokensOfType(source, type);
     const el = document.createElement(tag);
     Object.assign(el, { tokens, mode });
     for (const key of ["sample"] as const) {
