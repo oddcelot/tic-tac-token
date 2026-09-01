@@ -3,40 +3,79 @@
 // framework-free pure functions shared by every token-type component.
 import { resolveTokens } from "@oddsquad/tic-tac-token/resolver";
 import type { FlatToken, TokenType } from "@oddsquad/tic-tac-token/resolver";
+import {
+  colorToCss,
+  dimensionToCss,
+  fontFamilyToCss,
+  fontWeightToCss,
+} from "@oddsquad/tic-tac-token/css";
 
 export type { FlatToken, TokenType };
+// The value→CSS converters live in the core package (`@oddsquad/tic-tac-token/css`);
+// this addon re-exports them for its showcase elements without reimplementing.
+export {
+  pathToCssVar,
+  toCssValue,
+  tokensToCssVars,
+  colorToCss,
+  dimensionToCss,
+  fontFamilyToCss,
+  fontWeightToCss,
+} from "@oddsquad/tic-tac-token/css";
+export type { CssVarBundle } from "@oddsquad/tic-tac-token/css";
 
 export type TokenMode = "light" | "dark";
 
 /**
- * Global parameter key under which a project supplies its own raw DTCG token
- * document for the auto-injected showcase stories. Set it in `.storybook/preview.*`:
+ * Global parameter key under which a project supplies its raw DTCG token
+ * documents for the auto-injected showcase stories. Set it in `.storybook/preview.*`:
  *
  * ```ts
- * import raw from "../tokens/tokens.json?raw";
- * export default { parameters: { [PARAM_KEY]: { raw } } };
+ * import astro from "../tokens/themes/astro.json?raw";
+ * import cosmos from "../tokens/themes/cosmos.json?raw";
+ *
+ * export default {
+ *   globals: { theme: "astro" },
+ *   parameters: { [PARAM_KEY]: { documents: { astro, cosmos } } },
+ * };
  * ```
  *
- * The pre-built showcase stories read from here (falling back to the addon's
- * bundled default token document when the project doesn't set it).
+ * The pre-built showcase stories read from here, selecting the document for the
+ * current `theme` global (falling back to the addon's bundled default token
+ * document when the project doesn't supply one).
  */
 export const PARAM_KEY = "ticTacToken";
 
 /** Story render context fields the token document source reads. */
 export type TokenRenderContext = {
   parameters?: Record<string, unknown>;
+  globals?: Record<string, unknown>;
 };
 
-/** The project's raw DTCG token document from the global parameter, if any. */
+/** A map of theme name → raw DTCG token document. */
+type TokenDocuments = Record<string, string>;
+
+/**
+ * The project's raw DTCG token document, selected for the active `theme`
+ * global. Accepts either `{ documents: { theme: raw, … } }` (multi-theme) or
+ * a single `{ raw }` document. Falls back to the first theme when the active
+ * one is unknown.
+ */
 export function tokenDocumentFromParameters(
   context: TokenRenderContext,
 ): string | undefined {
   const v = context?.parameters?.[PARAM_KEY];
-  return typeof v === "string"
-    ? v
-    : v && typeof (v as { raw?: unknown }).raw === "string"
-      ? (v as { raw: string }).raw
-      : undefined;
+  if (typeof v === "string") return v;
+  if (!v || typeof v !== "object") return undefined;
+  const entry = v as { raw?: unknown; documents?: unknown };
+  if (typeof entry.raw === "string") return entry.raw;
+  const documents = entry.documents as TokenDocuments | undefined;
+  if (!documents) return undefined;
+  const theme = context?.globals?.["theme"];
+  if (theme && typeof theme === "string" && documents[theme]) {
+    return documents[theme];
+  }
+  return Object.values(documents)[0];
 }
 
 /** Parse a DTCG tokens document and filter to the active mode. */
@@ -60,66 +99,6 @@ export function parseTokens(raw: string, mode: TokenMode = "light"): FlatToken[]
 
 export function tokensOfType(tokens: FlatToken[], type: TokenType): FlatToken[] {
   return tokens.filter((t) => t.$type === type);
-}
-
-export function colorToCss(value: unknown): string | null {
-  if (!value || typeof value !== "object") return null;
-  const v = value as Record<string, unknown>;
-  if (typeof v.hex === "string") return v.hex;
-  if (Array.isArray(v.components) && typeof v.colorSpace === "string") {
-    const comps = v.components
-      .map((c) => (c === "none" ? "none" : String(c)))
-      .join(" ");
-    const alpha =
-      typeof v.alpha === "number" && v.alpha !== 1 ? ` / ${v.alpha}` : "";
-    return `color(${v.colorSpace} ${comps}${alpha})`;
-  }
-  return null;
-}
-
-export function dimensionToCss(value: unknown): string | null {
-  if (!value || typeof value !== "object") return null;
-  const v = value as { value?: unknown; unit?: unknown };
-  if (typeof v.value !== "number") return null;
-  if (v.unit !== "px" && v.unit !== "rem") return null;
-  return `${v.value}${v.unit}`;
-}
-
-export function fontFamilyToCss(value: unknown): string | null {
-  if (typeof value === "string") return value;
-  if (Array.isArray(value))
-    return value.map((v) => (/\s/.test(v) ? `"${v}"` : v)).join(", ");
-  return null;
-}
-
-const FONT_WEIGHT_MAP: Record<string, number> = {
-  thin: 100,
-  hairline: 100,
-  "extra-light": 200,
-  "ultra-light": 200,
-  light: 300,
-  normal: 400,
-  regular: 400,
-  book: 400,
-  medium: 500,
-  "semi-bold": 600,
-  "demi-bold": 600,
-  bold: 700,
-  "extra-bold": 800,
-  "ultra-bold": 800,
-  black: 900,
-  heavy: 900,
-  "extra-black": 950,
-  "ultra-black": 950,
-};
-
-export function fontWeightToCss(value: unknown): number | null {
-  if (typeof value === "number") return value;
-  if (typeof value === "string") {
-    const weight = FONT_WEIGHT_MAP[value];
-    return weight ?? null;
-  }
-  return null;
 }
 
 /** Human-readable representation of a token's $value (for labels). */
