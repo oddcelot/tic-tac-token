@@ -82,6 +82,13 @@ export function flattenTokens(root: unknown): {
       return;
     }
 
+    // DTCG 2025.10 §6.2: a group MAY carry its own token under `$root`,
+    // addressable as `{group.$root}` (§6.7.2). It's the one `$`-prefixed
+    // key that is a token child rather than group metadata.
+    if (rec.$root !== undefined) {
+      walk(rec.$root, [...prefix, "$root"], effectiveType);
+    }
+
     for (const [k, v] of Object.entries(rec)) {
       if (k.startsWith("$")) continue;
       walk(v, [...prefix, k], effectiveType);

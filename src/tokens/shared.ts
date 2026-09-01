@@ -5,13 +5,19 @@ import { regex } from "arkregex";
 // Matches '{name}' or '{group.nested.name}' where each segment starts with a
 // non-$, non-{, non-}, non-. character and contains no {, }, or . thereafter.
 //
+// `$root` is the sole exception (§6.2, §6.7.2): a group's own token is
+// addressed as '{group.$root}' (or bare '{$root}' at the document root),
+// so it is admitted as a terminal segment only.
+//
 // Built via `regex.as` because the trailing `\}` escape is required for JSON
 // Schema draft-2020 strict-Unicode validators like ajv with the `u` flag,
 // which reject a lone `}` as "Lone quantifier brackets". arkregex's type-level
 // parser flags `\}` as an unnecessary escape, so we bypass pattern inference
 // (the alias stays a plain `string` type) rather than drop the escape.
 export const ValueAlias = type(
-  regex.as("^\\{[^${}.][^{}.]*(\\.[^${}.][^{}.]*)*\\}$"),
+  regex.as(
+    "^\\{(?:\\$root|[^${}.][^{}.]*(?:\\.[^${}.][^{}.]*)*(?:\\.\\$root)?)\\}$",
+  ),
 );
 
 // Per DTCG 2025.10 format.json#/definitions/jsonPointerReference.
