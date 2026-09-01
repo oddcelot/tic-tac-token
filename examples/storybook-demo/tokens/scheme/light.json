@@ -1,0 +1,21 @@
+{
+  "$schema": "/schema.json",
+  "color": {
+    "$type": "color",
+    "primary": {
+      "$value": "{palette.primary.light}"
+    },
+    "accent": {
+      "$value": "{palette.accent.light}"
+    },
+    "background": {
+      "$value": "{palette.background.light}"
+    },
+    "surface": {
+      "$value": "{palette.surface.light}"
+    },
+    "ink": {
+      "$value": "{palette.ink.light}"
+    }
+  }
+}

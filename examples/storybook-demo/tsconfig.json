@@ -3,7 +3,11 @@
     "target": "es2022",
     "module": "nodenext",
     "moduleResolution": "nodenext",
-    "lib": ["es2022", "DOM", "DOM.Iterable"],
+    "lib": [
+      "es2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "esModuleInterop": true,
     "skipLibCheck": true,
     "strict": true,
@@ -12,8 +16,18 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
-    "types": ["vite/client", "node"]
+    "types": [
+      "vite/client",
+      "node"
+    ],
+    "resolveJsonModule": true
   },
-  "include": ["src/**/*", ".storybook/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*",
+    ".storybook/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

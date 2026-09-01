@@ -1,66 +1,22 @@
-// A sample component built the way the demo's own app would: it consumes the
-// core @oddsquad/tic-tac-token API directly (resolveTokens + tokensToCssVars)
-// with no Storybook-addon involvement for the token logic. It derives CSS
-// custom properties from the current theme's resolved token document and
-// styles itself only from stable role vars, so the same markup follows the
-// active theme × color scheme without any code changes.
-import { resolveTokens } from "@oddsquad/tic-tac-token/resolver";
-import { tokensToCssVars } from "@oddsquad/tic-tac-token/css";
-import type { FlatToken } from "@oddsquad/tic-tac-token/resolver";
-
+// A sample component built the way the demo's own app would: it knows nothing
+// about design tokens as *data*. It styles itself purely from role custom
+// properties — `--color-surface`, `--spacing-card`, `--font-family-sans` — and
+// the same markup follows the active theme × colour scheme with no code path
+// of its own.
+//
+// Custom properties set on `:root` inherit through the shadow boundary, which
+// is why a shadow-DOM component needs no wiring at all. Compare the previous
+// version of this file, which parsed the document, resolved it, filtered a
+// mode and pushed inline vars onto the host — all of that is now the resolver
+// document's job.
 export const tokenCardTag = "token-card";
 
-const ROLES = [
-  "color.primary",
-  "color.accent",
-  "color.background",
-  "color.surface",
-  "color.ink",
-  "spacing.card",
-  "spacing.radius",
-  "font.family.sans",
-  "font.weight.bold",
-] as const;
-
 export class TokenCard extends HTMLElement {
-  #doc: string = "";
-  #mode: "light" | "dark" = "light";
-
-  get document(): string {
-    return this.#doc;
-  }
-
-  set document(value: string) {
-    this.#doc = value;
-    this.#render();
-  }
-
-  get mode(): "light" | "dark" {
-    return this.#mode;
-  }
-
-  set mode(value: "light" | "dark") {
-    this.#mode = value;
-    this.#render();
-  }
-
   connectedCallback(): void {
-    this.#render();
-  }
-
-  #render(): void {
     if (!this.shadowRoot) this.attachShadow({ mode: "open" });
-    const vars = this.#cssVars();
-    const declared = Object.entries(vars)
-      .map(([k, v]) => `${k}: ${v};`)
-      .join(" ");
-
     this.shadowRoot!.innerHTML = `
       <style>
-        :host {
-          display: block;
-          ${declared}
-        }
+        :host { display: block; }
         .card {
           box-sizing: border-box;
           background: var(--color-surface, #ffffff);
@@ -94,35 +50,16 @@ export class TokenCard extends HTMLElement {
       <div class="card">
         <div class="card__header">
           <h3 class="card__title">Design tokens</h3>
-          <span class="card__badge">${vars["--color-primary"] ? "themed" : "—"}</span>
+          <span class="card__badge">themed</span>
         </div>
-        <p class="card__body">This card's color, type and spacing come straight from the active theme's token document as CSS custom properties.</p>
-        <div class="card__foot">● ${this.#mode} mode</div>
+        <p class="card__body">
+          This card's colour, type and spacing are plain <code>var()</code> references.
+          Switching Theme or Color scheme in the toolbar rebinds them; the component
+          never re-renders.
+        </p>
+        <div class="card__foot">● styled entirely from role variables</div>
       </div>
     `;
-  }
-
-  #cssVars(): Record<string, string> {
-    if (!this.#doc) return {};
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(this.#doc);
-    } catch {
-      return {};
-    }
-    const { tokens } = resolveTokens(parsed);
-    const modeTokens = this.#filterMode(tokens, this.#mode);
-    return tokensToCssVars(modeTokens).for(...ROLES);
-  }
-
-  #filterMode(tokens: FlatToken[], mode: "light" | "dark"): FlatToken[] {
-    if (mode === "light") return tokens.filter((t) => !t.mode);
-    const modePaths = new Set(
-      tokens.filter((t) => t.mode === mode).map((t) => t.path.replace(/@\w+$/, "")),
-    );
-    return tokens.filter(
-      (t) => t.mode === mode || (!t.mode && !modePaths.has(t.path)),
-    );
   }
 }
 
