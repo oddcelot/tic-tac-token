@@ -5,3 +5,4 @@ target
 .js
 .DS_Store
 .claude
+tmp
