@@ -91,30 +91,34 @@ get the full matrix: theme **×** color scheme.
 
 ### A real component from CSS custom properties
 
-Alongside the token swatches, the addon ships a **Tokens/Card** story: a sample
-component rendered entirely from the active theme's tokens. It relies on the core
-package's pure `tokensToCssVars()` (see `@oddsquad/tic-tac-token/css`) to turn a
-resolved token list into CSS custom properties, then consumes only stable role vars:
+The addon's value-to-CSS conversion is pure core API (`@oddsquad/tic-tac-token/css`):
+`tokensToCssVars()` turns a resolved token list into a CSS custom-property bundle.
+Any app — or any Storybook project — can consume it directly to build real components
+from tokens:
+
+```ts
+import { resolveTokens } from "@oddsquad/tic-tac-token/resolver";
+import { tokensToCssVars } from "@oddsquad/tic-tac-token/css";
+
+const { tokens } = resolveTokens(myThemeDoc);
+const css = tokensToCssVars(tokens); // { css, roles, for() }
+css.for("color.primary", "spacing.card"); // { "--color-primary": "#0D998C", "--spacing-card": "16px" }
+```
 
 - Declaring a role token (`color.primary = {color.blue}`) yields `--color-primary`
   whose value changes per theme, while the var name stays constant — so the same
   markup follows the active theme **×** scheme with no code changes.
-- Your own app can use the same core helper directly:
+- `tokensToCssVars` emits one var per resolved token, named by full path
+  (`color.primary` → `--color-primary`); mode-variant tokens (`color.primary@dark`)
+  map to the same var so a role name is stable across color schemes. `css` is the
+  full sheet, `roles` indexes stable names → value, and `for(...)` returns exactly
+  the roles a component needs.
 
-  ```ts
-  import { resolveTokens } from "@oddsquad/tic-tac-token/resolver";
-  import { tokensToCssVars } from "@oddsquad/tic-tac-token/css";
-
-  const { tokens } = resolveTokens(myThemeDoc);
-  const css = tokensToCssVars(tokens); // { css, roles, for() }
-  css.for("color.primary", "spacing.card"); // { "--color-primary": "#0D998C", "--spacing-card": "16px" }
-  ```
-
-`tokensToCssVars` emits one var per resolved token, named by full path
-(`color.primary` → `--color-primary`); mode-variant tokens (`color.primary@dark`)
-map to the same var so a role name is stable across color schemes. `css` is the full
-sheet, `roles` indexes stable names → value, and `for(...)` returns exactly the roles
-a component needs.
+The demo (`examples/storybook-demo`) includes a worked example: its **Card** story
+(`src/token-card.ts`) is a component authored in the demo itself that uses
+`resolveTokens()` + `tokensToCssVars()` and styles itself only from stable role vars —
+following the theme switcher and light/dark scheme, with no addon involvement in the
+component's token logic.
 
 ### Bring-your-own tokens
 
@@ -180,7 +184,7 @@ here from `@oddsquad/tic-tac-token/css`. See [A real component from CSS custom p
 
 ## Try it
 
-A working demo lives at [`examples/storybook-demo`](../examples/storybook-demo) and consumes this addon exactly as an external project would — it owns `tokens/themes/*.json` (an Astro and a Cosmos theme, each with light/dark schemes), switches them via the toolbar `Theme` global, and feeds them to the addon through the `ticTacToken` parameter:
+A working demo lives at [`examples/storybook-demo`](../examples/storybook-demo) and consumes this addon exactly as an external project would — it owns `tokens/themes/*.json` (an Astro and a Cosmos theme, each with light/dark schemes), switches them via the toolbar `Theme` global, and feeds them to the addon through the `ticTacToken` parameter. It also shows a **Card** example component authored in the demo that uses the core token→CSS API directly:
 
 ```sh
 pnpm --filter tic-tac-token-storybook-demo dev
