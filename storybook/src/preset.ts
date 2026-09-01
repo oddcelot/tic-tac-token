@@ -1,26 +1,37 @@
 // Preset entry. Listing "@oddsquad/tic-tac-token-storybook" in the `addons`
-// array of `.storybook/main.ts` is all a consumer needs. The preset:
+// array of `.storybook/main.ts` injects the preview module that registers the
+// showcase custom elements and applies the baseline parameters.
 //
-//  1. injects the preview module that registers the showcase custom
-//     elements and applies the baseline parameters, and
-//  2. contributes a `stories` glob pointing at the pre-built token
-//     showcase stories shipped in the addon's dist, so consumers get the
-//     full story set without writing any `.stories.*` files of their own.
+// Storybook v10 does not merge a `stories` glob contributed from an addon
+// preset into the story index (the `stories` field must live in the
+// consumer's own `.storybook/main.ts`). To keep consumers zero-story-file,
+// this module also exports `tokenStoriesDirectory()`, which resolves the
+// directory containing the addon's pre-built token showcase stories. Consumers
+// wire a single `stories` specifier against it:
+//
+//   import { tokenStoriesDirectory } from "@oddsquad/tic-tac-token-storybook";
+//
+//   const config: StorybookConfig = {
+//     framework: "@storybook/web-components-vite",
+//     addons: ["@oddsquad/tic-tac-token-storybook", "@storybook/addon-docs"],
+//     stories: [{ directory: tokenStoriesDirectory(), files: "*.stories.js" }],
+//   };
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 
 const require = createRequire(import.meta.url);
 
-const previewDir = dirname(require.resolve("./preview/index.js"));
+function previewDir(): string {
+  return dirname(require.resolve("./preview/index.js"));
+}
+
+/** Absolute directory containing the addon's pre-built token showcase stories. */
+export function tokenStoriesDirectory(): string {
+  return join(previewDir(), "stories");
+}
 
 const preset = {
   previewAnnotations: [require.resolve("./preview/index.js")],
-  stories: [
-    {
-      directory: join(previewDir, "stories"),
-      files: "*.stories.js",
-    },
-  ],
 };
 
 export default preset;

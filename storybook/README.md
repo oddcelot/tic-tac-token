@@ -17,7 +17,37 @@ pnpm add @oddsquad/tic-tac-token-storybook
 
 ## Setup
 
-Add it to `.storybook/main.ts`. The addon's preset registers the showcase custom elements and applies baseline preview parameters:
+Two ways to consume the addon.
+
+### Zero-config (recommended)
+
+The addon ships pre-built token showcase stories, so you don't write any `.stories.*`
+files (or token files) of your own. Add the addon and point a single `stories`
+specifier at the addon's bundled stories:
+
+```ts
+// .storybook/main.ts
+import { tokenStoriesDirectory } from "@oddsquad/tic-tac-token-storybook";
+
+export default {
+  framework: "@storybook/web-components-vite",
+  addons: [
+    "@oddsquad/tic-tac-token-storybook",
+    "@storybook/addon-docs", // for the autodocs pages
+  ],
+  stories: [{ directory: tokenStoriesDirectory(), files: "*.stories.js" }],
+};
+```
+
+`tokenStoriesDirectory()` (exported from the package root) resolves the directory
+inside the addon that contains its compiled showcase stories. The built-in default
+token document drives the whole "Tokens/*" set — Color, Font Family, Font Size,
+Font Weight and an Overview. Storybook v10 does not merge a `stories` glob contributed
+from an addon preset, so this single specifier is the one required line.
+
+### Bring-your-own tokens
+
+Only add the addon and write your own thin story files as usual:
 
 ```ts
 // .storybook/main.ts
@@ -62,7 +92,7 @@ Supported `type` values in this release: `color`, `fontFamily`, `fontWeight`, `d
 
 | Subpath             | Contents                                                    |
 | ------------------- | ----------------------------------------------------------- |
-| `.`                 | Addon preset (used via `addons`)                            |
+| `.`                 | Addon preset (used via `addons`) + `tokenStoriesDirectory()` |
 | `./preview`         | Baseline preview parameters + element registration          |
 | `./components`      | The showcase custom elements (`token-color`, `tokens-gallery`, …) |
 | `./tokens`          | Token parsing / CSS-formatting utilities                    |
@@ -70,7 +100,7 @@ Supported `type` values in this release: `color`, `fontFamily`, `fontWeight`, `d
 
 ## Roadmap / known options
 
-- **Option B — zero-config consumption (not implemented).** An auto-injecting mode where consumers *only* add the addon and nothing else: internally, a decorator or a gallery tag (`tokens-gallery`) discovers an injected token document (via `parameters` or a preset-supplied entry) and auto-generates the per-type story sections. Adds magic; deferred while the explicit per-type `tokenShowcase()` API is validated in real projects.
+- **Option B — zero-config consumption (implemented).** Consumers only add the addon (plus one `stories` specifier) and get the full "Tokens/*" story set from pre-built showcase stories bundled in the addon's dist. See [Zero-config setup](#zero-config-recommended) above.
 - Story types still to cover: `duration`, `number`, `strokeStyle`, `border`, `transition`, `cubicBezier`, `shadow`, `gradient`, `typography`.
 
 ## Try it
