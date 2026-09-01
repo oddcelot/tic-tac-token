@@ -21,9 +21,9 @@ Two ways to consume the addon.
 
 ### Zero-config (recommended)
 
-The addon ships pre-built token showcase stories, so you don't write any `.stories.*`
-files of your own — you only point one `stories` specifier at the addon's bundled
-stories and drop your token document(s) into the addon via a global parameter:
+The addon ships pre-built token showcase stories, so you write no `.stories.*` files
+of your own. Two pieces of setup: point one `stories` specifier at the addon's bundled
+stories, and hand `tokenPreviewAddon()` your resolver document.
 
 ```ts
 // .storybook/main.ts
@@ -40,89 +40,142 @@ export default {
 ```
 
 ```ts
-// .storybook/preview.ts — the project owns its token document(s)
-import raw from "../tokens/tokens.json?raw";
+// .storybook/preview.ts
+import {
+  externalDocumentsFrom,
+  tokenPreviewAddon,
+} from "@oddsquad/tic-tac-token-storybook/preview";
+import resolver from "../resolver.json" with { type: "json" };
+
+// Your document's `$ref`s are relative to the project root, so the glob's
+// `../` prefix has to come off for the keys to line up.
+const externalDocuments = externalDocumentsFrom(
+  import.meta.glob("../tokens/**/*.json", { eager: true, import: "default" }),
+);
 
 export default {
-  parameters: { ticTacToken: { raw } },
+  ...tokenPreviewAddon({ resolver, externalDocuments }),
+  tags: ["autodocs"],
 };
 ```
 
-`tokenStoriesDirectory()` (exported from the package root) resolves the directory
-inside the addon that contains its compiled showcase stories. The `tokens/tokens.json`
-file is **yours** — the addon's Color, Font Family, Font Size, Font Weight and Overview
-stories read it from the `ticTacToken` parameter. Storybook v10 does not merge a `stories`
-glob contributed from an addon preset, so the single specifier is the one required line
-in `main.ts`. If you don't supply a token document, the addon falls back to its bundled
-default sample.
+That is the whole setup. `tokenStoriesDirectory()` resolves the directory inside the
+addon holding its compiled showcase stories — Storybook v10 does not merge a `stories`
+glob contributed from an addon preset, so that specifier is the one required line in
+`main.ts`. Supply no tokens at all and the showcase stories fall back to the addon's
+bundled sample document.
+
+The return value is a plain object, so it works with CSF factories too:
+
+```ts
+export default definePreview({ addons: [tokenPreviewAddon({ resolver })] });
+```
 
 ### Themes & color schemes
 
-Supply multiple token documents keyed by **theme** and a `theme` toolbar global to
-switch between them. Each theme's document keeps its own `$extensions.tic-tac-token.modes`
-light/dark **color-scheme** variants, driven by the `colorScheme` toolbar global — which
-the addon registers in its baseline preview (so you don't have to declare it yourself) and
-sets to `light` by default:
+**One toolbar dropdown per modifier, derived from the document.** Add a `density`
+modifier to your resolver document and a Density dropdown appears; nothing in the addon
+changes. Contexts become the items, the modifier's `default` becomes the initial value,
+and the modifier name is the resolver input key.
 
-```ts
-// .storybook/preview.ts
-import astro from "../tokens/themes/astro.json?raw";
-import cosmos from "../tokens/themes/cosmos.json?raw";
-
-export default {
-  initialGlobals: { theme: "astro" },
-  globalTypes: {
-    theme: {
-      toolbar: {
-        title: "Theme",
-        items: [
-          { value: "astro", title: "Astro" },
-          { value: "cosmos", title: "Cosmos" },
-        ],
-      },
+```jsonc
+// resolver.json
+{
+  "version": "2025.10",
+  "sets": { "base": { "sources": [{ "$ref": "tokens/base.json#" }] } },
+  "modifiers": {
+    "theme": {
+      "default": "astro",
+      "contexts": {
+        "astro":  [{ "$ref": "tokens/palette/astro.json#" }],
+        "cosmos": [{ "$ref": "tokens/palette/cosmos.json#" }]
+      }
     },
+    "colorScheme": {
+      "default": "light",
+      "$extensions": {
+        "tic-tac-token.css": { "colorScheme": true },
+        "tic-tac-token.storybook": { "title": "Color scheme" }
+      },
+      "contexts": {
+        "light": [{ "$ref": "tokens/scheme/light.json#" }],
+        "dark":  [{ "$ref": "tokens/scheme/dark.json#" }]
+      }
+    }
   },
-  parameters: { ticTacToken: { documents: { astro, cosmos } } },
-};
+  "resolutionOrder": [
+    { "$ref": "#/sets/base" },
+    { "$ref": "#/modifiers/theme" },
+    { "$ref": "#/modifiers/colorScheme" }
+  ]
+}
 ```
 
-The addon reads `context.globals.theme` and renders that theme's document (the first
-one is used when the current theme is unknown) at the scheme picked by the `colorScheme`
-global — yielding the full **theme × color-scheme** matrix from the two toolbar dropdowns.
-Callers can override `initialGlobals.colorScheme` or the toolbar's items in their own
-preview. A per-story `mode` argument is still honored as a fallback for consumers who
-prefer not to use the global.
+On every globals change the addon resolves that combination and writes the result to
+`:root` as custom properties, plus one `data-*` attribute per modifier
+(`data-theme="cosmos"`, `data-color-scheme="dark"`). Writing to `:root` rather than a
+story wrapper is deliberate: it is how a real app consumes tokens, the properties inherit
+through the shadow boundary every showcase element uses, and they also reach `<body>`
+chrome and docs pages.
+
+`colorScheme: true` marks the modifier that drives native `color-scheme`, so scrollbars
+and form controls match. Absent any marker a modifier literally named `colorScheme` is
+picked up by convention.
+
+Presentational overrides live under `$extensions["tic-tac-token.storybook"]`:
+
+| Key | Effect |
+|---|---|
+| `title` | Dropdown label. Defaults to a title-cased modifier name. |
+| `labels` | Context name → item label. |
+| `global` | Rename the toolbar global — use when `theme` would collide with another addon's. |
+| `attribute` | Override the `data-*` attribute name, or `false` to skip it. |
+
+Consumer `globalTypes` / `initialGlobals` passed to `tokenPreviewAddon()` are merged
+*after* the derived ones, so you can always override.
+
+> **Upgrading from 0.1.** The addon no longer registers a `colorScheme` toolbar global
+> unconditionally. Storybook composes annotations with `Object.assign`, so a later
+> annotation can override a key but cannot *remove* one — a hardcoded dropdown would be
+> permanent, and inert for any document whose scheme modifier is named something else.
+> Call `tokenPreviewAddon()` and the toolbar comes from your document instead.
+>
+> The legacy `{ raw }` and `{ documents }` parameter shapes still work, and
+> `tokenPreviewAddon({ documents })` reproduces the old `theme` + `colorScheme` globals
+> verbatim. `$extensions["tic-tac-token.modes"]` is ignored on the resolver path with a
+> one-time console warning — see [migrating-modes-to-resolver.md](../docs/migrating-modes-to-resolver.md).
 
 ### A real component from CSS custom properties
 
-The addon's value-to-CSS conversion is pure core API (`@oddsquad/tic-tac-token/css`):
-`tokensToCssVars()` turns a resolved token list into a CSS custom-property bundle.
-Any app — or any Storybook project — can consume it directly to build real components
-from tokens:
+Because the addon binds role variables on `:root`, a component needs no token code at
+all — it just reads them:
 
 ```ts
-import { resolveTokens } from "@oddsquad/tic-tac-token/resolver";
-import { tokensToCssVars } from "@oddsquad/tic-tac-token/css";
-
-const { tokens } = resolveTokens(myThemeDoc);
-const css = tokensToCssVars(tokens); // { css, roles, for() }
-css.for("color.primary", "spacing.card"); // { "--color-primary": "#0D998C", "--spacing-card": "16px" }
+class TokenCard extends HTMLElement {
+  connectedCallback() {
+    this.attachShadow({ mode: "open" }).innerHTML = `
+      <style>
+        .card {
+          background: var(--color-surface);
+          border-radius: var(--spacing-radius);
+          padding: var(--spacing-card);
+          font-family: var(--font-family-sans);
+          color: var(--color-ink);
+        }
+      </style>
+      <div class="card">…</div>`;
+  }
+}
 ```
 
-- Declaring a role token (`color.primary = {color.blue}`) yields `--color-primary`
-  whose value changes per theme, while the var name stays constant — so the same
-  markup follows the active theme **×** scheme with no code changes.
-- `tokensToCssVars` emits one var per resolved token, named by full path
-  (`color.primary` → `--color-primary`); mode-variant tokens (`color.primary@dark`)
-  map to the same var so a role name is stable across color schemes. `css` is the
-  full sheet, `roles` indexes stable names → value, and `for(...)` returns exactly
-  the roles a component needs.
+Switching Theme or Color scheme rebinds the variables; the component never re-renders.
+`examples/storybook-demo/src/token-card.ts` is exactly this.
 
-The demo (`examples/storybook-demo`) includes a worked example: its **Card** story
-(`src/token-card.ts`) is a component authored in the demo itself that uses
-`resolveTokens()` + `tokensToCssVars()` and styles itself only from stable role vars —
-following the theme switcher and light/dark scheme, with no addon involvement in the
-component's token logic.
+A var's name is its token path, kebab-cased per segment (`space.itemGap` →
+`--space-item-gap`), and stays stable across every context — only the value changes.
+For a build-time stylesheet rather than a Storybook-injected one, core's
+`resolverDocumentToCssTheme()` emits the same thing with each context scoped to its own
+selector.
 
 ### Bring-your-own tokens
 
@@ -148,7 +201,6 @@ import raw from "../tokens/tokens.json?raw";
 
 const show = tokenShowcase({
   type: "color",
-  raw,
   description: "Brand, neutral, semantic and alias color tokens.",
 });
 
@@ -156,14 +208,25 @@ export default {
   title: "Tokens/Color",
   component: show.component,
   render: show.render,
-  args: show.args,
   argTypes: show.argTypes,
 };
 
-export const Dark = { args: { mode: "dark" } };
+export const Default = {};
 ```
 
-Supported `type` values in this release: `color`, `fontFamily`, `fontWeight`, `dimension` (used for font sizes).
+With no `raw`, the story renders whatever the project supplied through `tokenPreviewAddon()`,
+at the contexts the toolbar currently selects — which is almost always what you want.
+
+Two escape hatches for a story that must showcase one specific document:
+
+- `raw` — a document (or a `(args, context) => string`) that **overrides** the project's.
+- `fallbackRaw` — used only when the project supplied nothing, so it can never shadow a
+  real document. This is how the addon's own bundled stories stay useful in a project with
+  no setup yet.
+
+Supported `type` values in this release: `color`, `fontFamily`, `fontWeight`, `dimension`
+(used for font sizes). Other types resolve and emit CSS fine — they just have no showcase
+element yet, and `tokens-gallery` skips them.
 
 > **Why the story object is hand-assembled:** Storybook statically indexes CSF files, so `export default tokenShowcase(...)` fails with `CSF: default export must be an object`. Consumers declare a literal default export and reference the pieces `tokenShowcase()` returns.
 
@@ -172,9 +235,9 @@ Supported `type` values in this release: `color`, `fontFamily`, `fontWeight`, `d
 | Subpath             | Contents                                                    |
 | ------------------- | ----------------------------------------------------------- |
 | `.`                 | Addon preset (used via `addons`) + `tokenStoriesDirectory()` |
-| `./preview`         | Baseline preview parameters + element registration          |
+| `./preview`         | `tokenPreviewAddon()`, `externalDocumentsFrom()`, `applyTokenTheme()`, `resolveForContext()`, the toolbar derivation helpers, and element registration |
 | `./components`      | The showcase custom elements (`token-color`, `tokens-gallery`, …) |
-| `./tokens`          | Token parsing / CSS-formatting utilities + `PARAM_KEY` / `tokenDocumentFromParameters()` |
+| `./tokens`          | Token parsing / CSS-formatting utilities + `PARAM_KEY` / `tokenSourceFromParameters()` |
 | `./stories`         | `tokenShowcase()` helper                                    |
 
 The addon does **not** reimplement token→CSS conversion: the value converters and
@@ -183,12 +246,16 @@ here from `@oddsquad/tic-tac-token/css`. See [A real component from CSS custom p
 
 ## Roadmap / known options
 
-- **Option B — zero-config consumption (implemented).** Consumers add the addon (plus one `stories` specifier) and get the full "Tokens/*" story set from pre-built showcase stories, reading the project's own token document(s) from the `ticTacToken` parameter (falling back to the addon's bundled default). See [Zero-config setup](#zero-config-recommended) above.
-- Story types still to cover: `duration`, `number`, `strokeStyle`, `border`, `transition`, `cubicBezier`, `shadow`, `gradient`, `typography`.
+- **Zero-config consumption (implemented).** Consumers add the addon (plus one `stories` specifier) and get the full "Tokens/*" story set from pre-built showcase stories, reading the project's own document from the `ticTacToken` parameter (falling back to the addon's bundled default).
+- **Resolver-Module theming (implemented).** The toolbar is derived from the document's modifiers; the selected combination is written to `:root`.
+- Showcase elements still to build: `duration`, `number`, `strokeStyle`, `border`, `transition`, `cubicBezier`, `shadow`, `gradient`, `typography`. Each needs its own answer to "what does this look like as a card", which is why they are not just a wider type map.
+- A `<token-diagnostics>` element. A resolver document fails in ways a raw one cannot — a bad pointer, a missing external document, an unknown context — and those currently surface as an empty grid plus a console warning.
 
 ## Try it
 
-A working demo lives at [`examples/storybook-demo`](../examples/storybook-demo) and consumes this addon exactly as an external project would — it owns `tokens/themes/*.json` (an Astro and a Cosmos theme, each with light/dark schemes), switches them via the toolbar `Theme` global, and feeds them to the addon through the `ticTacToken` parameter. It also shows a **Card** example component authored in the demo that uses the core token→CSS API directly:
+A working demo lives at [`examples/storybook-demo`](../examples/storybook-demo) and consumes this addon exactly as an external project would. It owns a `resolver.json` with two modifiers — `theme` (Astro / Cosmos) and `colorScheme` (light / dark) — giving two toolbar dropdowns and four combinations.
+
+Its token files are worth a look for the layering: `tokens/palette/*.json` hold theme-specific colour ramps, while `tokens/scheme/*.json` hold nothing but semantic aliases into them and never name a theme. That works because the Resolver Module merges every source *before* it resolves any alias, and it is what lets two scheme files serve any number of themes. The **Card** story is a component with no token code at all — it reads role variables and follows the toolbar:
 
 ```sh
 pnpm --filter tic-tac-token-storybook-demo dev

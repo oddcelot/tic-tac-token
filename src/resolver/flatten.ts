@@ -64,6 +64,11 @@ export function flattenTokens(root: unknown): {
       });
 
       // Expand `$extensions.tic-tac-token.modes` into separate tokens.
+      //
+      // Deprecated: a non-standard extension that predates the DTCG Resolver
+      // Module, which expresses the same thing as a composable modifier. Kept
+      // because `FlatToken.mode` is public surface and the LSP reads it; see
+      // docs/migrating-modes-to-resolver.md.
       const ext = rec.$extensions;
       if (ext && typeof ext === "object" && !Array.isArray(ext)) {
         const modes = (ext as Record<string, unknown>)[MODES_KEY];

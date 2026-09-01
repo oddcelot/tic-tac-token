@@ -187,6 +187,79 @@ const { tokens, mergedTree, documentErrors, tokenErrors } = resolveResolverDocum
 
 Inputs are matched case-insensitively. Same-document `$ref`s resolve on their own; external files are supplied pre-parsed via `options.externalDocuments`, keyed by the pointer's pre-`#` portion, which keeps resolution synchronous.
 
+## CSS output
+
+The `/css` subpath turns resolved tokens into CSS custom properties. For a single token set that's `tokensToCssVars`; for a resolver document with modifiers, `resolverDocumentToCssTheme` emits a *themed* stylesheet.
+
+```ts
+import { loadResolverDocumentSync } from "@oddsquad/tic-tac-token/node";
+import { resolverDocumentToCssTheme } from "@oddsquad/tic-tac-token/css";
+
+const { document, externalDocuments } = loadResolverDocumentSync("./resolver.json");
+const { css, blocks, matrix, diagnostics } = resolverDocumentToCssTheme(document, {
+  externalDocuments,
+});
+```
+
+The base permutation (every modifier at its default) becomes a `:root` block; each other context becomes a scoped block carrying **only the properties whose value differs**. Switching theme at runtime is then one attribute.
+
+Two things stop the sheet growing as the product of the contexts.
+
+**Factoring.** A block holds only what changes, and a compound selector — `:root[data-theme="dark"][data-density="compact"]` — is emitted only where some property genuinely depends on the *combination*. Orthogonal modifiers cost `Σ|contexts|` blocks, not `Π|contexts|`. Resolving the full product is guarded by `maxPermutations` (default 512); above it only single-axis variations are enumerated and an `assumed-orthogonal` diagnostic says so, rather than truncating silently.
+
+**`aliases: "var"` (the default).** The Resolver Module resolves aliases *after* the merge (§6.3), which is what lets a `colorScheme` modifier contribute nothing but semantic aliases into a `theme` modifier's palette:
+
+```jsonc
+// tokens/palette/astro.json — theme-specific literals
+{ "palette": { "$type": "color", "background": { "light": { "$value": { /* … */ } } } } }
+
+// tokens/scheme/light.json — never names a theme
+{ "color": { "$type": "color", "background": { "$value": "{palette.background.light}" } } }
+```
+
+Keeping that indirection in the output emits `--color-background: var(--palette-background-light)`, so the cascade composes theme × scheme and the scheme block is theme-independent. Flattening the same document to literals instead would need one compound block per theme × scheme pair. Pass `aliases: "flatten"` if you want the literals.
+
+### Selectors
+
+How a context maps to a CSS condition isn't something the spec covers, so it's configurable — via the `selectors` option, or in the document itself under `modifiers.<name>.$extensions["tic-tac-token.css"]` (the schema already admits `$extensions` there, so the document stays spec-valid). With neither, the default is `[data-<modifier>="<context>"]`.
+
+```jsonc
+"$extensions": {
+  "tic-tac-token.css": {
+    "colorScheme": true,
+    "dark": [
+      { "kind": "media", "query": "(prefers-color-scheme: dark)" },
+      { "kind": "attribute", "attribute": "data-color-scheme", "value": "dark" }
+    ]
+  }
+}
+```
+
+An array means "emit the same declarations once per alternative" — the answer to *follow the system preference by default, but let an explicit choice win*. Unconditional variants are always emitted **after** at-rule-gated ones, so `data-color-scheme="light"` still wins on a dark-preferring OS.
+
+`kind` is one of `root`, `attribute`, `class`, `media`, `supports`, `selector`. `colorScheme: true` marks the modifier that drives native `color-scheme`.
+
+### Naming
+
+A token's custom property is its path, kebab-cased per segment: `space.itemGap` → `--space-item-gap`, matching what the language server reads back from a `var()`. A `$root` segment is dropped (`color.accent.$root` → `--color-accent`).
+
+Composite types contribute a shorthand *and* sub-properties — `--border-focus` alongside `--border-focus-width`/`-style`/`-color`. Two types have no lossless shorthand and emit sub-properties only: `typography` (CSS `font` can't express `letterSpacing`) and the `{dashArray, lineCap}` form of `strokeStyle`. A `gradient` emits its stop list rather than a `linear-gradient(...)`, since a DTCG gradient declares no direction — so it composes into any gradient function.
+
+The mapping is not reversible, so `color.brandPrimary` and `color.brand.primary` collide; the emitter reports that as a `var-collision` diagnostic rather than silently dropping one.
+
+## Loading from disk
+
+Resolution is synchronous and does no I/O by design, which keeps the core usable in a browser. `@oddsquad/tic-tac-token/node` is the one entry point that touches the filesystem:
+
+```ts
+import { loadResolverDocument, loadResolverDocumentSync } from "@oddsquad/tic-tac-token/node";
+// → { path, document, externalDocuments, errors }
+```
+
+It walks every `$ref` and keys each document by the exact pre-`#` URI, which is what `options.externalDocuments` expects. Nothing throws — a missing or malformed file becomes a diagnostic. Remote (`http(s):`) references are reported rather than fetched.
+
+One limitation worth knowing: because `externalDocuments` is a flat map keyed by the raw URI, every reference resolves against the **entry** document's directory, not the directory of the file that wrote it. A nested relative `$ref` is therefore diagnosed rather than silently pointing elsewhere.
+
 ## License
 
 ISC
