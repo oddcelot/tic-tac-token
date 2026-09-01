@@ -12,8 +12,8 @@ const EXTENDS_RE = /^\{([^{}]+)\}$/;
 // defeated by alternating forms.
 function extendsTargetPath(extendsRef: unknown): string[] | undefined {
   if (typeof extendsRef === "string") {
-    const match = extendsRef.match(EXTENDS_RE);
-    return match ? match[1].split(".") : undefined;
+    const target = extendsRef.match(EXTENDS_RE)?.[1];
+    return target ? target.split(".") : undefined;
   }
   if (isPlainObject(extendsRef) && typeof extendsRef.$ref === "string") {
     return jsonPointerSegments(extendsRef.$ref);
@@ -43,13 +43,18 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
 // A "token" here is detected by the presence of `$value` OR `$ref` at
 // that path. We do not recurse into tokens; the local definition wins
 // wholesale.
-function deepMergeGroup(
+// `keepExtends` is for callers that merge two independent documents rather
+// than an inheritance pair: there, a later document's `$extends` is part of
+// its content and must survive into the merged tree. The default drops it,
+// which is what resolving `$extends` itself needs.
+export function deepMergeGroup(
   base: Record<string, unknown>,
   over: Record<string, unknown>,
+  options: { keepExtends?: boolean } = {},
 ): Record<string, unknown> {
   const out: Record<string, unknown> = { ...base };
   for (const [k, overVal] of Object.entries(over)) {
-    if (k === "$extends") continue;
+    if (k === "$extends" && !options.keepExtends) continue;
     const baseVal = out[k];
     if (isPlainObject(baseVal) && isPlainObject(overVal)) {
       const overIsToken = "$value" in overVal || "$ref" in overVal;
@@ -57,7 +62,7 @@ function deepMergeGroup(
       if (overIsToken || baseIsToken) {
         out[k] = overVal;
       } else {
-        out[k] = deepMergeGroup(baseVal, overVal);
+        out[k] = deepMergeGroup(baseVal, overVal, options);
       }
     } else {
       out[k] = overVal;

@@ -14,6 +14,10 @@
       "types": "./dist/resolver/index.d.ts",
       "import": "./dist/resolver/index.js"
     },
+    "./resolver-module": {
+      "types": "./dist/resolver-module/index.d.ts",
+      "import": "./dist/resolver-module/index.js"
+    },
     "./css": {
       "types": "./dist/css.d.ts",
       "import": "./dist/css.js"

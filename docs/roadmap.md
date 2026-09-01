@@ -73,3 +73,8 @@ All three benefit from a complete resolver — currently only the playground has
 - Mode / theme application (playground-local extension; could stay there).
 
 This is the single piece of work that unlocks all three roadmap items moving from "validation-only" to "useful resolved tokens."
+
+**Status:** done — the pipeline lives in `src/resolver/` and ships on the
+`/resolver` subpath. The DTCG Resolver Module (sets / modifiers /
+resolutionOrder) is implemented separately in `src/resolver-module/` and ships
+on `/resolver-module`.

@@ -167,6 +167,26 @@ const { tokens, byPath, errors, references } = resolveTokens(parsedTokensDocumen
 
 Individual pipeline stages (`applyExtends`, `resolveRefs`, `flattenTokens`, `resolveAliases`, `clampGradients`) and `jsonPointerGet` are exported for advanced use.
 
+## Resolver Module
+
+The `@oddsquad/tic-tac-token/resolver-module` subpath implements the separate [DTCG Resolver Module](https://www.designtokens.org/tr/2025.10/resolver/): a resolver document declaring `sets`, `modifiers`, and a `resolutionOrder`, resolved against string inputs.
+
+```ts
+import { resolveResolverDocument } from "@oddsquad/tic-tac-token/resolver-module";
+
+const { tokens, mergedTree, documentErrors, tokenErrors } = resolveResolverDocument(
+  parsedResolverDocument,
+  { theme: "dark" },
+);
+
+// tokens:         ResolvedTokens — the merged document run through resolveTokens
+// mergedTree:     the merged token tree, before alias resolution
+// documentErrors: ResolverModuleError[] — bad pointers, unknown inputs, duplicate names, …
+// tokenErrors:    ResolverError[] — diagnostics from resolving the merged tokens
+```
+
+Inputs are matched case-insensitively. Same-document `$ref`s resolve on their own; external files are supplied pre-parsed via `options.externalDocuments`, keyed by the pointer's pre-`#` portion, which keeps resolution synchronous.
+
 ## License
 
 ISC

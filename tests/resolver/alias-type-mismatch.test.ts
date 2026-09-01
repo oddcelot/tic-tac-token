@@ -71,7 +71,6 @@ describe("alias type mismatches", () => {
     const result = resolveTokens({
       size: dim(16),
       accent: {
-        $type: "color",
         ...color(1, 0, 0, "#ff0000"),
         $extensions: { "tic-tac-token.modes": { dark: "{size}" } },
       },
