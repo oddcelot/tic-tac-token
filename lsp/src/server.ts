@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { createConnection, ProposedFeatures } from "vscode-languageserver/node.js";
+import { createConnection, ProposedFeatures } from "vscode-languageserver/node";
 import { registerServer } from "./bootstrap.ts";
 import { createNodeWorkspaceHost } from "./workspace/host-node.ts";
 

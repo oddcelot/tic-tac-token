@@ -73,3 +73,32 @@ All three benefit from a complete resolver — currently only the playground has
 - Mode / theme application (playground-local extension; could stay there).
 
 This is the single piece of work that unlocks all three roadmap items moving from "validation-only" to "useful resolved tokens."
+
+**Status:** done — the pipeline lives in `src/resolver/` and ships on the
+`/resolver` subpath. The DTCG Resolver Module (sets / modifiers /
+resolutionOrder) is implemented separately in `src/resolver-module/` and ships
+on `/resolver-module`.
+
+---
+
+## Cross-cutting: the emission layer
+
+`resolveResolverDocument` is a point query — one input combination in, one
+resolved document out. Anything that *switches* contexts at runtime needs every
+combination addressable at once, which is the layer built on top of it:
+
+- `src/resolver-module/permutations.ts` — modifier axes, the cartesian product,
+  and `resolvePermutations`, which validates the document once and reuses the
+  resolution order across every point.
+- `src/css/factor.ts` — factors the resulting value matrix into a base plus the
+  minimum overrides, so a compound selector appears only where a value really
+  depends on a combination of modifiers.
+- `src/css/theme.ts` — `resolverDocumentToCssTheme`, which renders that into a
+  stylesheet, keeping whole-value aliases as `var()` so the cascade composes
+  modifiers that would otherwise interact.
+- `src/node/load.ts` — the `./node` subpath, reading a document and its `$ref`
+  targets off disk without dragging `node:fs` into the browser entries.
+
+That covers item 3's first bullet below. What remains for the Vite plugin is
+the watch loop and the source-location manifest; the emitter and the CSS-var ↔
+token-path index (`CssThemeSheet.roles` / `.matrix`) already exist.

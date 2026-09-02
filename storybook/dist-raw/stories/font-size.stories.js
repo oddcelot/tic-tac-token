@@ -1,10 +1,9 @@
 import { tokenShowcase } from "../tokenShowcase.js";
-import { tokenDocumentFromParameters } from "../tokens.js";
 import raw from "../tokens.json?raw";
 
 const show = tokenShowcase({
   type: "dimension",
-  raw: (args, context) => tokenDocumentFromParameters(context) ?? raw,
+  fallbackRaw: raw,
   description: "A type scale built from dimension tokens, shown at their actual size.",
 });
 

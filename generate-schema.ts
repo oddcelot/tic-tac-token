@@ -36,7 +36,10 @@ const tokenTypeNames = [
 ];
 
 const nameSegment = "[^${}.][^{}.]*";
-const curlyBraceRef = `^\\{${nameSegment}(\\.${nameSegment})*\\}$`;
+// `$root` is admitted as a terminal segment only — see ValueAlias in
+// src/tokens/shared.ts; this mirrors that pattern for the hand-written
+// $extends node below.
+const curlyBraceRef = `^\\{(?:\\$root|${nameSegment}(?:\\.${nameSegment})*(?:\\.\\$root)?)\\}$`;
 const nameRef = `^${nameSegment}$`;
 
 // The root document is itself a Group; we inline the Group shape at the
@@ -57,7 +60,17 @@ const documentSchema = {
     $type: { enum: tokenTypeNames },
     $description: { type: "string" },
     $extensions: { type: "object" },
-    $extends: { type: "string", pattern: curlyBraceRef },
+    $extends: {
+      oneOf: [
+        { type: "string", pattern: curlyBraceRef },
+        {
+          type: "object",
+          properties: { $ref: { type: "string", pattern: "^#/" } },
+          required: ["$ref"],
+          additionalProperties: false,
+        },
+      ],
+    },
     $deprecated: { oneOf: [{ type: "boolean" }, { type: "string" }] },
     $root: { $ref: "#/$defs/token" },
   },

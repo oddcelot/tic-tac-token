@@ -1,8 +1,13 @@
+<!--
+  Paint the preview canvas from the tokens themselves. The addon writes these
+  custom properties to :root for whichever theme × colour scheme the toolbar
+  selects, so the surface behind every story tracks the active context without
+  a decorator.
+-->
 <style>
-  html,
-  body,
-  #storybook-root,
-  .sb-show-main {
-    font-family: system-ui, sans-serif;
+  body {
+    background: var(--color-background, #ffffff);
+    color: var(--color-ink, #1a1d21);
+    font-family: var(--font-family-sans, sans-serif);
   }
 </style>

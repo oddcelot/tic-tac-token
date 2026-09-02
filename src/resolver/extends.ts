@@ -1,9 +1,25 @@
+import { jsonPointerSegments } from "./json-pointer.ts";
 import type { ResolverError } from "./types.ts";
 
 // Curly-brace path used by `$extends`. Like the alias form, but the
 // target MUST be a group (no `$value`). The exact constraint is enforced
 // at use-time below.
 const EXTENDS_RE = /^\{([^{}]+)\}$/;
+
+// DTCG 2025.10 §6.4.5: `$extends` accepts the same reference forms as an
+// alias — `"{group.path}"` or `{ "$ref": "#/group/path" }`. Both normalise
+// to the same segment array so cycle detection and lookup can't be
+// defeated by alternating forms.
+function extendsTargetPath(extendsRef: unknown): string[] | undefined {
+  if (typeof extendsRef === "string") {
+    const target = extendsRef.match(EXTENDS_RE)?.[1];
+    return target ? target.split(".") : undefined;
+  }
+  if (isPlainObject(extendsRef) && typeof extendsRef.$ref === "string") {
+    return jsonPointerSegments(extendsRef.$ref);
+  }
+  return undefined;
+}
 
 // Walk a group path (dot-separated) from the root. Returns the
 // referenced group node or `undefined` if any segment misses.
@@ -27,13 +43,18 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
 // A "token" here is detected by the presence of `$value` OR `$ref` at
 // that path. We do not recurse into tokens; the local definition wins
 // wholesale.
-function deepMergeGroup(
+// `keepExtends` is for callers that merge two independent documents rather
+// than an inheritance pair: there, a later document's `$extends` is part of
+// its content and must survive into the merged tree. The default drops it,
+// which is what resolving `$extends` itself needs.
+export function deepMergeGroup(
   base: Record<string, unknown>,
   over: Record<string, unknown>,
+  options: { keepExtends?: boolean } = {},
 ): Record<string, unknown> {
   const out: Record<string, unknown> = { ...base };
   for (const [k, overVal] of Object.entries(over)) {
-    if (k === "$extends") continue;
+    if (k === "$extends" && !options.keepExtends) continue;
     const baseVal = out[k];
     if (isPlainObject(baseVal) && isPlainObject(overVal)) {
       const overIsToken = "$value" in overVal || "$ref" in overVal;
@@ -41,7 +62,7 @@ function deepMergeGroup(
       if (overIsToken || baseIsToken) {
         out[k] = overVal;
       } else {
-        out[k] = deepMergeGroup(baseVal, overVal);
+        out[k] = deepMergeGroup(baseVal, overVal, options);
       }
     } else {
       out[k] = overVal;
@@ -78,16 +99,16 @@ export function applyExtends(root: unknown): {
     let current: Record<string, unknown> = node;
     const extendsRef = current.$extends;
 
-    if (typeof extendsRef === "string") {
-      const match = extendsRef.match(EXTENDS_RE);
-      const targetPath = match?.[1];
+    if (extendsRef !== undefined) {
+      const segments = extendsTargetPath(extendsRef);
+      const targetPath = segments?.join(".");
       const here = pathFromRoot.join(".");
 
-      if (!targetPath) {
+      if (!segments || !targetPath) {
         errors.push({
           kind: "broken-extends",
           at: here || "(root)",
-          message: `$extends must be a curly-brace group ref; got ${JSON.stringify(extendsRef)}.`,
+          message: `$extends must be a curly-brace group ref or a { $ref } JSON Pointer; got ${JSON.stringify(extendsRef)}.`,
         });
       } else if (stack.has(targetPath)) {
         errors.push({
@@ -96,7 +117,7 @@ export function applyExtends(root: unknown): {
           message: `$extends cycle detected through {${targetPath}}.`,
         });
       } else {
-        const targetNode = groupAt(root, targetPath.split("."));
+        const targetNode = groupAt(root, segments);
         if (!isPlainObject(targetNode)) {
           errors.push({
             kind: "broken-extends",
@@ -113,7 +134,7 @@ export function applyExtends(root: unknown): {
           // Resolve the parent first (cycles guarded), then merge.
           const nextStack = new Set(stack);
           nextStack.add(here);
-          const resolvedParent = resolve(targetNode, targetPath.split("."), nextStack);
+          const resolvedParent = resolve(targetNode, segments, nextStack);
           if (isPlainObject(resolvedParent)) {
             current = deepMergeGroup(resolvedParent, current);
           }

@@ -1,28 +1,22 @@
+import { pathToCssVar } from "@oddsquad/tic-tac-token/css";
 import type { IndexedToken, WorkspaceIndex } from "../workspace/index.ts";
 
-// Convention A (the Style Dictionary default): a token's dot-path maps to a
-// CSS custom property by kebab-casing each path segment and joining the
-// segments with `-`, prefixed with `--`.
+// The naming rule itself lives in the core package, alongside the emitter that
+// writes the stylesheets this reads back. A second copy here would drift, and
+// a drifted copy means every camelCase-segment token gets a false hover.
 //
 //   color.brand.primary → --color-brand-primary
 //   space.itemGap       → --space-item-gap
 //
-// Mode variants (`<path>@<mode>`) have no CSS-var form — `@` is invalid in a
-// custom-property name — so they are excluded.
+// This wrapper adds the guard the language server needs: a path with no
+// derivable var name yields `undefined` rather than a plausible-looking string
+// nothing in a stylesheet will ever match. Mode variants (`<path>@<mode>`) are
+// among those — `@` is invalid in a custom-property name, and the mode token
+// must not shadow its own base in the reverse index.
 export function tokenPathToCssVar(path: string): string | undefined {
   if (!path || path.includes("@")) return undefined;
-  const segments = path.split(".").map(kebabCase);
-  if (segments.some((segment) => segment.length === 0)) return undefined;
-  return `--${segments.join("-")}`;
-}
-
-// camelCase / PascalCase → kebab-case. `itemGap` → `item-gap`,
-// `APIKey` → `api-key`. Already-kebab or lowercase segments pass through.
-function kebabCase(segment: string): string {
-  return segment
-    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
-    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2")
-    .toLowerCase();
+  if (path.split(".").some((segment) => segment.length === 0)) return undefined;
+  return pathToCssVar(path);
 }
 
 // Reverse lookup: CSS custom-property name → the token it refers to, across
@@ -35,6 +29,7 @@ export function buildCssVarIndex(
 ): Map<string, IndexedToken> {
   const map = new Map<string, IndexedToken>();
   for (const entry of index.allTokens()) {
+    if (entry.token.mode) continue;
     const cssVar = tokenPathToCssVar(entry.token.path);
     if (cssVar && !map.has(cssVar)) map.set(cssVar, entry);
   }

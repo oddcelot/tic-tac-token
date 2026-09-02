@@ -1,0 +1,136 @@
+{
+  "$schema": "../../node_modules/@oddsquad/tic-tac-token/schema.json",
+  "palette": {
+    "$type": "color",
+    "primary": {
+      "light": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.32,
+            0.36,
+            0.9
+          ],
+          "alpha": 1,
+          "hex": "#525CE6"
+        }
+      },
+      "dark": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.55,
+            0.58,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#8C94FF"
+        }
+      }
+    },
+    "accent": {
+      "light": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9,
+            0.24,
+            0.42
+          ],
+          "alpha": 1,
+          "hex": "#E63D6B"
+        }
+      },
+      "dark": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            0.45,
+            0.62
+          ],
+          "alpha": 1,
+          "hex": "#FF739E"
+        }
+      }
+    },
+    "background": {
+      "light": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.98,
+            0.97,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#FAF8FF"
+        }
+      },
+      "dark": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.06,
+            0.08,
+            0.16
+          ],
+          "alpha": 1,
+          "hex": "#0F1428"
+        }
+      }
+    },
+    "surface": {
+      "light": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#FFFFFF"
+        }
+      },
+      "dark": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.1,
+            0.13,
+            0.22
+          ],
+          "alpha": 1,
+          "hex": "#1A2036"
+        }
+      }
+    },
+    "ink": {
+      "light": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.1,
+            0.11,
+            0.13
+          ],
+          "alpha": 1,
+          "hex": "#1A1D21"
+        }
+      },
+      "dark": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.91,
+            0.92,
+            0.96
+          ],
+          "alpha": 1,
+          "hex": "#E8EAF5"
+        }
+      }
+    }
+  }
+}

@@ -5,12 +5,17 @@
 //
 // DTCG 2025.10 §4.2 anchors $ref values at `#/...`; we enforce that
 // prefix here so a relative or schema-less ref fails fast.
-export function jsonPointerGet(root: unknown, pointer: string): unknown {
+export function jsonPointerSegments(pointer: string): string[] | undefined {
   if (!pointer.startsWith("#/")) return undefined;
-  const segments = pointer
+  return pointer
     .slice(2)
     .split("/")
     .map((s) => s.replace(/~1/g, "/").replace(/~0/g, "~"));
+}
+
+export function jsonPointerGet(root: unknown, pointer: string): unknown {
+  const segments = jsonPointerSegments(pointer);
+  if (!segments) return undefined;
   let cur: unknown = root;
   for (const seg of segments) {
     if (cur == null) return undefined;

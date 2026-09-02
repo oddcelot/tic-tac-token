@@ -33,6 +33,16 @@ describe("curly-brace alias regex (DTCG §7.1)", () => {
     expect(isInvalid(aliased("{}"))).toBe(true);
   });
 
+  it("accepts $root as a terminal segment", () => {
+    expect(isValid(aliased("{$root}"))).toBe(true);
+    expect(isValid(aliased("{color.accent.$root}"))).toBe(true);
+  });
+
+  it("rejects $root as a non-terminal segment", () => {
+    expect(isInvalid(aliased("{$root.accent}"))).toBe(true);
+    expect(isInvalid(aliased("{color.$root.accent}"))).toBe(true);
+  });
+
   it("rejects a segment starting with $", () => {
     expect(isInvalid(aliased("{$foo}"))).toBe(true);
     expect(isInvalid(aliased("{foo.$bar}"))).toBe(true);

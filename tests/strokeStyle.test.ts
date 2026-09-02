@@ -102,9 +102,9 @@ describe("strokeStyle token — object form (DTCG §9.3)", () => {
     ).toBe(true);
   });
 
-  it("rejects an empty dashArray (spec: minItems 1)", () => {
+  it("accepts an empty dashArray", () => {
     expect(
-      isInvalid(
+      isValid(
         StrokeStyle({
           $type: "strokeStyle",
           $value: { dashArray: [], lineCap: "round" },

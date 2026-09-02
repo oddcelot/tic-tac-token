@@ -69,8 +69,24 @@ describe("toCssValue", () => {
     expect(toCssValue(token("font.weight.bold", { $type: "fontWeight", $value: "bold" }))).toBe("700");
     expect(toCssValue(token("space.md", { $type: "dimension", $value: { value: 16, unit: "px" } }))).toBe("16px");
   });
-  it("returns null for unsupported types", () => {
+  it("returns null for a malformed value", () => {
     expect(toCssValue(token("effect.shadow", { $type: "shadow", $value: {} }))).toBeNull();
+  });
+  it("returns null for typography, which has no lossless shorthand", () => {
+    expect(
+      toCssValue(
+        token("type.body", {
+          $type: "typography",
+          $value: {
+            fontFamily: ["Inter"],
+            fontSize: { value: 16, unit: "px" },
+            fontWeight: "regular",
+            letterSpacing: { value: 0, unit: "px" },
+            lineHeight: 1.5,
+          },
+        }),
+      ),
+    ).toBeNull();
   });
 });
 

@@ -1,71 +1,38 @@
-// The showcase addon renders tokens from the project's own token documents.
-// Each theme owns a document (tokens/themes/*.json); the `theme` toolbar global
-// picks which one drives the stories, and the `colorScheme` toolbar global picks
-// the light/dark color-scheme within that theme.
-import astro from "../tokens/themes/astro.json?raw";
-import cosmos from "../tokens/themes/cosmos.json?raw";
+// The addon derives everything from the resolver document: one toolbar
+// dropdown per modifier, and a decorator that writes the selected combination
+// to `:root` as custom properties plus `data-*` attributes.
+//
+// `globalTypes` has to be a static export of a preview annotation, and this
+// file is one — which is why the toolbar is built here rather than in the
+// preset.
+import {
+  externalDocumentsFrom,
+  tokenPreviewAddon,
+} from "@oddsquad/tic-tac-token-storybook/preview";
+import resolver from "../resolver.json" with { type: "json" };
 
 // Loads the font families showcased by the token-font-family cards
 // (Inter, JetBrains Mono) into the preview iframe.
 import "@fontsource/inter";
 import "@fontsource/jetbrains-mono";
 
-import type { Preview, Decorator } from "@storybook/web-components-vite";
-import { resolveTokens } from "@oddsquad/tic-tac-token/resolver";
+import type { Preview } from "@storybook/web-components-vite";
 
-const DOCS: Record<string, string> = { astro, cosmos };
+// The resolver document's `$ref`s are written relative to the project root
+// (`tokens/base.json`), so the glob's `../` prefix has to come off for the
+// keys to line up.
+const externalDocuments = externalDocumentsFrom(
+  import.meta.glob("../tokens/**/*.json", { eager: true, import: "default" }),
+);
 
-// Paint the whole story with the active theme's `color.background` token,
-// resolved at the current color scheme — so a dark theme's base surface (not a
-// fixed white) fills the preview behind every story.
-const themeBackground: Decorator = (story, context) => {
-  const scheme = context.globals?.colorScheme ?? "light";
-  const raw = DOCS[context.globals?.theme as string] ?? astro;
-  try {
-    const { tokens } = resolveTokens(JSON.parse(raw));
-    const bg = tokens.find(
-      (t) => t.path === (scheme === "dark" ? "color.background@dark" : "color.background"),
-    );
-    const hex = bg?.$value && typeof bg.$value === "object"
-      ? (bg.$value as { hex?: string }).hex
-      : undefined;
-    document.body.style.background = hex ? (hex.startsWith("#") ? hex : `#${hex}`) : "";
-  } catch {
-    document.body.style.background = "";
-  }
-  return story();
-};
+const addon = tokenPreviewAddon({ resolver, externalDocuments });
 
 const preview: Preview = {
+  ...addon,
   tags: ["autodocs"],
-  decorators: [themeBackground],
-  initialGlobals: { theme: "astro", colorScheme: "light" },
-  globalTypes: {
-    theme: {
-      description: "Which theme's token document to render.",
-      toolbar: {
-        title: "Theme",
-        items: [
-          { value: "astro", title: "Astro" },
-          { value: "cosmos", title: "Cosmos" },
-        ],
-      },
-    },
-    colorScheme: {
-      description: "Light or dark color scheme within the active theme.",
-      toolbar: {
-        title: "Color scheme",
-        items: [
-          { value: "light", title: "Light" },
-          { value: "dark", title: "Dark" },
-        ],
-      },
-    },
-  },
-  parameters: {
-    controls: { expanded: true },
-    ticTacToken: { documents: { astro, cosmos } },
-  },
+  // Spreading `addon` and then writing `parameters` would replace the addon's
+  // own parameters wholesale — plain object-literal overwrite. Merge instead.
+  parameters: { ...addon.parameters, controls: { expanded: true } },
 };
 
 export default preview;

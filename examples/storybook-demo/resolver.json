@@ -1,0 +1,45 @@
+{
+  "version": "2025.10",
+  "name": "storybook-demo",
+  "description": "Brand palette and colour scheme as two independent modifiers.",
+
+  "sets": {
+    "base": { "sources": [{ "$ref": "tokens/base.tokens.json#" }] }
+  },
+
+  "modifiers": {
+    "theme": {
+      "description": "Brand palette. Contributes raw colour ramps under `palette.*` and nothing semantic.",
+      "default": "astro",
+      "contexts": {
+        "astro": [{ "$ref": "tokens/palette/astro.tokens.json#" }],
+        "cosmos": [{ "$ref": "tokens/palette/cosmos.tokens.json#" }]
+      }
+    },
+
+    "colorScheme": {
+      "description": "Maps the semantic colour roles onto palette steps. Never names a theme.",
+      "default": "light",
+      "$extensions": {
+        "tic-tac-token.css": {
+          "colorScheme": true,
+          "dark": [
+            { "kind": "media", "query": "(prefers-color-scheme: dark)" },
+            { "kind": "attribute", "attribute": "data-color-scheme", "value": "dark" }
+          ]
+        },
+        "tic-tac-token.storybook": { "title": "Color scheme" }
+      },
+      "contexts": {
+        "light": [{ "$ref": "tokens/scheme/light.tokens.json#" }],
+        "dark": [{ "$ref": "tokens/scheme/dark.tokens.json#" }]
+      }
+    }
+  },
+
+  "resolutionOrder": [
+    { "$ref": "#/sets/base" },
+    { "$ref": "#/modifiers/theme" },
+    { "$ref": "#/modifiers/colorScheme" }
+  ]
+}

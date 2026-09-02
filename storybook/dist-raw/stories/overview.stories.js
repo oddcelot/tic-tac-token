@@ -1,4 +1,5 @@
-import { parseTokens, tokenDocumentFromParameters } from "../tokens.js";
+import { resolveForContext } from "../resolve.js";
+import { parseTokens } from "../tokens.js";
 import { tokenGalleryTag } from "../../components/index.js";
 import raw from "../tokens.json?raw";
 
@@ -10,29 +11,20 @@ export default {
     docs: {
       description: {
         story:
-          "Every supported token type in one place, grouped into sections by the tokens-gallery element.",
+          "Every supported token type in one place, grouped into sections by the tokens-gallery element. Use the toolbar to switch between the contexts the project's resolver document declares.",
       },
     },
   },
-  args: { mode: "light" },
-  argTypes: {
-    mode: {
-      control: { type: "inline-radio" },
-      options: ["light", "dark"],
-      description: "Pick the token scheme to render (light or dark mode variants).",
-      table: { defaultValue: { summary: "light" } },
-    },
-  },
   render: (args, context) => {
-    const doc = tokenDocumentFromParameters(context) ?? raw;
+    // The project's own tokens when it supplied any; the addon's bundled
+    // document only as a fallback, so a real resolver document is never
+    // shadowed by the demo one.
+    const resolved = resolveForContext(context).tokens;
+    const tokens = resolved.length > 0 ? resolved : parseTokens(raw, "light");
     const el = document.createElement(tokenGalleryTag);
-    const scheme = context.globals?.colorScheme ?? args.mode ?? "light";
-    Object.assign(el, {
-      tokens: parseTokens(doc, scheme === "dark" ? "dark" : "light"),
-    });
+    Object.assign(el, { tokens });
     return el;
   },
 };
 
-export const Light = {};
-export const Dark = { args: { mode: "dark" } };
+export const Default = {};

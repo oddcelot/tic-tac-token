@@ -1,9 +1,7 @@
-// The story is the thin glue: it resolves the active theme's raw token document
-// from the global parameter (addon-provided) and hands it to the demo's own
-// TokenCard component, which does all token → CSS work through core's
-// `tokensToCssVars()` — no addon involvement inside the component itself.
-// The light/dark color scheme comes from the `colorScheme` toolbar global.
-import { tokenDocumentFromParameters } from "@oddsquad/tic-tac-token-storybook/tokens";
+// The story is nothing but the element. Every token concern — resolving the
+// document, picking the theme and colour scheme, writing the custom properties
+// — belongs to the addon's decorator, and the component reads the result
+// through plain `var()`.
 import { tokenCardTag } from "./token-card";
 
 export default {
@@ -15,24 +13,14 @@ export default {
       description: {
         story:
           "A sample component authored in the demo itself (src/token-card.ts). " +
-          "It consumes the core @oddsquad/tic-tac-token API directly — " +
-          "resolveTokens() + tokensToCssVars() — deriving CSS custom properties " +
-          "from the active theme's token document and styling itself only from " +
-          "stable role vars (--color-primary, --color-accent, …). The same " +
-          "markup follows the current theme × color scheme.",
+          "It contains no token code at all: it styles itself from role variables " +
+          "(--color-primary, --spacing-card, …) that the addon binds on :root from " +
+          "the resolver document. Switch Theme or Color scheme in the toolbar and " +
+          "the card follows without re-rendering.",
       },
     },
   },
-  render: (args, context) => {
-    const doc = tokenDocumentFromParameters(context);
-    const scheme = context.globals?.colorScheme === "dark" ? "dark" : "light";
-    const el = document.createElement(tokenCardTag);
-    Object.assign(el, { mode: scheme, document: doc ?? "" });
-    if (!doc) {
-      el.innerHTML = "<p style='color:#b00'>No token document — set the ticTacToken parameter.</p>";
-    }
-    return el;
-  },
+  render: () => document.createElement(tokenCardTag),
 };
 
 export const Default = {};

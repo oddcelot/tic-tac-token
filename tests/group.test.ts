@@ -94,6 +94,27 @@ describe("Group (DTCG §5 + format/group.json)", () => {
     expect(isInvalid(Group({ $extends: "{}" }))).toBe(true);
   });
 
+  it("accepts $extends as a { $ref } JSON Pointer", () => {
+    expect(
+      isValid(
+        Group({
+          $extends: { $ref: "#/brand" },
+          accent: colorToken,
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it("rejects a { $ref } $extends carrying sibling keys", () => {
+    expect(
+      isInvalid(
+        Group({
+          $extends: { $ref: "#/brand", extra: true } as never,
+        }),
+      ),
+    ).toBe(true);
+  });
+
   it("accepts a $root token on a group", () => {
     expect(
       isValid(
